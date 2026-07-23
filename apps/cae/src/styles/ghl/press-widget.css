@@ -1,0 +1,46 @@
+/**
+ * @fileoverview Press logo marquee — from custom-code-tUL6q1clw3 (body only).
+ */
+
+.hl_page-preview--content .scroller {
+  width: 100%;
+  overflow: hidden;
+  background-color: transparent;
+  padding: 20px 0;
+}
+
+.hl_page-preview--content .scroller__inner {
+  display: flex;
+  gap: 4rem;
+  width: max-content;
+  animation: ghl-scroll-right 70s linear infinite;
+}
+
+@keyframes ghl-scroll-right {
+  from {
+    transform: translateX(-50%);
+  }
+
+  to {
+    transform: translateX(0%);
+  }
+}
+
+.hl_page-preview--content .scroller:hover .scroller__inner {
+  animation-play-state: paused;
+}
+
+.hl_page-preview--content .scroller img {
+  height: 50px;
+  width: auto;
+  max-width: 160px;
+  object-fit: contain;
+  display: inline-block;
+}
+
+@media (max-width: 768px) {
+  .hl_page-preview--content .scroller img {
+    height: 40px;
+    max-width: 120px;
+  }
+}

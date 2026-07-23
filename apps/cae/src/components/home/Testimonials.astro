@@ -1,0 +1,179 @@
+---
+/**
+ * @fileoverview Success stories: static quote cards plus dual-layer scrolling carousel.
+ * Carousel behavior lives in `src/scripts/testimonial-carousel.ts`.
+ */
+import { homeTestimonials } from "@/data/home/testimonials";
+import {
+  getHomeImage,
+  isHomeImageKey,
+  type HomeImageAsset,
+  type HomeImageKey,
+} from "@/data/home/images";
+import "@/styles/home/testimonials.css";
+
+/**
+ * Returns a usable `src` string from an Astro/Vite image import.
+ *
+ * @param asset - Static import from {@link homeImages}
+ * @returns URL string for an `<img src>`
+ */
+function assetSrc(asset: HomeImageAsset): string {
+  if (typeof asset === "string") {
+    return asset;
+  }
+  if (
+    typeof asset === "object" &&
+    asset !== null &&
+    "src" in asset &&
+    typeof asset.src === "string"
+  ) {
+    return asset.src;
+  }
+  throw new Error("Testimonials: unsupported home image asset shape.");
+}
+
+/**
+ * Resolves a content `imageKey` to a concrete image URL.
+ *
+ * @param imageKey - Logical slot from content modules
+ * @param fallback - Known {@link HomeImageKey} when the content key is missing
+ * @returns Resolved image URL
+ */
+function resolveImageSrc(imageKey: string, fallback: HomeImageKey): string {
+  if (isHomeImageKey(imageKey)) {
+    return assetSrc(getHomeImage(imageKey));
+  }
+  return assetSrc(getHomeImage(fallback));
+}
+
+/**
+ * Builds five star image nodes for static cards (GHL uses star artwork).
+ *
+ * @returns Array of five identical star slots for mapping
+ */
+function fiveStarSlots(): readonly number[] {
+  return [1, 2, 3, 4, 5];
+}
+
+const portraitFallbackById: Readonly<Record<string, HomeImageKey>> = {
+  "quote-1": "testimonialPortrait1",
+  "quote-2": "testimonialPortrait2",
+  "quote-3": "testimonialPortrait3",
+};
+
+const staticCards = homeTestimonials.staticQuotes.map((quote) => {
+  const mapped = portraitFallbackById[quote.id];
+  const fallback: HomeImageKey =
+    typeof mapped === "string" ? mapped : "testimonialPortrait1";
+  return {
+    ...quote,
+    portraitSrc: resolveImageSrc(quote.portraitImageKey, fallback),
+  };
+});
+
+const starSrc = assetSrc(getHomeImage("decorStar"));
+const sectionId = homeTestimonials.sectionId;
+---
+
+<section
+  class="cae-testimonials"
+  id={sectionId}
+  aria-labelledby="cae-testimonials-heading"
+>
+  <div class="cae-testimonials__inner">
+    <header class="cae-testimonials__header">
+      <p class="cae-testimonials__members">{homeTestimonials.membersHeadline}</p>
+      <h2 class="cae-testimonials__headline" id="cae-testimonials-heading">
+        {homeTestimonials.recommendationsHeadline}
+      </h2>
+    </header>
+
+    <ul class="cae-testimonials__static">
+      {
+        staticCards.map((card) => (
+          <li class="cae-testimonials__static-card">
+            <img
+              class="cae-testimonials__portrait"
+              src={card.portraitSrc}
+              alt={card.portraitAlt}
+              title={card.portraitTitle}
+              loading="lazy"
+              decoding="async"
+            />
+            <p class="cae-testimonials__quote">
+              <strong>&ldquo;{card.quote}&rdquo;</strong>
+            </p>
+            <p class="cae-testimonials__detail">{card.detail}</p>
+            <ul
+              class="cae-testimonials__stars"
+              aria-label={homeTestimonials.starsAlt}
+              title={homeTestimonials.starsTitle}
+            >
+              {
+                fiveStarSlots().map((slot) => (
+                  <li>
+                    <img
+                      class="cae-testimonials__star-img"
+                      src={starSrc}
+                      alt=""
+                      width="24"
+                      height="24"
+                      loading="lazy"
+                      decoding="async"
+                      data-star-slot={String(slot)}
+                    />
+                  </li>
+                ))
+              }
+            </ul>
+          </li>
+        ))
+      }
+    </ul>
+  </div>
+
+  <div class="cae-testimonials__carousel-wrap">
+    <div
+      class="cae-testimonials__carousel-container"
+      data-testimonial-carousel
+      role="region"
+      aria-roledescription="carousel"
+      aria-label="Member success stories carousel"
+    >
+      <div class="cae-testimonials__carousel" id="carousel">
+        <div
+          class="cae-testimonials__carousel-layer"
+          data-carousel-layer="1"
+          id="myLayer1"
+        >
+        </div>
+        <div
+          class="cae-testimonials__carousel-layer"
+          data-carousel-layer="2"
+          id="myLayer2"
+        >
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+{/**
+ * Bundled client script: imports content reviews and boots the carousel.
+ * `initTestimonialCarousel` no-ops when layer/container nodes are missing.
+ */}
+<script>
+  import { initTestimonialCarousel } from "../../scripts/testimonial-carousel";
+  import { homeTestimonials } from "../../data/home/testimonials";
+
+  initTestimonialCarousel({
+    reviews: homeTestimonials.carouselReviews.map((review) => ({
+      name: review.name,
+      age: review.age,
+      industry: review.industry,
+      review: review.review,
+      stars: review.stars,
+    })),
+  });
+</script>

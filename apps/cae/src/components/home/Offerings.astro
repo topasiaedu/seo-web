@@ -1,0 +1,122 @@
+---
+/**
+ * @fileoverview Offerings grid — native port of GHL `section-gZkeGFtHWF`.
+ *
+ * Structure: centered LIFE STARTS headline, then two rows of two
+ * `radius20` / `#4C247A` bordered columns (image → title → body).
+ */
+import { homeOfferings } from "@/data/home/offerings";
+import {
+  getHomeImage,
+  isHomeImageKey,
+  type HomeImageAsset,
+  type HomeImageKey,
+} from "@/data/home/images";
+import "@/styles/home/offerings.css";
+
+/**
+ * Returns a usable `src` string from an Astro/Vite image import.
+ *
+ * @param asset - Static import from {@link homeImages}
+ * @returns URL string for an `<img src>` or CSS `url()`
+ */
+function assetSrc(asset: HomeImageAsset): string {
+  if (typeof asset === "string") {
+    return asset;
+  }
+  if (
+    typeof asset === "object" &&
+    asset !== null &&
+    "src" in asset &&
+    typeof asset.src === "string"
+  ) {
+    return asset.src;
+  }
+  throw new Error("Offerings: unsupported home image asset shape.");
+}
+
+/**
+ * Resolves a content `imageKey` to a concrete image URL.
+ *
+ * @param imageKey - Logical slot from content modules
+ * @param fallback - Known {@link HomeImageKey} when the content key is missing
+ * @returns Resolved image URL
+ */
+function resolveImageSrc(imageKey: string, fallback: HomeImageKey): string {
+  if (isHomeImageKey(imageKey)) {
+    return assetSrc(getHomeImage(imageKey));
+  }
+  return assetSrc(getHomeImage(fallback));
+}
+
+/**
+ * Prefixes root-relative paths with Astro `base` (`/cae/`).
+ *
+ * @param href - Absolute URL, hash, or root-relative path
+ * @returns Href safe for this app's base path
+ */
+function resolveHref(href: string): string {
+  if (
+    href.startsWith("https://") ||
+    href.startsWith("http://") ||
+    href.startsWith("#") ||
+    href.startsWith("mailto:")
+  ) {
+    return href;
+  }
+  const base = import.meta.env.BASE_URL;
+  const normalizedBase = base.endsWith("/") ? base : `${base}/`;
+  const path = href.startsWith("/") ? href.slice(1) : href;
+  return `${normalizedBase}${path}`;
+}
+
+const cards = homeOfferings.cards.map((card) => ({
+  id: card.id,
+  title: card.title,
+  body: card.body,
+  href: resolveHref(card.href),
+  imageAlt: card.imageAlt,
+  imageTitle: card.imageTitle,
+  imageSrc: resolveImageSrc(card.imageKey, "offeringConsult"),
+}));
+
+const sectionBgSrc = assetSrc(getHomeImage("offeringsBg"));
+---
+
+<section
+  class="offerings"
+  id={homeOfferings.sectionId}
+  aria-labelledby="offerings-headline"
+  style={`--offerings-bg-image: url("${sectionBgSrc}");`}
+>
+  <!-- GHL: .bg.bg-section-gZkeGFtHWF absolute cover -->
+  <div class="offerings__bg" aria-hidden="true"></div>
+
+  <div class="offerings__inner">
+    <h2 class="offerings__headline" id="offerings-headline">
+      {homeOfferings.headline}
+    </h2>
+
+    <!-- GHL: two rows of two equal flex columns (borderFull radius20) -->
+    <div class="offerings__grid">
+      {
+        cards.map((card) => (
+          <a class="offerings__card" href={card.href} data-offering-id={card.id}>
+            <img
+              class="offerings__media"
+              src={card.imageSrc}
+              alt={card.imageAlt}
+              title={card.imageTitle}
+              width="640"
+              height="400"
+              loading="lazy"
+              decoding="async"
+            />
+            <h3 class="offerings__title">{card.title}</h3>
+            <p class="offerings__copy">{card.body}</p>
+          </a>
+        ))
+      }
+    </div>
+  </div>
+</section>

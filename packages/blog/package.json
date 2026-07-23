@@ -1,0 +1,16 @@
+{
+  "name": "@seo/blog",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "dependencies": {
+    "@seo/db": "workspace:*"
+  },
+  "devDependencies": {
+    "@seo/config-typescript": "workspace:*",
+    "typescript": "^5.8.2"
+  }
+}

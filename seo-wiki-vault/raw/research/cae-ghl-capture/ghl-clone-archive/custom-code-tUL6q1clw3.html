@@ -1,0 +1,86 @@
+<div id="custom-code-tUL6q1clw3" class="custom-code-container ccustom-code-tUL6q1clw3"><!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Right Scrolling Logo Scroller</title>
+  <style>
+    body {
+      margin: 0;
+      background-color: #100022;
+      font-family: sans-serif;
+    }
+
+    .scroller {
+      width: 100%;
+      overflow: hidden;
+      background-color: transparent;
+      padding: 20px 0;
+    }
+
+    .scroller__inner {
+      display: flex;
+      gap: 4rem;
+      width: max-content;
+      animation: scroll-right 70s linear infinite;
+    }
+
+    @keyframes scroll-right {
+      from {
+        transform: translateX(-50%);
+      }
+      to {
+        transform: translateX(0%);
+      }
+    }
+
+    .scroller:hover .scroller__inner {
+      animation-play-state: paused;
+    }
+
+    .scroller img {
+      height: 50px;
+      width: auto;
+      max-width: 160px;
+      object-fit: contain;
+      display: inline-block;
+    }
+
+    @media (max-width: 768px) {
+      .scroller img {
+        height: 40px;
+        max-width: 120px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="scroller">
+    <div class="scroller__inner">
+      <!-- LOGO SET: 8 media sources -->
+      <img src="https://storage.googleapis.com/msgsndr/OjRihR4hKrEVcA3qJMfk/media/6877a37f1db1291e184636bd.svg" alt="APNews Logo">
+      <img src="https://assets.cdn.filesafe.space/OjRihR4hKrEVcA3qJMfk/media/6878720d4e2184e89da3351a.png" alt="Newsbreak Logo">
+      <img src="https://storage.googleapis.com/msgsndr/OjRihR4hKrEVcA3qJMfk/media/6877abd59ee714fcdb5cf4cc.png" alt="DigitalJournal Logo">
+      <img src="https://storage.googleapis.com/msgsndr/OjRihR4hKrEVcA3qJMfk/media/68779ca3204f2d3df0d3b716.png" alt="PrimeTimePress Logo">
+      <img src="https://storage.googleapis.com/msgsndr/OjRihR4hKrEVcA3qJMfk/media/6877ac4a1db12948804660f4.png" alt="CEOTimes Logo">
+      <img src="https://storage.googleapis.com/msgsndr/OjRihR4hKrEVcA3qJMfk/media/6877ac78204f2d1facd3f201.png" alt="NYReview Logo">
+      <img src="https://storage.googleapis.com/msgsndr/OjRihR4hKrEVcA3qJMfk/media/6877aca6e2aa7cc657ce7191.png" alt="WomensInsider Logo">
+      <img src="https://storage.googleapis.com/msgsndr/OjRihR4hKrEVcA3qJMfk/media/6877acf1c019ad946157f741.png" alt="USANews Logo">
+
+      <!-- Duplicate logos for continuous scroll -->
+      <img src="https://storage.googleapis.com/msgsndr/OjRihR4hKrEVcA3qJMfk/media/6877a37f1db1291e184636bd.svg" alt="APNews Logo">
+      <img src="https://assets.cdn.filesafe.space/OjRihR4hKrEVcA3qJMfk/media/6878720d4e2184e89da3351a.png" alt="Newsbreak Logo">
+      <img src="https://storage.googleapis.com/msgsndr/OjRihR4hKrEVcA3qJMfk/media/6877abd59ee714fcdb5cf4cc.png" alt="DigitalJournal Logo">
+      <img src="https://storage.googleapis.com/msgsndr/OjRihR4hKrEVcA3qJMfk/media/68779ca3204f2d3df0d3b716.png" alt="PrimeTimePress Logo">
+      <img src="https://storage.googleapis.com/msgsndr/OjRihR4hKrEVcA3qJMfk/media/6877ac4a1db12948804660f4.png" alt="CEOTimes Logo">
+      <img src="https://storage.googleapis.com/msgsndr/OjRihR4hKrEVcA3qJMfk/media/6877ac78204f2d1facd3f201.png" alt="NYReview Logo">
+      <img src="https://storage.googleapis.com/msgsndr/OjRihR4hKrEVcA3qJMfk/media/6877aca6e2aa7cc657ce7191.png" alt="WomensInsider Logo">
+      <img src="https://storage.googleapis.com/msgsndr/OjRihR4hKrEVcA3qJMfk/media/6877acf1c019ad946157f741.png" alt="USANews Logo">
+    </div>
+  </div>
+
+<script type="module" src="https://static.cloudflareinsights.com/beacon.min.js/v4513226cdae34746b4dedf0b4dfa099e1781791509496" integrity="sha512-ZE9pZaUXND66v380QUtch/5sE9tPFh2zg45pR2PB0CVkCtOREv2AJKkSidISWkysEuQ0EH8faUU5du78bx87UQ==" data-cf-beacon='{"version":"2024.11.0","token":"d56c0fb9091e40fc8f3829f8a67134fa","server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
+</body>
+</html>
+</div>

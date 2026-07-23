@@ -1,0 +1,20 @@
+{
+  "name": "seo-website",
+  "private": true,
+  "packageManager": "pnpm@9.15.0",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "dev": "concurrently -n gateway,cae -c blue,green \"pnpm --filter @seo/gateway dev\" \"pnpm --filter @seo/cae dev\"",
+    "dev:gateway": "pnpm --filter @seo/gateway dev",
+    "dev:cae": "pnpm --filter @seo/cae dev",
+    "build": "pnpm --filter @seo/cae build",
+    "build:cae": "pnpm --filter @seo/cae build",
+    "preview": "pnpm --filter @seo/cae preview",
+    "typecheck:gateway": "pnpm --filter @seo/gateway typecheck"
+  },
+  "devDependencies": {
+    "concurrently": "^9.1.2"
+  }
+}

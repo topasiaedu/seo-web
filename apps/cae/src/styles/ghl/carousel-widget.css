@@ -1,0 +1,151 @@
+/**
+ * @fileoverview Testimonial drag carousel — from custom-code-NFPO0kzh4m.
+ */
+
+.hl_page-preview--content .carousel-wrapper {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  padding: 20px 0;
+  overflow-x: hidden;
+  font-family: "Hanken Grotesk", sans-serif;
+}
+
+.hl_page-preview--content .carousel-container {
+  width: 100%;
+  max-width: 1200px;
+  overflow: hidden;
+  position: relative;
+  user-select: none;
+  -webkit-mask-image: linear-gradient(
+    to right,
+    rgba(0, 0, 0, 0) 0%,
+    rgba(0, 0, 0, 1) 5%,
+    rgba(0, 0, 0, 1) 95%,
+    rgba(0, 0, 0, 0) 100%
+  );
+  mask-image: linear-gradient(
+    to right,
+    rgba(0, 0, 0, 0) 0%,
+    rgba(0, 0, 0, 1) 2.5%,
+    rgba(0, 0, 0, 1) 97.5%,
+    rgba(0, 0, 0, 0) 100%
+  );
+}
+
+.hl_page-preview--content .carousel {
+  display: flex;
+  flex-direction: column;
+  gap: 40px;
+  cursor: grab;
+}
+
+.hl_page-preview--content .carousel-layer {
+  display: flex;
+  gap: 24px;
+}
+
+.hl_page-preview--content .carousel-wrapper .card {
+  background: #fff;
+  padding: 18px 20px;
+  width: 320px;
+  border-radius: 12px;
+  border: 2px solid #9461a3;
+  box-shadow:
+    0 8px 20px rgba(255, 255, 255, 0.03),
+    0 2px 10px rgba(255, 255, 255, 0.06);
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  position: relative;
+  transition:
+    transform 0.3s ease,
+    box-shadow 0.3s ease;
+}
+
+.hl_page-preview--content .carousel-wrapper .card:hover {
+  transform: translateY(-4px);
+  box-shadow:
+    0 12px 28px rgba(255, 255, 255, 0.05),
+    0 4px 16px rgba(255, 255, 255, 0.08);
+}
+
+.hl_page-preview--content .quote-icon {
+  position: absolute;
+  top: 12px;
+  left: 16px;
+  font-size: 1.8rem;
+  color: #9461a3;
+}
+
+.hl_page-preview--content .quote-text {
+  margin: 32px 0 16px;
+  font-size: 0.875rem;
+  line-height: 1.6;
+  color: #444;
+}
+
+.hl_page-preview--content .card-footer {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  border-top: 1px solid #eee;
+  padding-top: 14px;
+}
+
+.hl_page-preview--content .avatar {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  background: #140625;
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  font-size: 1.1rem;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+}
+
+.hl_page-preview--content .user-info h3 {
+  margin: 0;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #222;
+}
+
+.hl_page-preview--content .user-info .subtext {
+  margin: 2px 0 0;
+  font-size: 0.75rem;
+  color: #777;
+}
+
+.hl_page-preview--content .stars {
+  margin-top: 4px;
+  color: #f4b400;
+  font-size: 0.95rem;
+}
+
+@media (max-width: 768px) {
+  .hl_page-preview--content .carousel-container {
+    max-width: 100%;
+    -webkit-mask-image: none;
+    mask-image: none;
+    padding: 0 12px;
+  }
+
+  .hl_page-preview--content .carousel-layer {
+    gap: 16px;
+  }
+
+  .hl_page-preview--content .carousel-wrapper .card {
+    width: 280px;
+    padding: 16px 18px;
+  }
+
+  .hl_page-preview--content .quote-text {
+    font-size: 0.8rem;
+    margin: 24px 0 12px;
+  }
+}

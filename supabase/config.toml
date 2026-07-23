@@ -1,0 +1,14 @@
+# Supabase local/remote config placeholder.
+# Run `supabase init` refinements when connecting a real project.
+
+[project]
+id = "seo-website"
+
+[api]
+enabled = true
+
+[db]
+port = 54322
+
+[studio]
+enabled = true

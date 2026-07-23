@@ -1,0 +1,16 @@
+{
+  "name": "@seo/db",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.49.1"
+  },
+  "devDependencies": {
+    "@seo/config-typescript": "workspace:*",
+    "typescript": "^5.8.2"
+  }
+}

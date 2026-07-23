@@ -1,0 +1,241 @@
+/**
+ * Hero — native rewrite of GHL `section-GdS5u8Huz` CSS (not the HTML dump).
+ *
+ * Spec sources (`_ghl-extract/ghl-page.css` + preview-cleaned.html):
+ * - Section: padding 80px 0, bg #140625
+ * - BG layer: absolute inset, bgCover100 (100% auto), opacity 1, no purple overlay
+ * - Inner: max-width 1170px
+ * - Row: two equal flex columns; right column empty (desktop spacer)
+ * - Slogan img: height 40px
+ * - H1: Archivo Black 72px / 40px mobile, uppercase, line-height 1em, no shadow
+ * - Paragraph: 20px / 16px mobile, white, text-shadow 2px 2px 20px #38134838
+ * - Button: .button-flat-line → transparent!important + white border (ghost pill),
+ *   padding 20px 40px, radius 150px, letter-spacing 2px, 18px / 14px mobile
+ */
+
+.hero {
+  --hero-section-bg: #140625;
+  --hero-text: #ffffff;
+  --hero-shadow: 2px 2px 20px #38134838;
+  --hero-font-sans: var(--cae-font-sans);
+  --hero-font-display: var(--cae-font-display);
+
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  margin: 0;
+  padding: 80px 0;
+  color: var(--hero-text);
+  background-color: var(--hero-section-bg);
+  border: 1px solid var(--hero-section-bg);
+  font-family: var(--hero-font-sans);
+}
+
+/* GHL: .bg.bgCover100 absolute top/left/width/height 100%, border-radius 19px top */
+.hero__bg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: -1;
+  width: 100%;
+  height: 100%;
+  border-radius: 19px 19px 0 0;
+  background-image: var(--hero-bg-image);
+  background-size: 100% auto;
+  background-position: top center;
+  background-repeat: no-repeat;
+  opacity: 1;
+  pointer-events: none;
+}
+
+/* GHL: #section-GdS5u8Huz > .inner { max-width: 1170px } */
+.hero__inner {
+  position: relative;
+  z-index: 1;
+  box-sizing: border-box;
+  width: 100%;
+  max-width: 1170px;
+  margin: 0 auto;
+  padding: 0 15px;
+}
+
+/*
+ * GHL: .row-FHN0Hj7LQrI — width 100%, padding 20px 0 40px, margin-bottom 40px
+ * Columns: .c-column { flex: 1 } → equal left copy / right spacer
+ */
+.hero__row {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  width: 100%;
+  margin: 0 0 40px;
+  padding: 20px 0 40px;
+}
+
+.hero__copy,
+.hero__spacer {
+  flex: 1 1 0%;
+  min-width: 0;
+}
+
+/* GHL: #col-Kc6QK_aJU9S > .inner — column, padding 10px 10px 10px 0 */
+.hero__copy {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: flex-start;
+  padding: 10px 10px 10px 0;
+}
+
+/* GHL: .image-sg1CVEfhgy img { height: 40px }, margin-top 10px */
+.hero__slogan {
+  display: block;
+  width: auto;
+  height: 40px;
+  max-width: 100%;
+  margin: 10px 0 0;
+  object-fit: contain;
+  object-position: left center;
+}
+
+/*
+ * GHL: .cheading-PfkfMnyjbg / .heading-PfkfMnyjbg
+ * desktop 72px, mobile 40px, Archivo Black, uppercase, line-height 1em,
+ * text-shadow none on heading (transparent)
+ */
+.hero__brand {
+  margin: 20px 0 0;
+  color: var(--hero-text);
+  font-family: var(--hero-font-display);
+  font-size: 72px;
+  font-weight: 400;
+  letter-spacing: 0;
+  line-height: 1em;
+  text-align: left;
+  text-transform: uppercase;
+  text-shadow: none;
+}
+
+/*
+ * GHL: .cparagraph-2EC8MAdJ9zD / .paragraph-2EC8MAdJ9zD
+ * desktop 20px, mobile 16px, white, line-height 1.5em,
+ * text-shadow 2px 2px 20px #38134838; margin-top 20px
+ */
+.hero__tagline {
+  margin: 20px 0 0;
+  max-width: 100%;
+  color: var(--hero-text);
+  font-family: var(--hero-font-sans);
+  font-size: 20px;
+  font-weight: 400;
+  letter-spacing: 0;
+  line-height: 1.5em;
+  text-align: left;
+  text-shadow: var(--hero-shadow);
+}
+
+/*
+ * GHL button classes on the same element:
+ *   .cbutton-h2gy3SX8Kg0 — padding 20px 40px, white border, letter-spacing 2px,
+ *                          uppercase, weight 700, 18px desktop / 14px mobile
+ *   .button-flat-line — background transparent !important; border-width 2px
+ *   .radius150 — border-radius 150px
+ * Live result is a ghost pill (flat-line wins over the lavender fill).
+ */
+.hero__cta {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: auto;
+  margin: 20px 0 0;
+  padding: 20px 40px;
+  border: 2px solid #ffffff;
+  border-radius: 150px;
+  color: #ffffff;
+  background-color: transparent;
+  font-family: var(--hero-font-sans);
+  font-size: 18px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  line-height: 1;
+  text-align: left;
+  text-decoration: none;
+  text-transform: uppercase;
+  text-shadow: none;
+  box-shadow: 0 0 0 0 transparent;
+  transition: transform 0.2s ease, background-color 0.2s ease, color 0.2s ease;
+}
+
+.hero__cta:hover,
+.hero__cta:focus-visible {
+  color: #140625;
+  background-color: #ffffff;
+  outline: none;
+  transform: translateY(-2px);
+}
+
+/* GHL: right column is .desktop-only empty spacer */
+.hero__spacer {
+  display: none;
+}
+
+@media (min-width: 768px) {
+  .hero__spacer {
+    display: block;
+  }
+}
+
+@media screen and (max-width: 480px) {
+  .hero {
+    padding: 80px 0 0;
+  }
+
+  .hero__bg {
+    border-radius: 0;
+    /* Fill the narrower frame so the portrait still reads on mobile. */
+    background-size: cover;
+    background-position: 70% top;
+  }
+
+  .hero__row {
+    flex-direction: column;
+    margin-bottom: 0;
+    padding: 20px 0 40px;
+  }
+
+  .hero__copy {
+    padding: 10px;
+    align-items: center;
+  }
+
+  .hero__slogan {
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .hero__brand {
+    font-size: 40px;
+    text-align: center;
+  }
+
+  .hero__tagline {
+    font-size: 16px;
+    text-align: center;
+  }
+
+  .hero__cta {
+    font-size: 14px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+}
+
+@media screen and (min-width: 481px) and (max-width: 1024px) {
+  .hero__brand {
+    font-size: 56px;
+  }
+
+  .hero__tagline {
+    font-size: 18px;
+  }
+}

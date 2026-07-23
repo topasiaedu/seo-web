@@ -1,0 +1,47 @@
+---
+/**
+ * Document chrome for the CAE marketing homepage — GHL CSS lift.
+ * Native BEM home/*.css is intentionally not loaded on this route.
+ */
+import "@/styles/ghl/ghl-runtime.css";
+import "@/styles/ghl/ghl-page.css";
+import "@/styles/ghl/host-patch.css";
+import "@/styles/ghl/bg-overrides.css";
+import { requireMetaString } from "../data/home/meta.ts";
+
+interface Props {
+  title: string;
+  description?: string;
+}
+
+const { title, description } = Astro.props;
+const pageTitle = requireMetaString(title, "Cae Goh");
+const metaDescription = requireMetaString(
+  description,
+  "Purple Star Astrology & Life Strategy | Zi Wei Dou Shu | Chinese Astrology | Cae Goh",
+);
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content={metaDescription} />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;600;700&family=Archivo+Black&display=swap"
+      rel="stylesheet"
+    />
+    <title>{pageTitle}</title>
+  </head>
+  <body>
+    <div
+      id="preview-container"
+      class="preview-container hl_page-preview--content"
+    >
+      <slot />
+    </div>
+  </body>
+</html>

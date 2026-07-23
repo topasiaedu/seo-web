@@ -1,0 +1,288 @@
+/**
+ * Static quote cards + scrolling testimonial carousel styles.
+ * Matches caegoh.com: circular portraits, gold stars, white purple-bordered cards.
+ */
+
+.cae-testimonials {
+  --cae-t-bg: var(--cae-bg-elevated);
+  --cae-t-text: var(--cae-text);
+  --cae-t-muted: var(--cae-text-muted);
+  --cae-t-accent: var(--cae-accent);
+  --cae-t-card: #ffffff;
+  --cae-t-card-border: #9461a3;
+  --cae-t-card-text: #444444;
+  --cae-t-card-muted: #777777;
+  --cae-t-star: var(--cae-star);
+  background: var(--cae-t-bg);
+  color: var(--cae-t-text);
+  padding: clamp(3rem, 8vw, 5.5rem) 0;
+  overflow-x: hidden;
+  font-family: var(--cae-font-sans);
+}
+
+.cae-testimonials__inner {
+  max-width: var(--cae-max-width);
+  margin: 0 auto;
+  padding: 0 clamp(1.25rem, 4vw, 2.5rem);
+}
+
+.cae-testimonials__header {
+  text-align: center;
+  margin-bottom: clamp(2rem, 5vw, 3rem);
+}
+
+.cae-testimonials__members {
+  margin: 0 0 0.35rem;
+  font-family: var(--cae-font-sans);
+  font-size: clamp(0.95rem, 2vw, 1.125rem);
+  font-weight: 700;
+  letter-spacing: 0.125em;
+  line-height: 2;
+  text-transform: uppercase;
+  color: var(--cae-t-accent);
+}
+
+.cae-testimonials__headline {
+  margin: 0;
+  font-family: var(--cae-font-display), var(--cae-font-sans);
+  font-size: clamp(1.75rem, 4vw, 2.75rem);
+  font-weight: 400;
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+  text-transform: uppercase;
+  color: #ffffff;
+}
+
+.cae-testimonials__static {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.75rem;
+  list-style: none;
+  margin: 0 0 clamp(2.5rem, 6vw, 3.5rem);
+  padding: 0;
+}
+
+@media (min-width: 768px) {
+  .cae-testimonials__static {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 1.25rem;
+  }
+}
+
+/*
+ * GHL reference: plain centered stacks on the section background
+ * (circular portrait, quote, detail, stars) — no bordered card box.
+ */
+.cae-testimonials__static-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.65rem;
+  padding: 0 0.5rem;
+  text-align: center;
+}
+
+/*
+ * Circular headshot (~75px) with a soft drop shadow, no hard ring.
+ */
+.cae-testimonials__portrait {
+  width: 4.7rem;
+  height: 4.7rem;
+  object-fit: cover;
+  border-radius: 50%;
+  box-shadow: 0 8px 20px -6px rgba(10, 1, 20, 0.5);
+}
+
+.cae-testimonials__quote {
+  margin: 0;
+  font-family: var(--cae-font-sans);
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--cae-t-text);
+}
+
+.cae-testimonials__detail {
+  margin: 0;
+  max-width: 22rem;
+  font-family: var(--cae-font-sans);
+  font-size: 0.9rem;
+  line-height: 1.55;
+  color: var(--cae-text-muted-gray);
+}
+
+.cae-testimonials__stars {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.15rem;
+  margin: 0.15rem 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.cae-testimonials__star-img {
+  display: block;
+  width: auto;
+  height: 1.1rem;
+  object-fit: contain;
+}
+
+.cae-testimonials__carousel-wrap {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  padding: 0.5rem 0 0;
+}
+
+.cae-testimonials__carousel-container {
+  width: 100%;
+  max-width: 75rem;
+  overflow: hidden;
+  position: relative;
+  user-select: none;
+  cursor: grab;
+  -webkit-mask-image: linear-gradient(
+    to right,
+    rgba(0, 0, 0, 0) 0%,
+    rgba(0, 0, 0, 1) 5%,
+    rgba(0, 0, 0, 1) 95%,
+    rgba(0, 0, 0, 0) 100%
+  );
+  mask-image: linear-gradient(
+    to right,
+    rgba(0, 0, 0, 0) 0%,
+    rgba(0, 0, 0, 1) 2.5%,
+    rgba(0, 0, 0, 1) 97.5%,
+    rgba(0, 0, 0, 0) 100%
+  );
+}
+
+.cae-testimonials__carousel-container:active {
+  cursor: grabbing;
+}
+
+.cae-testimonials__carousel {
+  display: flex;
+  flex-direction: column;
+  gap: 2.5rem;
+}
+
+.cae-testimonials__carousel-layer {
+  display: flex;
+  gap: 1.5rem;
+  will-change: transform;
+}
+
+/*
+ * GHL custom-code carousel: white card, 12px radius, 2px #9461A3 border.
+ */
+.cae-testimonials__carousel-card {
+  background: var(--cae-t-card);
+  padding: 1.125rem 1.25rem;
+  width: 20rem;
+  border-radius: 0.75rem;
+  border: 2px solid var(--cae-t-card-border);
+  box-shadow:
+    0 8px 20px rgba(255, 255, 255, 0.03),
+    0 2px 10px rgba(255, 255, 255, 0.06);
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  position: relative;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.cae-testimonials__carousel-card:hover {
+  transform: translateY(-4px);
+  box-shadow:
+    0 12px 28px rgba(255, 255, 255, 0.05),
+    0 4px 16px rgba(255, 255, 255, 0.08);
+}
+
+.cae-testimonials__quote-icon {
+  position: absolute;
+  top: 0.75rem;
+  left: 1rem;
+  font-size: 1.8rem;
+  line-height: 1;
+  color: var(--cae-t-accent);
+}
+
+.cae-testimonials__carousel-text {
+  margin: 2rem 0 1rem;
+  font-family: var(--cae-font-sans);
+  font-size: 0.875rem;
+  line-height: 1.6;
+  color: var(--cae-t-card-text);
+}
+
+.cae-testimonials__carousel-footer {
+  display: flex;
+  gap: 0.75rem;
+  align-items: center;
+  border-top: 1px solid #eeeeee;
+  padding-top: 0.875rem;
+}
+
+.cae-testimonials__avatar {
+  width: 3.125rem;
+  height: 3.125rem;
+  border-radius: 50%;
+  background: #140625;
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--cae-font-sans);
+  font-weight: 700;
+  font-size: 1.1rem;
+  flex-shrink: 0;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+}
+
+.cae-testimonials__user-name {
+  margin: 0;
+  font-family: var(--cae-font-sans);
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #222222;
+}
+
+.cae-testimonials__user-meta {
+  margin: 0.125rem 0 0;
+  font-family: var(--cae-font-sans);
+  font-size: 0.75rem;
+  color: var(--cae-t-card-muted);
+}
+
+.cae-testimonials__carousel-stars {
+  margin-top: 0.25rem;
+  color: var(--cae-t-star);
+  font-size: 0.95rem;
+  letter-spacing: 0.02em;
+  line-height: 1;
+}
+
+@media (max-width: 768px) {
+  .cae-testimonials__carousel-container {
+    max-width: 100%;
+    -webkit-mask-image: none;
+    mask-image: none;
+    padding: 0 0.75rem;
+  }
+
+  .cae-testimonials__carousel-layer {
+    gap: 1rem;
+  }
+
+  .cae-testimonials__carousel-card {
+    width: 17.5rem;
+    padding: 1rem 1.125rem;
+  }
+
+  .cae-testimonials__carousel-text {
+    font-size: 0.8rem;
+    margin: 1.5rem 0 0.75rem;
+  }
+}

@@ -1,0 +1,37 @@
+/**
+ * @fileoverview Host chrome for the GHL section lift — page bg + font vars.
+ * Section look comes from ghl-page.css under `.hl_page-preview--content`.
+ */
+
+:root {
+  --headlinefont: "Archivo Black", "Impact", sans-serif;
+  --contentfont: "Hanken Grotesk", "Segoe UI", sans-serif;
+  --hanken-grotesk: "Hanken Grotesk";
+  --archivo-black: "Archivo Black";
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  min-height: 100vh;
+  background-color: #030a18;
+  color: #f9f1ff;
+  font-family: var(--contentfont);
+  -webkit-font-smoothing: antialiased;
+}
+
+#preview-container.hl_page-preview--content {
+  display: block;
+  width: 100%;
+  overflow-x: clip;
+  background-color: #100022;
+}
+
+/* GHL empty spacer columns need a minimum height on desktop. */
+.empty-component-min-height {
+  min-height: 1px;
+}

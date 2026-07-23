@@ -1,0 +1,42 @@
+/* Clone host tweaks: preserve GHL button look on converted anchors */
+a.buttonElevate,
+a[class*="cbutton-"],
+a.btn-vp {
+  display: inline-flex;
+  text-decoration: none;
+  cursor: pointer;
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+}
+
+/**
+ * Capture HTML keeps `.hide-popup` on the desktop menu list. GHL runtime
+ * clears that on wide viewports; without it, SUCCESS STORIES / MEDIA stay hidden.
+ */
+@media (min-width: 768px) {
+  #nav-menu-v2-m9OQtGI6ro .nav-menu-desktop.hide-popup,
+  #nav-menu-v2-T-4r6fNDom .nav-menu-desktop.hide-popup {
+    display: flex !important;
+    position: static;
+    width: auto;
+    height: auto;
+    overflow: visible;
+  }
+
+  #nav-menu-v2-m9OQtGI6ro .nav-menu-desktop .x-icon,
+  #nav-menu-v2-T-4r6fNDom .nav-menu-desktop .x-icon {
+    display: none !important;
+  }
+}
+
+@media (max-width: 767px) {
+  #nav-menu-v2-m9OQtGI6ro .nav-menu-desktop.show-popup,
+  #nav-menu-v2-T-4r6fNDom .nav-menu-desktop.show-popup {
+    display: block !important;
+  }
+}

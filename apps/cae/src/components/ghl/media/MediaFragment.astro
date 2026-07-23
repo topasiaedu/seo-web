@@ -1,0 +1,23 @@
+---
+/**
+ * @fileoverview Injects a sanitized Media & Press GHL HTML fragment.
+ */
+import {
+  buildMediaAssetUrlMap,
+  remapMediaHtml,
+} from "./remapMediaHtml";
+
+interface Props {
+  fragment: string;
+}
+
+const { fragment } = Astro.props;
+if (typeof fragment !== "string" || fragment.length === 0) {
+  throw new Error("MediaFragment: fragment must be a non-empty string.");
+}
+
+const urls = buildMediaAssetUrlMap();
+const html = remapMediaHtml(fragment, urls);
+---
+
+<Fragment set:html={html} />

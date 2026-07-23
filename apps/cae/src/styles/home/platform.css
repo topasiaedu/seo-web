@@ -1,0 +1,147 @@
+/**
+ * Platform mastery section styles for the CAE homepage.
+ * Layout mirrors caegoh.com: centered intro, left app mockup, right Daily/Weekly/Monthly.
+ */
+
+.cae-platform {
+  --cae-platform-bg: var(--cae-bg-elevated);
+  --cae-platform-text: var(--cae-text);
+  --cae-platform-muted: var(--cae-text-muted);
+  --cae-platform-line: #4c247a;
+  background: var(--cae-platform-bg);
+  color: var(--cae-platform-text);
+  padding: clamp(3rem, 7vw, 5rem) clamp(1.25rem, 4vw, 2.5rem) clamp(3.5rem, 8vw, 5.5rem);
+  font-family: var(--cae-font-sans);
+}
+
+.cae-platform__inner {
+  max-width: var(--cae-max-width);
+  margin: 0 auto;
+  display: grid;
+  gap: 2rem;
+}
+
+@media (min-width: 900px) {
+  .cae-platform__inner {
+    grid-template-columns: minmax(0, 1.15fr) minmax(0, 0.85fr);
+    align-items: center;
+    gap: 2.5rem 3rem;
+  }
+}
+
+.cae-platform__intro {
+  text-align: center;
+}
+
+@media (min-width: 900px) {
+  .cae-platform__intro {
+    grid-column: 1 / -1;
+  }
+}
+
+.cae-platform__headline {
+  margin: 0 auto 0.75rem;
+  max-width: 42rem;
+  font-family: var(--cae-font-display), var(--cae-font-sans);
+  font-size: clamp(1.75rem, 4vw, 2.75rem);
+  font-weight: 400;
+  line-height: 1.2;
+  letter-spacing: 0;
+  text-transform: uppercase;
+  color: #ffffff;
+}
+
+.cae-platform__lead {
+  margin: 0 auto;
+  max-width: 40rem;
+  font-family: var(--cae-font-sans);
+  font-size: clamp(1rem, 2vw, 1.125rem);
+  line-height: 1.5;
+  color: var(--cae-platform-muted);
+}
+
+/*
+ * GHL shows the phone mockup as a plain asset (bezel is in the PNG).
+ * Keep a soft drop shadow only — no second CSS device frame.
+ */
+.cae-platform__visual {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.cae-platform__app-frame {
+  display: block;
+  max-width: 100%;
+}
+
+.cae-platform__app {
+  display: block;
+  width: min(100%, 25rem);
+  height: auto;
+  object-fit: contain;
+  filter: drop-shadow(0 28px 48px rgba(10, 1, 20, 0.55));
+}
+
+.cae-platform__rhythm {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 0;
+}
+
+/*
+ * GHL stacks a ~60px icon above each cadence title, with a hairline
+ * divider between Daily / Weekly / Monthly rows.
+ */
+.cae-platform__rhythm-item {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.35rem;
+  padding: 1.25rem 0.25rem;
+  border-bottom: 1px solid var(--cae-platform-line);
+}
+
+.cae-platform__rhythm-item:first-child {
+  padding-top: 0;
+}
+
+.cae-platform__rhythm-item:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.cae-platform__icon-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: flex-start;
+  margin-bottom: 0.15rem;
+}
+
+.cae-platform__icon {
+  width: 3.75rem;
+  height: 3.75rem;
+  object-fit: contain;
+}
+
+.cae-platform__rhythm-title {
+  margin: 0;
+  padding: 0.35rem 0 0;
+  font-family: var(--cae-font-display), var(--cae-font-sans);
+  font-size: clamp(1.05rem, 2vw, 1.35rem);
+  font-weight: 400;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  color: #ffffff;
+}
+
+.cae-platform__rhythm-body {
+  margin: 0;
+  padding: 0 0.35rem 0 0;
+  font-family: var(--cae-font-sans);
+  font-size: 1rem;
+  line-height: 1.5;
+  color: var(--cae-platform-muted);
+}

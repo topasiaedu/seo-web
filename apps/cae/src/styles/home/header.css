@@ -1,0 +1,134 @@
+/**
+ * Site header — sticky nav matching GHL `.custom-header` (#140625 ground).
+ */
+
+.site-header {
+  --header-bg: var(--cae-bg-header);
+  --header-text: var(--cae-text);
+  --header-accent: var(--cae-purple);
+  --header-border: transparent;
+
+  position: sticky;
+  top: 0;
+  z-index: 40;
+  width: 100%;
+  background: var(--header-bg);
+  border-bottom: none;
+  font-family: var(--cae-font-sans);
+}
+
+.site-header__inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.5rem;
+  max-width: var(--cae-max-width);
+  margin: 0 auto;
+  padding: 1.25rem 2.5rem;
+}
+
+.site-header__brand {
+  display: inline-flex;
+  align-items: center;
+  flex-shrink: 0;
+  text-decoration: none;
+}
+
+.site-header__logo {
+  display: block;
+  width: auto;
+  height: 3.125rem;
+  object-fit: contain;
+}
+
+.site-header__toggle {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  padding: 0;
+  border: 1px solid rgba(249, 241, 255, 0.25);
+  border-radius: 0.35rem;
+  background: transparent;
+  color: var(--header-text);
+  cursor: pointer;
+}
+
+.site-header__toggle-bars {
+  display: block;
+  width: 1.15rem;
+  height: 2px;
+  background: currentColor;
+  box-shadow: 0 -6px 0 currentColor, 0 6px 0 currentColor;
+}
+
+.site-header__nav {
+  display: flex;
+  align-items: center;
+}
+
+.site-header__list {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 0.35rem 1.75rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.site-header__link {
+  display: inline-block;
+  padding: 0.4rem 0.15rem;
+  color: var(--header-text);
+  font-family: var(--cae-font-sans);
+  font-size: 0.9375rem;
+  font-weight: 400;
+  letter-spacing: 0.01em;
+  text-decoration: none;
+  text-transform: none;
+  white-space: nowrap;
+  transition: color 160ms ease;
+}
+
+.site-header__link:hover,
+.site-header__link:focus-visible {
+  color: var(--header-accent);
+  outline: none;
+}
+
+@media (max-width: 720px) {
+  .site-header__inner {
+    padding: 1rem 1.25rem;
+  }
+
+  .site-header__toggle {
+    display: inline-flex;
+  }
+
+  .site-header__nav {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    padding: 0.75rem 1.25rem 1.1rem;
+    background: var(--cae-bg-header);
+    border-bottom: 1px solid rgba(249, 241, 255, 0.12);
+  }
+
+  .site-header.is-open .site-header__nav {
+    display: block;
+  }
+
+  .site-header__list {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.35rem;
+  }
+
+  .site-header__link {
+    padding: 0.55rem 0;
+  }
+}

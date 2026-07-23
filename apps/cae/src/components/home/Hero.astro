@@ -1,0 +1,115 @@
+---
+/**
+ * @fileoverview Hero section mirrored from GHL `section-GdS5u8Huz` structure.
+ *
+ * GHL layout (preview-cleaned.html):
+ *   section → absolute .bg image → .inner (max 1170px)
+ *     → row (two equal flex columns)
+ *       → left: slogan img, h1, paragraph, LEARN MORE button
+ *       → right: empty desktop-only spacer (portrait lives in the BG image)
+ */
+import { homeHero } from "@/data/home/hero";
+import {
+  getHomeImage,
+  isHomeImageKey,
+  type HomeImageAsset,
+  type HomeImageKey,
+} from "@/data/home/images";
+import "@/styles/home/hero.css";
+
+/**
+ * Returns a usable `src` string from an Astro/Vite image import.
+ *
+ * @param asset - Static import from {@link homeImages}
+ * @returns URL string for an `<img src>` or CSS `url()`
+ */
+function assetSrc(asset: HomeImageAsset): string {
+  if (typeof asset === "string") {
+    return asset;
+  }
+  if (
+    typeof asset === "object" &&
+    asset !== null &&
+    "src" in asset &&
+    typeof asset.src === "string"
+  ) {
+    return asset.src;
+  }
+  throw new Error("Hero: unsupported home image asset shape.");
+}
+
+/**
+ * Resolves a content `imageKey` to a concrete image URL.
+ *
+ * @param imageKey - Logical slot from content modules
+ * @param fallback - Known {@link HomeImageKey} when the content key is missing
+ * @returns Resolved image URL
+ */
+function resolveImageSrc(imageKey: string, fallback: HomeImageKey): string {
+  if (isHomeImageKey(imageKey)) {
+    return assetSrc(getHomeImage(imageKey));
+  }
+  return assetSrc(getHomeImage(fallback));
+}
+
+/**
+ * Prefixes root-relative paths with Astro `base` (`/cae/`).
+ *
+ * @param href - Absolute URL, hash, or root-relative path
+ * @returns Href safe for this app's base path
+ */
+function resolveHref(href: string): string {
+  if (
+    href.startsWith("https://") ||
+    href.startsWith("http://") ||
+    href.startsWith("#") ||
+    href.startsWith("mailto:")
+  ) {
+    return href;
+  }
+  const base = import.meta.env.BASE_URL;
+  const normalizedBase = base.endsWith("/") ? base : `${base}/`;
+  const path = href.startsWith("/") ? href.slice(1) : href;
+  return `${normalizedBase}${path}`;
+}
+
+const sloganSrc = resolveImageSrc(homeHero.sloganImageKey, "heroSlogan");
+const backgroundSrc = assetSrc(getHomeImage("heroBg"));
+const ctaHref = resolveHref(homeHero.ctaHref);
+---
+
+<section class="hero" aria-labelledby="hero-brand">
+  <!-- GHL: .bg.bgCover100.bg-section-GdS5u8Huz (absolute full-bleed photo, no overlay) -->
+  <div
+    class="hero__bg"
+    style={`--hero-bg-image: url("${backgroundSrc}");`}
+    aria-hidden="true"
+  >
+  </div>
+
+  <!-- GHL: #section-GdS5u8Huz > .inner { max-width: 1170px } -->
+  <div class="hero__inner">
+    <!-- GHL: .row-FHN0Hj7LQrI.row-align-center — two equal .c-column { flex: 1 } -->
+    <div class="hero__row">
+      <!-- GHL: #col-Kc6QK_aJU9S — slogan, heading, paragraph, button -->
+      <div class="hero__copy">
+        <img
+          class="hero__slogan"
+          src={sloganSrc}
+          alt={homeHero.sloganAlt}
+          title={homeHero.sloganTitle}
+          width="280"
+          height="40"
+          loading="eager"
+          decoding="async"
+        />
+        <h1 class="hero__brand" id="hero-brand">{homeHero.brand}</h1>
+        <p class="hero__tagline">{homeHero.tagline}</p>
+        <a class="hero__cta" href={ctaHref}>{homeHero.ctaLabel}</a>
+      </div>
+
+      <!-- GHL: #col-aZaS1nJ5v6.desktop-only — empty spacer so copy stays left of portrait -->
+      <div class="hero__spacer" aria-hidden="true"></div>
+    </div>
+  </div>
+</section>

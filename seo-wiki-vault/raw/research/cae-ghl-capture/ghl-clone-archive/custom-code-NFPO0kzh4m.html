@@ -1,0 +1,311 @@
+<div id="custom-code-NFPO0kzh4m" class="custom-code-container ccustom-code-NFPO0kzh4m"><!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Responsive Testimonial Carousel</title>
+  <link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background: #111;
+      font-family: 'Hanken Grotesk', sans-serif;
+    }
+
+    .carousel-wrapper {
+      width: 100%;
+      display: flex;
+      justify-content: center;
+      padding: 20px 0;
+      overflow-x: hidden;
+    }
+
+    .carousel-container {
+      width: 100%;
+      max-width: 1200px;
+      overflow: hidden;
+      position: relative;
+      user-select: none;
+      -webkit-mask-image: linear-gradient(
+        to right,
+        rgba(0, 0, 0, 0) 0%,
+        rgba(0, 0, 0, 1) 5%,
+        rgba(0, 0, 0, 1) 95%,
+        rgba(0, 0, 0, 0) 100%
+      );
+      mask-image: linear-gradient(
+        to right,
+        rgba(0, 0, 0, 0) 0%,
+        rgba(0, 0, 0, 1) 2.5%,
+        rgba(0, 0, 0, 1) 97.5%,
+        rgba(0, 0, 0, 0) 100%
+      );
+    }
+
+    .carousel {
+      display: flex;
+      flex-direction: column;
+      gap: 40px;
+      cursor: grab;
+    }
+
+    .carousel-layer {
+      display: flex;
+      gap: 24px;
+    }
+
+    .card {
+      background: #fff;
+      padding: 18px 20px;
+      width: 320px;
+      border-radius: 12px;
+      border: 2px solid #9461A3;
+      box-shadow:
+        0 8px 20px rgba(255, 255, 255, 0.03),
+        0 2px 10px rgba(255, 255, 255, 0.06);
+      flex-shrink: 0;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      position: relative;
+      transition: transform .3s ease, box-shadow .3s ease;
+    }
+
+    .card:hover {
+      transform: translateY(-4px);
+      box-shadow:
+        0 12px 28px rgba(255, 255, 255, 0.05),
+        0 4px 16px rgba(255, 255, 255, 0.08);
+    }
+
+    .quote-icon {
+      position: absolute;
+      top: 12px; left: 16px;
+      font-size: 1.8rem;
+      color: #9461A3;
+    }
+
+    .quote-text {
+      margin: 32px 0 16px;
+      font-size: .875rem;
+      line-height: 1.6;
+      color: #444;
+    }
+
+    .card-footer {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+      border-top: 1px solid #eee;
+      padding-top: 14px;
+    }
+
+    .avatar {
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      background: #140625;
+      color: #FFFFFF;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+      font-size: 1.1rem;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    }
+
+    .user-info h3 {
+      margin: 0;
+      font-size: .95rem;
+      font-weight: 600;
+      color: #222;
+    }
+
+    .user-info .subtext {
+      margin: 2px 0 0;
+      font-size: .75rem;
+      color: #777;
+    }
+
+    .stars {
+      margin-top: 4px;
+      color: #f4b400;
+      font-size: .95rem;
+    }
+
+    @media (max-width: 768px) {
+      .carousel-container {
+        max-width: 100%;
+        -webkit-mask-image: none;
+        mask-image: none;
+        padding: 0 12px;
+      }
+
+      .carousel-layer {
+        gap: 16px;
+      }
+
+      .card {
+        width: 280px;
+        padding: 16px 18px;
+      }
+
+      .quote-text {
+        font-size: .8rem;
+        margin: 24px 0 12px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="carousel-wrapper">
+    <div class="carousel-container">
+      <div class="carousel" id="carousel">
+        <div class="carousel-layer" id="myLayer1"></div>
+        <div class="carousel-layer" id="myLayer2"></div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const reviews = [
+      { name: "Nicole", age:29, industry:"E-commerce", review:"Before this session, I kept pivoting every few months. After decoding my chart, I realized I was chasing a path that wasn't meant for me. I now run a business that feels effortless and I'm finally seeing consistent income.", stars:5 },
+      { name: "Darren", age:34, industry:"Marketing", review:"This gave me more clarity than any coach ever has. I stopped applying for random jobs, and started building a path that fits me exactly.", stars:5 },
+      { name: "Amanda", age:27, industry:"Graphic Design", review:"Within a week of applying what I learned, I turned down two bad fit clients and landed one that paid double, because I finally knew what aligned with my energy.", stars:5 },
+      { name: "Kelvin", age:32, industry:"Insurance Agent", review:"I always thought I had a 'money block.' Turns out, I just had the wrong timing. Once I saw my chart, I stopped self-sabotaging and became the top sales of the month.", stars:5 },
+      { name: "Joanne", age:41, industry:"Healthcare", review:"This wasn't just about business. It helped me fix my focus, plan long-term, and stop feeling like I was behind. I finally feel like I'm building something that lasts.", stars:5 },
+      { name: "Joshua", age:36, industry:"Education", review:"My colleague noticed it first 'You're clearer. Sharper.' I'm leading with more confidence because I'm no longer doubting every decision.", stars:5 },
+      { name: "Michelle", age:31, industry:"Technology", review:"For years I worked hard but felt stuck. Now I know why. This chart showed me exactly how I'm wired to succeed — and it changed everything.", stars:5 },
+      { name: "KS", age:28, industry:"Engineer", review:"After finding my own strengths through the chart, I received a high salary offer from a big company and they wanted me to start immediately. Originally, I thought I'd take a few months to rest but within just 2 weeks, I landed the job with a salary jump from RM4K to RM8K.", stars:5 },
+      { name: "Elaine", age:38, industry:"Real Estate", review:"Before this, I was stuck underpaid and overworked. After realigning my timing and energy, I finally dared to ask for what I was worth and got a 40% raise in one shot.", stars:5 },
+      { name: "Jason", age:43, industry:"Consulting", review:"At first, I didn't really believe the health warning mentioned in my chart — it felt too 'coincidental.' But just a few weeks later, I was diagnosed with an early-stage condition exactly in the area pointed out. Thanks to that early headsup, I could take action quickly and prevent it from getting worse.", stars:5 }
+    ];
+
+    const myLayer1 = document.getElementById("myLayer1");
+    const myLayer2 = document.getElementById("myLayer2");
+    const carouselContainer = document.querySelector(".carousel-container");
+    let animationFrame;
+    let isDragging = false;
+    let startX;
+    let scrollStart1;
+    let scrollStart2;
+
+    function shuffleReviews(reviews) {
+      return reviews.map(r => ({ ...r, sort: Math.random() }))
+                    .sort((a, b) => a.sort - b.sort)
+                    .map(({ sort, ...r }) => r);
+    }
+
+    function populateLayer(layer, reviews) {
+      layer.innerHTML = '';
+      reviews.forEach(review => {
+        const card = document.createElement("div");
+        card.className = "card";
+        card.innerHTML = `
+          <div class="quote-icon">❝</div>
+          <p class="quote-text">${review.review}</p>
+          <div class="card-footer">
+            <div class="avatar">${review.name.charAt(0)}</div>
+            <div class="user-info">
+              <h3>${review.name}</h3>
+              <p class="subtext">${review.age}, ${review.industry}</p>
+              <div class="stars">
+                ${'<span>⭐</span>'.repeat(review.stars)}
+              </div>
+            </div>
+          </div>
+        `;
+        layer.appendChild(card);
+      });
+    }
+
+    populateLayer(myLayer1, shuffleReviews(reviews));
+    populateLayer(myLayer2, shuffleReviews(reviews));
+
+    let scrollPosition1 = 0;
+    let scrollPosition2 = -150;
+
+    function animate() {
+      if (!isDragging) {
+        scrollPosition1 -= 0.2;
+        scrollPosition2 -= 0.2;
+
+        if (scrollPosition2 <= -myLayer2.scrollWidth / 3) {
+          populateLayer(myLayer1, shuffleReviews(reviews));
+          populateLayer(myLayer2, shuffleReviews(reviews));
+          scrollPosition1 = 0;
+          scrollPosition2 = -150;
+        }
+
+        myLayer1.style.transform = `translateX(${scrollPosition1}px)`;
+        myLayer2.style.transform = `translateX(${scrollPosition2}px)`;
+      }
+      animationFrame = requestAnimationFrame(animate);
+    }
+
+    animate();
+
+    carouselContainer.addEventListener('mousedown', (e) => {
+      isDragging = true;
+      cancelAnimationFrame(animationFrame);
+      startX = e.clientX;
+      scrollStart1 = scrollPosition1;
+      scrollStart2 = scrollPosition2;
+    });
+
+    window.addEventListener('mousemove', (e) => {
+      if (isDragging) {
+        const dx = e.clientX - startX;
+        scrollPosition1 = scrollStart1 + dx;
+        scrollPosition2 = scrollStart2 + dx;
+        myLayer1.style.transform = `translateX(${scrollPosition1}px)`;
+        myLayer2.style.transform = `translateX(${scrollPosition2}px)`;
+      }
+    });
+
+    window.addEventListener('mouseup', () => {
+      if (isDragging) {
+        isDragging = false;
+        animate();
+      }
+    });
+
+    carouselContainer.addEventListener('touchstart', (e) => {
+      isDragging = true;
+      cancelAnimationFrame(animationFrame);
+      startX = e.touches[0].clientX;
+      scrollStart1 = scrollPosition1;
+      scrollStart2 = scrollPosition2;
+    });
+
+    window.addEventListener('touchmove', (e) => {
+      if (isDragging) {
+        const dx = e.touches[0].clientX - startX;
+        scrollPosition1 = scrollStart1 + dx;
+        scrollPosition2 = scrollStart2 + dx;
+        myLayer1.style.transform = `translateX(${scrollPosition1}px)`;
+        myLayer2.style.transform = `translateX(${scrollPosition2}px)`;
+      }
+    });
+
+    window.addEventListener('touchend', () => {
+      if (isDragging) {
+        isDragging = false;
+        animate();
+      }
+    });
+
+    carouselContainer.addEventListener("mouseenter", () => {
+      if (!isDragging) cancelAnimationFrame(animationFrame);
+    });
+
+    carouselContainer.addEventListener("mouseleave", () => {
+      if (!isDragging) animate();
+    });
+  </script>
+
+</body>
+</html>
+</div>

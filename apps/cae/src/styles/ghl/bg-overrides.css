@@ -1,0 +1,45 @@
+/**
+ * @fileoverview Local section/row background images — overrides GHL CDN URLs
+ * in ghl-page.css. Vite resolves these relative to this file.
+ */
+
+.bg-section-GdS5u8Huz {
+  background-image: url("../../assets/hero-bg.jpeg") !important;
+  background-size: 100% auto !important;
+  background-repeat: no-repeat !important;
+  background-position: center top !important;
+  opacity: 1 !important;
+}
+
+.bg-section-gZkeGFtHWF {
+  background-image: url("../../assets/offerings-bg.jpeg") !important;
+  background-size: cover !important;
+  background-repeat: no-repeat !important;
+  background-position: center center !important;
+  opacity: 1 !important;
+}
+
+.bg-section-m2EB8Ft6xN2 {
+  background-image: url("../../assets/pillars-bg.jpeg") !important;
+  background-size: cover !important;
+  background-repeat: no-repeat !important;
+  background-position: center center !important;
+  opacity: 1 !important;
+}
+
+/* Platform section reuses the same atmospheric photo as offerings in GHL. */
+.bg-section-eLWtYi2DVK {
+  background-image: url("../../assets/offerings-bg.jpeg") !important;
+  background-size: cover !important;
+  background-repeat: no-repeat !important;
+  background-position: center center !important;
+  opacity: 1 !important;
+}
+
+.bg-row-Mk59g9CqkV {
+  background-image: url("../../assets/connect-panel-bg.jpeg") !important;
+  background-size: cover !important;
+  background-repeat: no-repeat !important;
+  background-position: center center !important;
+  opacity: 1 !important;
+}

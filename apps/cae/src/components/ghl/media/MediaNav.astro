@@ -1,0 +1,52 @@
+---
+/**
+ * @fileoverview Media & Press nav (`section-TX7QG09A69`) + mobile toggle.
+ */
+import MediaFragment from "./MediaFragment.astro";
+import fragment from "./fragments/nav.html?raw";
+---
+
+<MediaFragment fragment={fragment} />
+
+<script>
+  /**
+   * Toggles the media-page GHL nav popup.
+   */
+  function initMediaNav(): void {
+    const root = document.querySelector(".cnav-menu-v2-T-4r6fNDom");
+    if (!(root instanceof HTMLElement)) {
+      return;
+    }
+    const desktopMenu = root.querySelector(".nav-menu-desktop");
+    const openBtn = root.querySelector(".nav-menu-mobile");
+    const closeBtn = root.querySelector(".x-icon .touch-target, .x-icon");
+    if (!(desktopMenu instanceof HTMLElement)) {
+      return;
+    }
+
+    const open = (): void => {
+      desktopMenu.classList.remove("hide-popup");
+      desktopMenu.classList.add("show-popup");
+    };
+    const close = (): void => {
+      desktopMenu.classList.add("hide-popup");
+      desktopMenu.classList.remove("show-popup");
+    };
+
+    if (openBtn instanceof HTMLElement) {
+      openBtn.addEventListener("click", (event) => {
+        event.preventDefault();
+        open();
+      });
+    }
+    if (closeBtn instanceof HTMLElement) {
+      closeBtn.addEventListener("click", (event) => {
+        event.preventDefault();
+        close();
+      });
+    }
+  }
+
+  initMediaNav();
+  document.addEventListener("astro:page-load", initMediaNav);
+</script>

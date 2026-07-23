@@ -1,0 +1,143 @@
+/**
+ * Featured On — native port of GHL section-JP6zPvfGtS + custom-code-tUL6q1clw3.
+ *
+ * Spec (`ghl-page.css` + custom-code HTML):
+ * - Section bg #F9F1FF, padding 10px 0, inner max-width 100%
+ * - Heading: Archivo Black, black, uppercase, center, weight 200,
+ *   42px desktop / 26px mobile, line-height 1.3em
+ * - Divider: 1px #9461A3, width 10% desktop / 30% mobile, centered
+ * - Scroller: overflow hidden, padding 20px 0, transparent bg
+ * - Track: flex, gap 4rem, 70s linear infinite scroll-right (-50% → 0)
+ * - Logos: height 50px / 40px mobile, max-width 160px / 120px
+ */
+
+.press {
+  margin: 0;
+  padding: 10px 0;
+  color: #000000;
+  background-color: #f9f1ff;
+  font-family: var(--cae-font-sans);
+  box-shadow: none;
+}
+
+/* GHL: #section-JP6zPvfGtS > .inner { max-width: 100% } */
+.press__inner {
+  box-sizing: border-box;
+  width: 100%;
+  max-width: 100%;
+  margin: 0 auto;
+  padding: 10px 5px;
+  text-align: center;
+}
+
+/*
+ * GHL: .csub-heading-dhLDFC7tvV
+ * font-family headline (Archivo Black), color black, uppercase, center,
+ * line-height 1.3em; .sub-heading weight 200; 42px / 26px
+ */
+.press__heading {
+  margin: 0;
+  padding: 0;
+  color: #000000;
+  font-family: var(--cae-font-display), var(--cae-font-sans);
+  font-size: 42px;
+  font-weight: 200;
+  letter-spacing: 0;
+  line-height: 1.3em;
+  text-align: center;
+  text-transform: uppercase;
+  background-color: transparent;
+  box-shadow: none;
+  opacity: 1;
+}
+
+/*
+ * GHL dividers under the heading:
+ *   desktop .divider-j8Y4mivPCu .divider-element { width: 10% }
+ *   mobile  .divider-pmyksj1At5 .divider-element { width: 30% }
+ *   border-top: 1px solid #9461A3
+ */
+.press__divider {
+  margin: 0 0 10px;
+  padding: 10px 0;
+}
+
+.press__divider-line {
+  width: 10%;
+  margin: 0 auto;
+  border: 0;
+  border-top: 1px solid #9461a3;
+}
+
+/* GHL custom-code: .scroller */
+.press__scroller {
+  width: 100%;
+  overflow: hidden;
+  padding: 20px 0;
+  background-color: transparent;
+}
+
+/* GHL custom-code: .scroller__inner */
+.press__track {
+  display: flex;
+  gap: 4rem;
+  width: max-content;
+  animation: press-scroll-right 70s linear infinite;
+}
+
+.press__scroller:hover .press__track {
+  animation-play-state: paused;
+}
+
+/* GHL custom-code: .scroller img */
+.press__logo {
+  display: inline-block;
+  flex-shrink: 0;
+  height: 50px;
+  width: auto;
+  max-width: 160px;
+  object-fit: contain;
+}
+
+@keyframes press-scroll-right {
+  from {
+    transform: translateX(-50%);
+  }
+
+  to {
+    transform: translateX(0%);
+  }
+}
+
+@media screen and (max-width: 480px) {
+  .press__heading {
+    font-size: 26px;
+    font-weight: 200;
+  }
+
+  .press__divider {
+    margin-bottom: 0;
+  }
+
+  .press__divider-line {
+    width: 30%;
+  }
+}
+
+@media (max-width: 768px) {
+  .press__logo {
+    height: 40px;
+    max-width: 120px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .press__track {
+    animation: none;
+    flex-wrap: wrap;
+    width: 100%;
+    justify-content: center;
+    row-gap: 1.25rem;
+    max-width: 100%;
+  }
+}

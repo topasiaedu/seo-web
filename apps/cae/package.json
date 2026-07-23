@@ -1,0 +1,20 @@
+{
+  "name": "@seo/cae",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview"
+  },
+  "dependencies": {
+    "@seo/blog": "workspace:*",
+    "@seo/db": "workspace:*",
+    "astro": "^5.7.0"
+  },
+  "devDependencies": {
+    "@seo/config-typescript": "workspace:*",
+    "typescript": "^5.8.2"
+  }
+}

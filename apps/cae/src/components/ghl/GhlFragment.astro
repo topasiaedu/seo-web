@@ -1,0 +1,25 @@
+---
+/**
+ * @fileoverview Shared GHL fragment renderer — remaps asset tokens then
+ * injects sanitized capture HTML (GHL class/IDs preserved).
+ */
+import {
+  buildAssetUrlMap,
+  remapGhlHtml,
+} from "./remapHtml";
+
+interface Props {
+  /** Raw HTML fragment from `fragments/*.html` (via `?raw`). */
+  fragment: string;
+}
+
+const { fragment } = Astro.props;
+if (typeof fragment !== "string" || fragment.length === 0) {
+  throw new Error("GhlFragment: fragment prop must be a non-empty string.");
+}
+
+const urls = buildAssetUrlMap();
+const html = remapGhlHtml(fragment, urls);
+---
+
+<Fragment set:html={html} />

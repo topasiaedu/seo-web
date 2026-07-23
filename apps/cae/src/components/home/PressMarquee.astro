@@ -1,0 +1,113 @@
+---
+/**
+ * @fileoverview "Featured On" press marquee — native port of GHL section-JP6zPvfGtS
+ * + custom-code-tUL6q1clw3 (right-scrolling logo scroller).
+ *
+ * GHL structure:
+ *   section (#F9F1FF) → heading "Featured On:" → divider (10% desktop / 30% mobile)
+ *   → .scroller → .scroller__inner (duplicated logos, 70s infinite scroll)
+ */
+import { homePress } from "@/data/home/press";
+import {
+  getHomeImage,
+  isHomeImageKey,
+  type HomeImageAsset,
+} from "@/data/home/images";
+import "@/styles/home/press.css";
+
+/**
+ * Returns a usable `src` string from an Astro/Vite image import.
+ *
+ * @param asset - Static import from {@link homeImages}
+ * @returns URL string for an `<img src>`
+ */
+function assetSrc(asset: HomeImageAsset): string {
+  if (typeof asset === "string") {
+    return asset;
+  }
+  if (
+    typeof asset === "object" &&
+    asset !== null &&
+    "src" in asset &&
+    typeof asset.src === "string"
+  ) {
+    return asset.src;
+  }
+  throw new Error("PressMarquee: unsupported home image asset shape.");
+}
+
+/**
+ * Resolves a press `imageKey` to a concrete image URL.
+ *
+ * @param imageKey - Logical slot from {@link homePress}
+ * @returns Resolved image URL, or empty string when unknown
+ */
+function resolvePressSrc(imageKey: string): string {
+  if (!isHomeImageKey(imageKey)) {
+    return "";
+  }
+  return assetSrc(getHomeImage(imageKey));
+}
+
+type PressLogoView = {
+  readonly id: string;
+  readonly alt: string;
+  readonly title: string;
+  readonly src: string;
+};
+
+const logos: readonly PressLogoView[] = homePress.logos
+  .map((logo): PressLogoView | null => {
+    const src = resolvePressSrc(logo.imageKey);
+    if (src.length === 0) {
+      return null;
+    }
+    return {
+      id: logo.id,
+      alt: logo.alt,
+      title: logo.title,
+      src,
+    };
+  })
+  .filter((logo): logo is PressLogoView => logo !== null);
+
+/** Duplicate set for seamless CSS marquee (GHL: translateX -50% → 0). */
+const marqueeLogos: readonly PressLogoView[] = [...logos, ...logos];
+---
+
+<section class="press" aria-labelledby="press-heading">
+  <div class="press__inner">
+    <!-- GHL: #sub-heading-dhLDFC7tvV — Archivo Black, black, centered -->
+    <h2 class="press__heading" id="press-heading">{homePress.heading}</h2>
+
+    <!--
+      GHL: divider-j8Y4mivPCu (desktop 10%) / divider-pmyksj1At5 (mobile 30%)
+      border-top 1px solid #9461A3
+    -->
+    <div class="press__divider" aria-hidden="true">
+      <div class="press__divider-line"></div>
+    </div>
+
+    <!-- GHL custom-code-tUL6q1clw3: .scroller > .scroller__inner -->
+    <div class="press__scroller" aria-label="Press logos">
+      <div class="press__track">
+        {
+          marqueeLogos.map((logo, index) => (
+            <img
+              class="press__logo"
+              src={logo.src}
+              alt={logo.alt}
+              title={logo.title}
+              width="160"
+              height="50"
+              loading="lazy"
+              decoding="async"
+              data-logo-id={logo.id}
+              data-marquee-index={String(index)}
+            />
+          ))
+        }
+      </div>
+    </div>
+  </div>
+</section>

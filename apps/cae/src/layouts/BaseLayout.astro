@@ -1,0 +1,61 @@
+---
+/**
+ * Default CAE document chrome for non-homepage marketing pages (e.g. blog).
+ */
+import "../styles/global.css";
+
+interface Props {
+  title: string;
+  description?: string;
+}
+
+/**
+ * Returns a trimmed non-empty page title, falling back when invalid.
+ *
+ * @param value - Candidate title from the page
+ * @param fallback - Fallback when invalid
+ * @returns Trimmed non-empty string
+ */
+function resolveTitle(value: unknown, fallback: string): string {
+  if (typeof value !== "string" || value.trim().length === 0) {
+    return fallback;
+  }
+  return value.trim();
+}
+
+/**
+ * Returns a trimmed meta description, or `undefined` when absent/invalid.
+ *
+ * @param value - Optional description prop
+ * @returns Trimmed string or undefined
+ */
+function resolveDescription(value: unknown): string | undefined {
+  if (typeof value !== "string" || value.trim().length === 0) {
+    return undefined;
+  }
+  return value.trim();
+}
+
+const { title, description } = Astro.props;
+const pageTitle = resolveTitle(title, "CAE");
+const metaDescription = resolveDescription(description);
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    {metaDescription ? <meta name="description" content={metaDescription} /> : null}
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;600;700&family=Archivo+Black&display=swap"
+      rel="stylesheet"
+    />
+    <title>{pageTitle}</title>
+  </head>
+  <body>
+    <slot />
+  </body>
+</html>

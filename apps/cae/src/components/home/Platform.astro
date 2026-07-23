@@ -1,0 +1,111 @@
+---
+/**
+ * @fileoverview Platform mastery section: app visual plus Daily / Weekly / Monthly rhythm.
+ */
+import { homePlatform } from "@/data/home/platform";
+import {
+  getHomeImage,
+  isHomeImageKey,
+  type HomeImageAsset,
+  type HomeImageKey,
+} from "@/data/home/images";
+import "@/styles/home/platform.css";
+
+/**
+ * Returns a usable `src` string from an Astro/Vite image import.
+ *
+ * @param asset - Static import from {@link homeImages}
+ * @returns URL string for an `<img src>`
+ */
+function assetSrc(asset: HomeImageAsset): string {
+  if (typeof asset === "string") {
+    return asset;
+  }
+  if (
+    typeof asset === "object" &&
+    asset !== null &&
+    "src" in asset &&
+    typeof asset.src === "string"
+  ) {
+    return asset.src;
+  }
+  throw new Error("Platform: unsupported home image asset shape.");
+}
+
+/**
+ * Resolves a content `imageKey` to a concrete image URL.
+ *
+ * @param imageKey - Logical slot from content modules
+ * @param fallback - Known {@link HomeImageKey} when the content key is missing
+ * @returns Resolved image URL
+ */
+function resolveImageSrc(imageKey: string, fallback: HomeImageKey): string {
+  if (isHomeImageKey(imageKey)) {
+    return assetSrc(getHomeImage(imageKey));
+  }
+  return assetSrc(getHomeImage(fallback));
+}
+
+const appSrc = resolveImageSrc(homePlatform.appImageKey, "platformApp");
+
+const rhythmItems = homePlatform.rhythm.map((item) => {
+  const fallback: HomeImageKey =
+    item.id === "daily"
+      ? "platformDaily"
+      : item.id === "weekly"
+        ? "platformWeekly"
+        : "platformMonthly";
+  return {
+    ...item,
+    iconSrc: resolveImageSrc(item.iconImageKey, fallback),
+  };
+});
+---
+
+<section class="cae-platform" aria-labelledby="cae-platform-heading">
+  <div class="cae-platform__inner">
+    <header class="cae-platform__intro">
+      <h2 class="cae-platform__headline" id="cae-platform-heading">
+        {homePlatform.headline}
+      </h2>
+      <p class="cae-platform__lead">{homePlatform.lead}</p>
+    </header>
+
+    <div class="cae-platform__visual">
+      <!-- Phone bezel is in the platformApp PNG; wrapper is layout-only. -->
+      <span class="cae-platform__app-frame">
+        <img
+          class="cae-platform__app"
+          src={appSrc}
+          alt={homePlatform.appAlt}
+          title={homePlatform.appTitle}
+          loading="lazy"
+          decoding="async"
+        />
+      </span>
+    </div>
+
+    <ul class="cae-platform__rhythm">
+      {
+        rhythmItems.map((item) => (
+          <li class="cae-platform__rhythm-item">
+            <span class="cae-platform__icon-badge">
+              <img
+                class="cae-platform__icon"
+                src={item.iconSrc}
+                alt={item.iconAlt}
+                title={item.iconTitle}
+                width="60"
+                height="60"
+                loading="lazy"
+                decoding="async"
+              />
+            </span>
+            <h3 class="cae-platform__rhythm-title">{item.title}</h3>
+            <p class="cae-platform__rhythm-body">{item.body}</p>
+          </li>
+        ))
+      }
+    </ul>
+  </div>
+</section>

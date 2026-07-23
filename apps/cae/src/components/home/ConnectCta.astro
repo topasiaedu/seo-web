@@ -1,0 +1,139 @@
+---
+/**
+ * @fileoverview Connect / social links plus live-event and booking CTA panels.
+ * Preserves funnel URLs from the live site (Predictable Destiny, socials, book call).
+ */
+import { homeCta } from "@/data/home/cta";
+import {
+  getHomeImage,
+  isHomeImageKey,
+  type HomeImageAsset,
+  type HomeImageKey,
+} from "@/data/home/images";
+import "@/styles/home/connect-cta.css";
+
+/**
+ * Returns a usable `src` string from an Astro/Vite image import.
+ *
+ * @param asset - Static import from {@link homeImages}
+ * @returns URL string for an `<img src>`
+ */
+function assetSrc(asset: HomeImageAsset): string {
+  if (typeof asset === "string") {
+    return asset;
+  }
+  if (
+    typeof asset === "object" &&
+    asset !== null &&
+    "src" in asset &&
+    typeof asset.src === "string"
+  ) {
+    return asset.src;
+  }
+  throw new Error("ConnectCta: unsupported home image asset shape.");
+}
+
+/**
+ * Resolves a content `imageKey` to a concrete image URL.
+ *
+ * @param imageKey - Logical slot from content modules
+ * @param fallback - Known {@link HomeImageKey} when the content key is missing
+ * @returns Resolved image URL
+ */
+function resolveImageSrc(imageKey: string, fallback: HomeImageKey): string {
+  if (isHomeImageKey(imageKey)) {
+    return assetSrc(getHomeImage(imageKey));
+  }
+  return assetSrc(getHomeImage(fallback));
+}
+
+const socialLinks = homeCta.social.map((link) => {
+  const fallback: HomeImageKey =
+    link.id === "facebook" ? "socialFacebook" : "socialInstagram";
+  return {
+    ...link,
+    iconSrc: resolveImageSrc(link.iconImageKey, fallback),
+  };
+});
+
+const { liveEvent, closing } = homeCta;
+const panelBgSrc = assetSrc(getHomeImage("connectPanelBg"));
+---
+
+<section class="cae-connect" aria-labelledby="cae-connect-heading">
+  <div class="cae-connect__inner">
+    <!-- Connect headline + Instagram / Facebook (full-width centered band). -->
+    <div class="cae-connect__social-block">
+      <h2 class="cae-connect__headline" id="cae-connect-heading">
+        {homeCta.connectHeadline}
+      </h2>
+      <ul class="cae-connect__social-list">
+        {
+          socialLinks.map((link) => (
+            <li>
+              <a
+                class="cae-connect__social-link"
+                href={link.href}
+                target="_blank"
+                rel="noreferrer noopener"
+                aria-label={link.label}
+                title={link.iconTitle}
+              >
+                <img
+                  class="cae-connect__social-icon"
+                  src={link.iconSrc}
+                  alt={link.iconAlt}
+                  width="44"
+                  height="44"
+                  loading="lazy"
+                  decoding="async"
+                />
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+
+    <!-- Stacked purple panels: free event, then book-a-call (URLs from cta.ts). -->
+    <article
+      class="cae-connect__panel"
+      style={`--connect-panel-bg-image: url("${panelBgSrc}");`}
+      aria-labelledby="cae-connect-event-heading"
+    >
+      <p class="cae-connect__eyebrow">{liveEvent.eyebrow}</p>
+      <h3 class="cae-connect__panel-headline" id="cae-connect-event-heading">
+        {liveEvent.headline}
+      </h3>
+      <p class="cae-connect__lead">{liveEvent.lead}</p>
+      <a
+        class="cae-connect__button"
+        href={liveEvent.ctaHref}
+        target="_blank"
+        rel="noreferrer noopener"
+      >
+        {liveEvent.ctaLabel}
+      </a>
+    </article>
+
+    <article
+      class="cae-connect__panel"
+      style={`--connect-panel-bg-image: url("${panelBgSrc}");`}
+      aria-labelledby="cae-connect-book-heading"
+    >
+      <p class="cae-connect__eyebrow">{closing.eyebrow}</p>
+      <h3 class="cae-connect__panel-headline" id="cae-connect-book-heading">
+        {closing.headline}
+      </h3>
+      <p class="cae-connect__services">{closing.services}</p>
+      <a
+        class="cae-connect__button"
+        href={closing.ctaHref}
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        {closing.ctaLabel}
+      </a>
+    </article>
+  </div>
+</section>

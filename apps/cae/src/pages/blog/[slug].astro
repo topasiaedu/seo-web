@@ -1,0 +1,25 @@
+---
+/**
+ * CAE blog post detail scaffold — will load one published post by slug.
+ */
+import type { GetStaticPaths } from "astro";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+
+/**
+ * Static scaffold paths until Supabase-backed posts are wired.
+ * Returns an empty list so the route exists without generating HTML yet.
+ */
+export const getStaticPaths = (() => {
+  return [] as const;
+}) satisfies GetStaticPaths;
+
+const { slug } = Astro.params;
+const safeSlug = typeof slug === "string" ? slug : "";
+---
+
+<BaseLayout title={`${safeSlug} · CAE Blog`}>
+  <main>
+    <h1>Post: {safeSlug}</h1>
+    <p>Content will load from Supabase for this slug under CAE.</p>
+  </main>
+</BaseLayout>

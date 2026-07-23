@@ -1,0 +1,17 @@
+---
+/**
+ * Site footer with copyright / terms line from homepage CTA content.
+ */
+import { homeCta } from "@/data/home/cta";
+import "@/styles/home/footer.css";
+
+const { copyright, termsHref } = homeCta.footer;
+---
+
+<footer class="cae-footer">
+  <div class="cae-footer__inner">
+    <p class="cae-footer__copy">
+      <a class="cae-footer__link" href={termsHref}>{copyright}</a>
+    </p>
+  </div>
+</footer>

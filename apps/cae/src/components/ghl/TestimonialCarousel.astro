@@ -1,0 +1,19 @@
+---
+/**
+ * @fileoverview GHL testimonial drag carousel (`section-WpyBRTO4O1`).
+ */
+import GhlFragment from "./GhlFragment.astro";
+import fragment from "./fragments/testimonial-carousel.html?raw";
+import "@/styles/ghl/carousel-widget.css";
+---
+
+<GhlFragment fragment={fragment} />
+
+<script>
+  import { initGhlTestimonialCarousel } from "@/scripts/ghl-testimonial-carousel";
+
+  initGhlTestimonialCarousel();
+  document.addEventListener("astro:page-load", () => {
+    initGhlTestimonialCarousel();
+  });
+</script>

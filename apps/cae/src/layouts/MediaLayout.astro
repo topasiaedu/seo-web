@@ -1,0 +1,47 @@
+---
+/**
+ * Document chrome for the CAE Media & Press page (GHL lift).
+ */
+import "@/styles/ghl/ghl-runtime.css";
+import "@/styles/ghl/media-page.css";
+import "@/styles/ghl/host-patch.css";
+
+interface Props {
+  title: string;
+  description?: string;
+}
+
+const { title, description } = Astro.props;
+const pageTitle =
+  typeof title === "string" && title.trim().length > 0
+    ? title.trim()
+    : "Media & Press - Cae Goh";
+const metaDescription =
+  typeof description === "string" && description.trim().length > 0
+    ? description.trim()
+    : "Media & Press coverage featuring CAE Goh and the Predictable Destiny System.";
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content={metaDescription} />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;600;700&family=Archivo+Black&display=swap"
+      rel="stylesheet"
+    />
+    <title>{pageTitle}</title>
+  </head>
+  <body>
+    <div
+      id="preview-container"
+      class="preview-container hl_page-preview--content"
+    >
+      <slot />
+    </div>
+  </body>
+</html>

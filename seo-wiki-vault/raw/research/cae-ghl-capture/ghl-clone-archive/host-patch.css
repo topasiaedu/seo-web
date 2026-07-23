@@ -1,0 +1,12 @@
+
+/* Clone host tweaks: preserve GHL button look on converted anchors */
+a.buttonElevate, a[class*="cbutton-"], a.btn-vp {
+  display: inline-flex;
+  text-decoration: none;
+  cursor: pointer;
+  box-sizing: border-box;
+}
+html, body {
+  margin: 0;
+  padding: 0;
+}

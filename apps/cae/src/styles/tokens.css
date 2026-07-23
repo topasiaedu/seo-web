@@ -1,0 +1,67 @@
+/**
+ * CAE brand design tokens — purple / lavender marketing palette.
+ * Values mirrored from the GHL capture (`ghl-page.css` brand colors).
+ * Section styles consume these so header → footer reads as one surface.
+ */
+
+:root {
+  /* Surfaces (GHL: --color-lzay1h44 / lyik0lh6) */
+  --cae-bg: #100022;
+  --cae-bg-deep: #0a0114;
+  --cae-bg-elevated: #140625;
+  --cae-bg-header: #140625;
+  --cae-surface: #1a0a30;
+  --cae-surface-soft: #1a0633;
+  --cae-surface-panel: rgba(76, 36, 122, 0.28);
+
+  /* Text */
+  --cae-text: #f9f1ff;
+  --cae-text-bright: #f5eef8;
+  --cae-text-soft: #f7f1fb;
+  --cae-text-muted: #cab7da;
+  --cae-text-muted-alt: #d2c0df;
+  --cae-text-muted-hero: #d4c2e0;
+  /* GHL --color-lx2q00eu — testimonial / secondary body */
+  --cae-text-muted-gray: #8893a8;
+
+  /* Accents (GHL: lzaytma1, lzb15zlk, lzayulcw) */
+  --cae-lavender: #b98bc8;
+  --cae-lavender-soft: #c9a8d8;
+  --cae-lavender-bright: #d4aee0;
+  --cae-accent: #9461a3;
+  --cae-purple: #4c247a;
+  --cae-purple-deep: #140625;
+  --cae-cta-soft: #cab7da;
+  --cae-cta-light: #f9f1ff;
+  --cae-cta-border: #ffffff;
+  --cae-star: #f4b400;
+
+  /* Borders / rules */
+  --cae-border: rgba(148, 97, 163, 0.45);
+  --cae-border-strong: #4c247a;
+  --cae-border-soft: rgba(185, 139, 200, 0.45);
+  --cae-border-header: rgba(201, 168, 216, 0.22);
+  --cae-border-offerings: #4c247a;
+
+  /* Press band (GHL --color-lzb16ip5) */
+  --cae-press-bg: #f9f1ff;
+  --cae-press-text: #000000;
+  --cae-press-rule: #9461a3;
+
+  /* Pillars bar (light strip overlapping offerings) */
+  --cae-pillars-bar-bg: #f9f1ff;
+  --cae-pillars-bar-border: #4c247a;
+  --cae-pillars-bar-shadow: 0 20px 100px rgba(4, 3, 28, 0.32);
+
+  /* Shared button recipe (GHL .cbutton-*) */
+  --cae-btn-padding: 20px 40px;
+  --cae-btn-tracking: 2px;
+
+  /* Typography */
+  --cae-font-sans: "Hanken Grotesk", "Segoe UI", sans-serif;
+  --cae-font-display: "Archivo Black", "Impact", sans-serif;
+
+  /* Layout */
+  --cae-max-width: 72rem;
+  --cae-gutter: 1.25rem;
+}

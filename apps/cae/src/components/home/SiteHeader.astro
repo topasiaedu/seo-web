@@ -1,0 +1,141 @@
+---
+/**
+ * @fileoverview Sticky site header with brand logo and primary nav links.
+ */
+import { homeNav } from "@/data/home/nav";
+import {
+  getHomeImage,
+  isHomeImageKey,
+  type HomeImageAsset,
+  type HomeImageKey,
+} from "@/data/home/images";
+import "@/styles/home/header.css";
+
+/**
+ * Returns a usable `src` string from an Astro/Vite image import.
+ *
+ * @param asset - Static import from {@link homeImages}
+ * @returns URL string for an `<img src>`
+ */
+function assetSrc(asset: HomeImageAsset): string {
+  if (typeof asset === "string") {
+    return asset;
+  }
+  if (
+    typeof asset === "object" &&
+    asset !== null &&
+    "src" in asset &&
+    typeof asset.src === "string"
+  ) {
+    return asset.src;
+  }
+  throw new Error("SiteHeader: unsupported home image asset shape.");
+}
+
+/**
+ * Prefixes root-relative paths with Astro `base` (`/cae/`).
+ *
+ * @param href - Absolute URL, hash, or root-relative path
+ * @returns Href safe for this app's base path
+ */
+function resolveHref(href: string): string {
+  if (
+    href.startsWith("https://") ||
+    href.startsWith("http://") ||
+    href.startsWith("#") ||
+    href.startsWith("mailto:")
+  ) {
+    return href;
+  }
+  const base = import.meta.env.BASE_URL;
+  const normalizedBase = base.endsWith("/") ? base : `${base}/`;
+  const path = href.startsWith("/") ? href.slice(1) : href;
+  return `${normalizedBase}${path}`;
+}
+
+const logoKey: HomeImageKey = isHomeImageKey(homeNav.logoImageKey)
+  ? homeNav.logoImageKey
+  : "logo";
+const logoSrc = assetSrc(getHomeImage(logoKey));
+const homeHref = resolveHref(homeNav.homeHref);
+const navLinks = homeNav.links.map((link) => ({
+  label: link.label,
+  href: resolveHref(link.href),
+}));
+---
+
+<header class="site-header" data-site-header>
+  <div class="site-header__inner">
+    <a class="site-header__brand" href={homeHref} aria-label={homeNav.logoTitle}>
+      <img
+        class="site-header__logo"
+        src={logoSrc}
+        alt={homeNav.logoAlt}
+        title={homeNav.logoTitle}
+        width="120"
+        height="36"
+        loading="eager"
+        decoding="async"
+      />
+    </a>
+
+    <button
+      class="site-header__toggle"
+      type="button"
+      aria-expanded="false"
+      aria-controls="site-header-nav"
+      data-site-header-toggle
+    >
+      <span class="site-header__toggle-bars" aria-hidden="true"></span>
+      <span class="visually-hidden">Toggle menu</span>
+    </button>
+
+    <nav class="site-header__nav" id="site-header-nav" aria-label="Primary">
+      <ul class="site-header__list">
+        {
+          navLinks.map((link) => (
+            <li>
+              <a class="site-header__link" href={link.href}>
+                {link.label}
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </nav>
+  </div>
+</header>
+
+<style>
+  .visually-hidden {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+  }
+</style>
+
+<script>
+  /**
+   * Toggles the mobile nav open state on the sticky header.
+   */
+  function initSiteHeader(): void {
+    const header = document.querySelector("[data-site-header]");
+    const toggle = document.querySelector("[data-site-header-toggle]");
+    if (!(header instanceof HTMLElement) || !(toggle instanceof HTMLButtonElement)) {
+      return;
+    }
+
+    toggle.addEventListener("click", () => {
+      const isOpen = header.classList.toggle("is-open");
+      toggle.setAttribute("aria-expanded", isOpen ? "true" : "false");
+    });
+  }
+
+  initSiteHeader();
+</script>

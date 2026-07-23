@@ -1,0 +1,50 @@
+/**
+ * CAE global base styles. Homepage sections add their own sheets;
+ * blog / scaffold pages rely on these defaults alone.
+ */
+
+@import "./tokens.css";
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  color: var(--cae-text);
+  background-color: var(--cae-bg);
+  font-family: var(--cae-font-sans);
+  -webkit-font-smoothing: antialiased;
+}
+
+img {
+  max-width: 100%;
+  height: auto;
+}
+
+a {
+  color: inherit;
+}
+
+/* Non-home pages (blog scaffold) keep a readable content column. */
+main:not(.cae-home) {
+  max-width: 40rem;
+  margin: 0 auto;
+  padding: 2rem var(--cae-gutter);
+  font-family: var(--cae-font-sans);
+}
+
+.cae-home {
+  display: block;
+  width: 100%;
+  overflow-x: clip;
+  background-color: var(--cae-bg);
+  color: var(--cae-text);
+}
