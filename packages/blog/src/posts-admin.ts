@@ -63,6 +63,19 @@ function resolvePublishedAtForWrite(
 }
 
 /**
+ * Coerces optional text to `""` for Postgres `NOT NULL DEFAULT ''` columns.
+ *
+ * Explicit `null` does not use the column default and violates the constraint;
+ * empty string is the domain “no override / no value” sentinel.
+ *
+ * @param value - Domain string, or `null` meaning clear / unset.
+ * @returns Non-null string for the insert/update row.
+ */
+function notNullText(value: string | null): string {
+  return value ?? "";
+}
+
+/**
  * Maps {@link CreatePostInput} to a posts insert row.
  *
  * @param input - Domain create payload.
@@ -95,16 +108,16 @@ function toPostInsert(input: CreatePostInput): PostInsert {
     row.reading_time_minutes = input.readingTimeMinutes;
   }
   if (input.heroImageUrl !== undefined) {
-    row.hero_image_url = input.heroImageUrl;
+    row.hero_image_url = notNullText(input.heroImageUrl);
   }
   if (input.heroImageAlt !== undefined) {
-    row.hero_image_alt = input.heroImageAlt;
+    row.hero_image_alt = notNullText(input.heroImageAlt);
   }
   if (input.ogImageUrl !== undefined) {
-    row.og_image_url = input.ogImageUrl;
+    row.og_image_url = notNullText(input.ogImageUrl);
   }
   if (input.keyTakeaway !== undefined) {
-    row.key_takeaway = input.keyTakeaway;
+    row.key_takeaway = notNullText(input.keyTakeaway);
   }
   if (input.faq !== undefined) {
     row.faq = serializeFaq(input.faq);
@@ -119,10 +132,10 @@ function toPostInsert(input: CreatePostInput): PostInsert {
     row.tags = input.tags;
   }
   if (input.seoTitle !== undefined) {
-    row.seo_title = input.seoTitle;
+    row.seo_title = notNullText(input.seoTitle);
   }
   if (input.seoDescription !== undefined) {
-    row.seo_description = input.seoDescription;
+    row.seo_description = notNullText(input.seoDescription);
   }
   if (input.relatedPostIds !== undefined) {
     row.related_post_ids = input.relatedPostIds;
@@ -166,16 +179,16 @@ function toPostUpdate(input: UpdatePostInput): PostUpdate {
     row.reading_time_minutes = input.readingTimeMinutes;
   }
   if (input.heroImageUrl !== undefined) {
-    row.hero_image_url = input.heroImageUrl;
+    row.hero_image_url = notNullText(input.heroImageUrl);
   }
   if (input.heroImageAlt !== undefined) {
-    row.hero_image_alt = input.heroImageAlt;
+    row.hero_image_alt = notNullText(input.heroImageAlt);
   }
   if (input.ogImageUrl !== undefined) {
-    row.og_image_url = input.ogImageUrl;
+    row.og_image_url = notNullText(input.ogImageUrl);
   }
   if (input.keyTakeaway !== undefined) {
-    row.key_takeaway = input.keyTakeaway;
+    row.key_takeaway = notNullText(input.keyTakeaway);
   }
   if (input.faq !== undefined) {
     row.faq = serializeFaq(input.faq);
@@ -190,10 +203,10 @@ function toPostUpdate(input: UpdatePostInput): PostUpdate {
     row.tags = input.tags;
   }
   if (input.seoTitle !== undefined) {
-    row.seo_title = input.seoTitle;
+    row.seo_title = notNullText(input.seoTitle);
   }
   if (input.seoDescription !== undefined) {
-    row.seo_description = input.seoDescription;
+    row.seo_description = notNullText(input.seoDescription);
   }
   if (input.relatedPostIds !== undefined) {
     row.related_post_ids = input.relatedPostIds;

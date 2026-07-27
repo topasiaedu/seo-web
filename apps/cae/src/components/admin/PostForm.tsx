@@ -627,9 +627,9 @@ export function PostForm(props: PostFormProps): JSX.Element {
       sources: state.sources,
       categoryId: emptyToNull(state.categoryId),
       tags: state.tags,
-      /** Public pages fall back to Title / Summary — no separate SEO copy. */
-      seoTitle: null,
-      seoDescription: null,
+      /** Empty = fall back to Title / Summary on public pages (NOT NULL in DB). */
+      seoTitle: "",
+      seoDescription: "",
       /** Related posts are auto-picked from the same category on the public site. */
       relatedPostIds: [],
     };

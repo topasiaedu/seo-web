@@ -160,8 +160,9 @@ function buildCreatePostInput(
     sources: entry.sources,
     categoryId,
     tags: entry.tags,
-    seoTitle: null,
-    seoDescription: null,
+    /** Empty = fall back to Title / Summary on public pages (NOT NULL in DB). */
+    seoTitle: "",
+    seoDescription: "",
     relatedPostIds: [],
   };
 }

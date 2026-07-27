@@ -1,6 +1,6 @@
 ---
 /**
- * Related Posts as image cards — published entries only.
+ * Related Posts — horizontal visual strip for immersive article pages.
  */
 import type { BlogPost } from "@seo/blog";
 import { formatBlogDate, joinBlogPath } from "./blog-format";
@@ -16,52 +16,54 @@ const related = Array.isArray(posts) ? posts : [];
 {
   related.length > 0 ? (
     <section
-      class="blog-section blog-section--related"
+      class="blog-section blog-section--related blog-related-strip"
       aria-labelledby="blog-related-heading"
     >
-      <h2 id="blog-related-heading" class="blog-section__title">
-        Continue reading
-      </h2>
-      <ul class="blog-related">
-        {related.map((post) => {
-          const href = joinBlogPath(
-            import.meta.env.BASE_URL,
-            `blog/${post.slug}`,
-          );
-          const dateLabel = formatBlogDate(post.publishedAt);
-          const categoryName =
-            post.category !== null && typeof post.category.name === "string"
-              ? post.category.name.trim()
-              : "";
-          const heroImageUrl =
-            typeof post.heroImageUrl === "string"
-              ? post.heroImageUrl.trim()
-              : "";
-          const hasThumb = heroImageUrl.length > 0;
-          const meta = [categoryName, dateLabel]
-            .filter((part) => part.length > 0)
-            .join(" · ");
-          return (
-            <li>
-              <a class="blog-related__card" href={href}>
-                {hasThumb ? (
-                  <div class="blog-related__thumb">
-                    <img src={heroImageUrl} alt="" loading="lazy" />
+      <div class="blog-related-strip__inner">
+        <h2 id="blog-related-heading" class="blog-section__title">
+          Continue reading
+        </h2>
+        <ul class="blog-related">
+          {related.map((post) => {
+            const href = joinBlogPath(
+              import.meta.env.BASE_URL,
+              `blog/${post.slug}`,
+            );
+            const dateLabel = formatBlogDate(post.publishedAt);
+            const categoryName =
+              post.category !== null && typeof post.category.name === "string"
+                ? post.category.name.trim()
+                : "";
+            const heroImageUrl =
+              typeof post.heroImageUrl === "string"
+                ? post.heroImageUrl.trim()
+                : "";
+            const hasThumb = heroImageUrl.length > 0;
+            const meta = [categoryName, dateLabel]
+              .filter((part) => part.length > 0)
+              .join(" · ");
+            return (
+              <li>
+                <a class="blog-related__card" href={href}>
+                  {hasThumb ? (
+                    <div class="blog-related__thumb">
+                      <img src={heroImageUrl} alt="" loading="lazy" />
+                    </div>
+                  ) : (
+                    <div class="blog-related__thumb blog-tile__media--empty" />
+                  )}
+                  <div class="blog-related__body">
+                    <p class="blog-related__title">{post.title}</p>
+                    {meta.length > 0 ? (
+                      <span class="blog-related__meta">{meta}</span>
+                    ) : null}
                   </div>
-                ) : (
-                  <div class="blog-related__thumb blog-tile__media--empty" />
-                )}
-                <div class="blog-related__body">
-                  <p class="blog-related__title">{post.title}</p>
-                  {meta.length > 0 ? (
-                    <span class="blog-related__meta">{meta}</span>
-                  ) : null}
-                </div>
-              </a>
-            </li>
-          );
-        })}
-      </ul>
+                </a>
+              </li>
+            );
+          })}
+        </ul>
+      </div>
     </section>
   ) : null
 }

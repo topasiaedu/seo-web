@@ -1,7 +1,8 @@
 ---
 /**
- * CAE public blog Post detail — full-bleed hero + reading column.
- * Published only; 404 when missing or not published.
+ * CAE public blog Post detail — immersive story layout.
+ * Full-bleed hero, accent takeaway band, narrow dark reading column,
+ * breakout images, minimal TOC rail. Published only; 404 when missing.
  */
 import {
   getPublishedPostBySlug,
@@ -17,6 +18,7 @@ import RelatedPosts from "@/components/blog/RelatedPosts.astro";
 import SourcesSection from "@/components/blog/SourcesSection.astro";
 import TableOfContents from "@/components/blog/TableOfContents.astro";
 import {
+  buildBlogIndexHref,
   formatBlogDate,
   formatReadingTime,
   joinBlogPath,
@@ -64,6 +66,7 @@ let related: BlogPost[] = [];
 let dateLabel = "";
 let readingLabel = "";
 let categoryName = "";
+let categoryHref = "";
 let hasHero = false;
 let heroAlt = "";
 let keyTakeaway = "";
@@ -100,6 +103,16 @@ if (post !== null) {
     post.category !== null && typeof post.category.name === "string"
       ? post.category.name.trim()
       : "";
+  const categorySlug =
+    post.category !== null && typeof post.category.slug === "string"
+      ? post.category.slug.trim()
+      : "";
+  categoryHref =
+    categorySlug.length > 0
+      ? buildBlogIndexHref(import.meta.env.BASE_URL, {
+          categorySlug,
+        })
+      : "";
   hasHero =
     typeof post.heroImageUrl === "string" &&
     post.heroImageUrl.trim().length > 0;
@@ -134,7 +147,7 @@ if (post !== null) {
       ogImage={ogImage}
       jsonLd={jsonLd}
     >
-      <main class="blog-page blog-page--article">
+      <main class="blog-page blog-page--article blog-page--immersive">
         <article>
           <header
             class:list={[
@@ -155,31 +168,49 @@ if (post !== null) {
               ) : null
             }
             <div class="blog-post-hero__inner">
-              <a class="blog-post-hero__back" href={blogIndexHref}>
-                ← All articles
-              </a>
+              <div class="blog-post-hero__nav">
+                <a class="blog-post-hero__back" href={blogIndexHref}>
+                  <svg
+                    class="blog-post-hero__back-icon"
+                    width="16"
+                    height="16"
+                    viewBox="0 0 16 16"
+                    fill="none"
+                    aria-hidden="true"
+                  >
+                    <path
+                      d="M10 3.5 5.5 8 10 12.5"
+                      stroke="currentColor"
+                      stroke-width="1.5"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                    />
+                  </svg>
+                  <span>All articles</span>
+                </a>
+                {
+                  categoryName.length > 0 ? (
+                    categoryHref.length > 0 ? (
+                      <a class="blog-post-hero__category" href={categoryHref}>
+                        {categoryName}
+                      </a>
+                    ) : (
+                      <span class="blog-post-hero__category">
+                        {categoryName}
+                      </span>
+                    )
+                  ) : null
+                }
+              </div>
+              <h1 class="blog-post-hero__title">{post.title}</h1>
               {
-                categoryName.length > 0 ? (
-                  <p class="blog-post-hero__eyebrow">{categoryName}</p>
+                keyTakeaway.length > 0 ? (
+                  <KeyTakeaway text={keyTakeaway} />
                 ) : null
               }
-              <h1 class="blog-post-hero__title">{post.title}</h1>
-            </div>
-          </header>
-
-          <div class="blog-page__shell blog-page__shell--article">
-            {/* Light reading paper — dark ink on press-band surface under the hero. */}
-            <div class="blog-article-paper">
               {
-                post.author !== null ? (
-                  <AuthorByline
-                    author={post.author}
-                    dateLabel={dateLabel}
-                    publishedAt={post.publishedAt}
-                    readingLabel={readingLabel}
-                  />
-                ) : dateLabel.length > 0 || readingLabel.length > 0 ? (
-                  <p class="blog-byline blog-byline--meta-only">
+                dateLabel.length > 0 || readingLabel.length > 0 ? (
+                  <p class="blog-post-hero__meta">
                     {
                       dateLabel.length > 0 ? (
                         <time datetime={post.publishedAt ?? undefined}>
@@ -192,7 +223,7 @@ if (post !== null) {
                         <span
                           class:list={[
                             dateLabel.length > 0
-                              ? "blog-byline__meta-sep"
+                              ? "blog-post-hero__meta-sep"
                               : null,
                           ]}
                         >
@@ -203,46 +234,51 @@ if (post !== null) {
                   </p>
                 ) : null
               }
+            </div>
+          </header>
 
-              <PostTags tags={post.tags} />
+          <div class="blog-page__shell blog-page__shell--article">
+            <div
+              class:list={[
+                "blog-article",
+                toc.length > 0 ? "blog-article--with-toc" : null,
+              ]}
+            >
+              {
+                toc.length > 0 ? (
+                  <div class="blog-article__toc">
+                    <TableOfContents headings={toc} />
+                  </div>
+                ) : null
+              }
 
-              {keyTakeaway.length > 0 ? (
-                <KeyTakeaway text={keyTakeaway} />
-              ) : null}
-
-              <div
-                class:list={[
-                  "blog-article",
-                  toc.length > 0 ? "blog-article--with-toc" : null,
-                ]}
-              >
+              <div class="blog-article__main">
                 {
-                  toc.length > 0 ? (
-                    <div class="blog-article__toc">
-                      <TableOfContents headings={toc} />
-                    </div>
+                  post.author !== null ? (
+                    <AuthorByline author={post.author} />
                   ) : null
                 }
 
-                <div class="blog-article__main">
-                  {
-                    bodyHtml.length > 0 ? (
-                      <div class="blog-body" set:html={bodyHtml} />
-                    ) : (
-                      <p class="blog__empty">
-                        This post has no body content yet.
-                      </p>
-                    )
-                  }
+                <PostTags tags={post.tags} />
 
-                  <FaqSection items={post.faq} />
-                  <SourcesSection items={post.sources} />
-                  <AuthorCard author={post.author} />
-                  <RelatedPosts posts={related} />
-                </div>
+                {
+                  bodyHtml.length > 0 ? (
+                    <div class="blog-body" set:html={bodyHtml} />
+                  ) : (
+                    <p class="blog__empty">
+                      This post has no body content yet.
+                    </p>
+                  )
+                }
+
+                <FaqSection items={post.faq} />
+                <SourcesSection items={post.sources} />
+                <AuthorCard author={post.author} />
               </div>
             </div>
           </div>
+
+          <RelatedPosts posts={related} />
         </article>
       </main>
     </BlogLayout>
