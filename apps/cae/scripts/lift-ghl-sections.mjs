@@ -121,10 +121,10 @@ function sanitize(html) {
       let aAttrs = attrs
         .replace(/\s*id="[^"]*_btn"/i, "")
         .replace(/\s*type="[^"]*"/i, "");
-      // Try to find a nearby href from original button — default hash offerings for hero
-      let href = "#offerings";
+      // Try to find a nearby href from original button — default hash Insights for hero
+      let href = "#insights";
       if (/LEARN MORE/i.test(label)) {
-        href = "#section-gZkeGFtHWF";
+        href = "#insights";
       }
       return `<a href="${href}"${aAttrs}>${inner}</a>`;
     },

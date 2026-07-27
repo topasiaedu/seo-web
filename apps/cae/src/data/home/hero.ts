@@ -17,7 +17,7 @@ export const homeHero = {
   tagline:
     "Discover Your Destiny with Zi Wei Dou Shu Consulting: Expert Astrological Insights to Guide Your Life's Path, Enhance Relationships, and Prosper in Business.",
   ctaLabel: "LEARN MORE",
-  ctaHref: assertHomeHref("#offerings"),
+  ctaHref: assertHomeHref("#insights"),
 } as const;
 
 /** Shape of {@link homeHero}. */

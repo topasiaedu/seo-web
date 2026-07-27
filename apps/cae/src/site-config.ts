@@ -29,6 +29,7 @@ export const caeSiteConfig = {
   slug: "cae",
   projectId: "00000000-0000-4000-8000-000000000001",
   name: "CAE",
-  domains: ["cae.localhost", "www.cae.localhost"],
+  /** Local gateway hosts; production SEO origin is `PUBLIC_SITE_ORIGIN` / caegoh.com. */
+  domains: ["cae.localhost", "www.cae.localhost", "caegoh.com", "www.caegoh.com"],
   enabled: true,
 } as const satisfies SiteConfig;

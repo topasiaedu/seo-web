@@ -40,3 +40,24 @@ body {
     display: block !important;
   }
 }
+
+/**
+ * Belt-and-suspenders: equalize UA heading margins when SEO demotes spare
+ * `<h1>` → `<h2>`. GHL already co-selects h1/h2 in typed heading rules; this
+ * only neutralizes browser-default margin differences inside heading wrappers.
+ */
+.hl_page-preview--content .c-heading h1,
+.hl_page-preview--content .c-heading h2,
+.hl_page-preview--content .c-heading h3,
+.hl_page-preview--content .c-heading h4,
+.hl_page-preview--content .c-heading h5,
+.hl_page-preview--content .c-heading h6,
+.hl_page-preview--content .text-output h1,
+.hl_page-preview--content .text-output h2,
+.hl_page-preview--content .text-output h3,
+.hl_page-preview--content .text-output h4,
+.hl_page-preview--content .text-output h5,
+.hl_page-preview--content .text-output h6 {
+  margin-block-start: 0;
+  margin-block-end: 0;
+}

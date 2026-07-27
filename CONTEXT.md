@@ -18,7 +18,7 @@ Read this first, then open the wiki vault:
 
 
 
-- **Primary site:** CAE (`apps/cae` / `@seo/cae`) — homepage + `/media/` via GHL section lift; blog scaffold; preview via gateway `/cae`
+- **Primary site:** CAE (`apps/cae` / `@seo/cae`) — homepage (GHL lift + Insights Blog soft bento; home SSR) + `/media/`; Admin + public `/blog`; preview via gateway `/cae`
 
 - **Path gateway:** `apps/gateway` (`@seo/gateway`) on port **4321**
 
@@ -74,9 +74,7 @@ Env for CAE: `apps/cae/.env.example` → `apps/cae/.env.local`.
 
 ## Deploy note (`vercel.json`)
 
-
-
-Root `vercel.json` builds **`@seo/cae`** → `apps/cae/dist` (Astro `base: "/cae/"`). Host-based multi-brand routing and `@astrojs/vercel` SSR are still deferred.
+Root `vercel.json` currently assumes a **static** `@seo/cae` → `apps/cae/dist` build. CAE Admin requires **server mode** (`@astrojs/node`); deploy config must move to a Node host (or a Vercel SSR adapter) before Admin works in production. Host-based multi-brand routing remains deferred.
 
 
 

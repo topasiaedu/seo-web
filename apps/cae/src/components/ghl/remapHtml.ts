@@ -1,6 +1,7 @@
 /**
  * @fileoverview Replaces `__GHL_ASSET_*__` tokens in lifted HTML with resolved
- * local asset URLs from {@link homeImages}.
+ * local asset URLs from {@link homeImages}, then applies UI-safe SEO fixes
+ * (alt / loading / h1 demotion) via {@link applySeoHtmlPass}.
  */
 
 import {
@@ -10,6 +11,7 @@ import {
   type HomeImageAsset,
   type HomeImageKey,
 } from "@/data/home/images";
+import { applySeoHtmlPass } from "./seoHtmlPass";
 
 /**
  * Returns a usable `src` string from an Astro/Vite image import.
@@ -92,7 +94,7 @@ export function remapGhlHtml(
   // Strip empty target="" attributes that sanitize left behind.
   out = out.replace(/\s+target(?:=["']{2})?(?=\s|>)/g, "");
 
-  // Internal Media & Press route (base-aware).
+  // Internal Media & Press / Blog routes (base-aware).
   const base = import.meta.env.BASE_URL;
   const normalizedBase = base.endsWith("/") ? base : `${base}/`;
   out = out.replace(
@@ -103,6 +105,21 @@ export function remapGhlHtml(
     /https:\/\/caegoh\.com\/media\/?/g,
     `${normalizedBase}media/`,
   );
+  out = out.replace(
+    /__GHL_INTERNAL_BLOG__/g,
+    `${normalizedBase}blog/`,
+  );
+  out = out.replace(
+    /https:\/\/caegoh\.com\/blog\/?/g,
+    `${normalizedBase}blog/`,
+  );
+
+  // Hero LEARN MORE formerly targeted Offerings; blog band replaced that slot.
+  out = out.replace(/#section-gZkeGFtHWF\b/g, "#insights");
+  out = out.replace(/#offerings\b/g, "#insights");
+
+  // SEO: alts, loading hints, heading demotion (per-fragment aware).
+  out = applySeoHtmlPass(out, urls);
 
   return out;
 }

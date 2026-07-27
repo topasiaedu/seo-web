@@ -7,7 +7,11 @@ import "@/styles/ghl/ghl-runtime.css";
 import "@/styles/ghl/ghl-page.css";
 import "@/styles/ghl/host-patch.css";
 import "@/styles/ghl/bg-overrides.css";
-import { requireMetaString } from "../data/home/meta.ts";
+import SeoHead from "@/components/seo/SeoHead.astro";
+import { homeMeta, requireMetaString } from "@/data/home/meta";
+import { buildHomeJsonLd } from "@/data/home/jsonld";
+import { toAbsoluteUrl } from "@/lib/site-url";
+import logoAsset from "../assets/logo.png";
 
 interface Props {
   title: string;
@@ -15,11 +19,25 @@ interface Props {
 }
 
 const { title, description } = Astro.props;
-const pageTitle = requireMetaString(title, "Cae Goh");
+const pageTitle = requireMetaString(title, homeMeta.title);
 const metaDescription = requireMetaString(
   description,
-  "Purple Star Astrology & Life Strategy | Zi Wei Dou Shu | Chinese Astrology | Cae Goh",
+  homeMeta.description,
 );
+const logoSrc =
+  typeof logoAsset === "object" &&
+  logoAsset !== null &&
+  "src" in logoAsset &&
+  typeof logoAsset.src === "string"
+    ? logoAsset.src
+    : typeof logoAsset === "string"
+      ? logoAsset
+      : "";
+if (logoSrc.length === 0) {
+  throw new Error("HomeLayout: failed to resolve logo asset src.");
+}
+const ogImageUrl = toAbsoluteUrl(logoSrc);
+const jsonLd = buildHomeJsonLd(Astro.url.pathname, ogImageUrl);
 ---
 
 <!doctype html>
@@ -27,7 +45,15 @@ const metaDescription = requireMetaString(
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="description" content={metaDescription} />
+    <SeoHead
+      title={pageTitle}
+      description={metaDescription}
+      ogType={homeMeta.ogType}
+      siteName={homeMeta.siteName}
+      twitterCard={homeMeta.twitterCard}
+      ogImage={ogImageUrl}
+      jsonLd={jsonLd}
+    />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link

@@ -1,38 +1,49 @@
 /**
- * @fileoverview Shared Supabase client factory for all sites and the CMS.
- */
-
-/**
- * Public env bag required to talk to Supabase from the browser or server.
- */
-export type SupabasePublicEnv = {
-  url: string;
-  anonKey: string;
-};
-
-/**
- * Validates and returns Supabase public credentials.
+ * @fileoverview Shared Supabase client factory for all sites and Admin surfaces.
  *
- * @param env - Raw URL and anon key values (often from `import.meta.env`).
- * @returns Normalized credentials.
- * @throws If either value is missing or blank.
+ * ## Astro middleware cookie wiring
+ *
+ * `createServerClient` expects a `@supabase/ssr`-compatible cookie adapter with
+ * `getAll` (and ideally `setAll` so refreshed tokens persist). In Astro:
+ *
+ * 1. Call `createServerClient` inside middleware (and optionally attach to `locals`).
+ * 2. Implement `getAll` with `parseCookieHeader` on the request `Cookie` header.
+ * 3. Implement `setAll` by calling `context.cookies.set(name, value, options)`
+ *    for each cookie (ignore cache headers if the framework sets them elsewhere).
+ * 4. Call `supabase.auth.getUser()` (or `getClaims()`) early so refreshes run
+ *    before the response is committed.
+ *
+ * Browser/React islands should use `createBrowserClient` instead — it stores the
+ * session in cookies via `document.cookie` and does not take a cookie adapter.
+ *
+ * @see README.md for a complete middleware snippet.
  */
-export function requireSupabasePublicEnv(env: {
-  url: string | undefined;
-  anonKey: string | undefined;
-}): SupabasePublicEnv {
-  const url = env.url?.trim() ?? "";
-  const anonKey = env.anonKey?.trim() ?? "";
-  if (url.length === 0 || anonKey.length === 0) {
-    throw new Error(
-      "@seo/db: PUBLIC_SUPABASE_URL and PUBLIC_SUPABASE_ANON_KEY are required.",
-    );
-  }
-  return { url, anonKey };
-}
+
+export {
+  requireSupabasePublicEnv,
+  type SupabasePublicEnv,
+  type SupabasePublicEnvInput,
+} from "./env.js";
+
+export {
+  createBrowserClient,
+  createServerClient,
+} from "./clients.js";
+
+export type {
+  CookieOptions,
+  GetAllCookies,
+  SetAllCookies,
+  SupabaseCookieMethods,
+} from "./cookies.js";
 
 /**
- * Placeholder export so the package resolves before client helpers land.
- * Call sites will use `createBrowserClient` / `createServerClient` next.
+ * Parses a raw `Cookie` request header into `{ name, value }` pairs for
+ * `createServerClient` `getAll` handlers.
+ */
+export { parseCookieHeader } from "@supabase/ssr";
+
+/**
+ * Package identity constant (useful in diagnostics / smoke checks).
  */
 export const dbPackageName = "@seo/db" as const;

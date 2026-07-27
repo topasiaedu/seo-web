@@ -1,0 +1,235 @@
+---
+/**
+ * Homepage Insights band — soft bento of newest published Posts.
+ * Slot: after Press, before Pillars. Empty `posts` hides the section.
+ *
+ * Desktop: feature (2×2) + up to three support cells; collapses cleanly
+ * for 1–3 posts. Mobile: stacked column with feature first.
+ */
+import type { BlogPost } from "@seo/blog";
+import {
+  formatBlogDate,
+  formatReadingTime,
+  joinBlogPath,
+} from "@/components/blog/blog-format";
+import "./home-insights.css";
+
+interface Props {
+  /** Newest published Posts to surface (caller should already limit to 3–4). */
+  posts: readonly BlogPost[];
+}
+
+/**
+ * Resolved display fields for one bento cell.
+ */
+type TileFields = {
+  href: string;
+  categoryName: string;
+  heroImageUrl: string;
+  excerpt: string;
+  dateLabel: string;
+  readingLabel: string;
+};
+
+const { posts } = Astro.props;
+const recent = Array.isArray(posts) ? posts : [];
+const baseUrl = import.meta.env.BASE_URL;
+const blogIndexHref = joinBlogPath(baseUrl, "blog");
+
+/**
+ * Resolves display fields for one cell from a published Post.
+ *
+ * @param post - Published blog post.
+ * @returns Safe strings for the Insights card.
+ */
+function tileFields(post: BlogPost): TileFields {
+  const categoryName =
+    post.category !== null && typeof post.category.name === "string"
+      ? post.category.name.trim()
+      : "";
+  const heroImageUrl =
+    typeof post.heroImageUrl === "string" ? post.heroImageUrl.trim() : "";
+  const excerpt =
+    typeof post.excerpt === "string" && post.excerpt.trim().length > 0
+      ? post.excerpt.trim()
+      : "";
+  return {
+    href: joinBlogPath(baseUrl, `blog/${post.slug}`),
+    categoryName,
+    heroImageUrl,
+    excerpt,
+    dateLabel: formatBlogDate(post.publishedAt),
+    readingLabel: formatReadingTime(post.readingTimeMinutes),
+  };
+}
+
+/**
+ * Returns the support-cell size class for a 0-based support index.
+ *
+ * @param supportIndex - Index within `supportPosts` (0 = second newest).
+ * @param supportTotal - Number of support posts.
+ * @returns Modifier class for small or wide cells.
+ */
+function supportCellClass(
+  supportIndex: number,
+  supportTotal: number,
+): string {
+  if (supportTotal >= 3 && supportIndex === 2) {
+    return "home-insights__cell--wide";
+  }
+  return "home-insights__cell--sm";
+}
+
+const featurePost = recent.length > 0 ? recent[0] : null;
+const supportPosts = recent.length > 1 ? recent.slice(1) : [];
+const featureFields =
+  featurePost !== null ? tileFields(featurePost) : null;
+const countClass =
+  recent.length === 1
+    ? "home-insights__bento--count-1"
+    : recent.length === 2
+      ? "home-insights__bento--count-2"
+      : recent.length === 3
+        ? "home-insights__bento--count-3"
+        : "home-insights__bento--count-4";
+---
+
+{
+  featurePost !== null && featureFields !== null ? (
+    <section
+      class="home-insights"
+      id="insights"
+      aria-labelledby="home-insights-heading"
+    >
+      <div class="home-insights__inner">
+        <header class="home-insights__header">
+          <div>
+            <p class="home-insights__eyebrow">Blog</p>
+            <h2 id="home-insights-heading" class="home-insights__title">
+              Insights
+            </h2>
+            <p class="home-insights__lede">
+              Recent notes on Zi Wei Dou Shu, timing, and life strategy.
+            </p>
+          </div>
+          <a class="home-insights__all" href={blogIndexHref}>
+            View all blog
+          </a>
+        </header>
+
+        <ul class:list={["home-insights__bento", countClass]}>
+          <li class="home-insights__cell home-insights__cell--feature">
+            <a class="home-insights__card" href={featureFields.href}>
+              {
+                featureFields.heroImageUrl.length > 0 ? (
+                  <img
+                    class="home-insights__media"
+                    src={featureFields.heroImageUrl}
+                    alt=""
+                    loading="lazy"
+                  />
+                ) : (
+                  <span
+                    class="home-insights__media home-insights__media--empty"
+                    aria-hidden="true"
+                  />
+                )
+              }
+              <span class="home-insights__scrim" aria-hidden="true" />
+              <span class="home-insights__body">
+                {
+                  featureFields.categoryName.length > 0 ? (
+                    <span class="home-insights__category">
+                      {featureFields.categoryName}
+                    </span>
+                  ) : null
+                }
+                <h3 class="home-insights__post-title">{featurePost.title}</h3>
+                {
+                  featureFields.excerpt.length > 0 ? (
+                    <span class="home-insights__excerpt">
+                      {featureFields.excerpt}
+                    </span>
+                  ) : null
+                }
+                {
+                  featureFields.dateLabel.length > 0 ||
+                  featureFields.readingLabel.length > 0 ? (
+                    <span class="home-insights__meta">
+                      {featureFields.dateLabel.length > 0 ? (
+                        <time datetime={featurePost.publishedAt ?? undefined}>
+                          {featureFields.dateLabel}
+                        </time>
+                      ) : null}
+                      {featureFields.readingLabel.length > 0 ? (
+                        <span>
+                          {featureFields.dateLabel.length > 0 ? " · " : ""}
+                          {featureFields.readingLabel}
+                        </span>
+                      ) : null}
+                    </span>
+                  ) : null
+                }
+              </span>
+            </a>
+          </li>
+
+          {
+            supportPosts.map((post, supportIndex) => {
+              const fields = tileFields(post);
+              const hasThumb = fields.heroImageUrl.length > 0;
+              const sizeClass = supportCellClass(
+                supportIndex,
+                supportPosts.length,
+              );
+              return (
+                <li class:list={["home-insights__cell", sizeClass]}>
+                  <a class="home-insights__card" href={fields.href}>
+                    {hasThumb ? (
+                      <img
+                        class="home-insights__media"
+                        src={fields.heroImageUrl}
+                        alt=""
+                        loading="lazy"
+                      />
+                    ) : (
+                      <span
+                        class="home-insights__media home-insights__media--empty"
+                        aria-hidden="true"
+                      />
+                    )}
+                    <span class="home-insights__scrim" aria-hidden="true" />
+                    <span class="home-insights__body">
+                      {fields.categoryName.length > 0 ? (
+                        <span class="home-insights__category">
+                          {fields.categoryName}
+                        </span>
+                      ) : null}
+                      <h3 class="home-insights__post-title">{post.title}</h3>
+                      {fields.dateLabel.length > 0 ||
+                      fields.readingLabel.length > 0 ? (
+                        <span class="home-insights__meta">
+                          {fields.dateLabel.length > 0 ? (
+                            <time datetime={post.publishedAt ?? undefined}>
+                              {fields.dateLabel}
+                            </time>
+                          ) : null}
+                          {fields.readingLabel.length > 0 ? (
+                            <span>
+                              {fields.dateLabel.length > 0 ? " · " : ""}
+                              {fields.readingLabel}
+                            </span>
+                          ) : null}
+                        </span>
+                      ) : null}
+                    </span>
+                  </a>
+                </li>
+              );
+            })
+          }
+        </ul>
+      </div>
+    </section>
+  ) : null
+}

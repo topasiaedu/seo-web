@@ -10,13 +10,14 @@
 
 ## Summary
 
-CAE marketing pages switched from a **native BEM rewrite** to a **GHL section lift**: sanitized capture HTML (original GHL `id`/`class`) + sanitized capture CSS under `.hl_page-preview--content`, with CDN images remapped to local assets. Homepage runtime is `apps/cae/src/components/ghl/*`. **Media & Press** ships at `/cae/media/` from a new capture of https://caegoh.com/media. Native `components/home/*` remains parked/unwired.
+CAE marketing pages switched from a **native BEM rewrite** to a **GHL section lift**: sanitized capture HTML (original GHL `id`/`class`) + sanitized capture CSS under `.hl_page-preview--content`, with CDN images remapped to local assets. Homepage runtime is `apps/cae/src/components/ghl/*`. **Media & Press** ships at `/cae/media/` from a new capture of https://caegoh.com/media. Native `components/home/*` remains parked/unwired. UI-safe SEO (head / sitemap / remapper alts+h1) layers on top — see [cae-seo-improvements](cae-seo-improvements.md).
 
 ## Affects
 
-- [sites/cae.md](../sites/cae.md) — routes, homepage/media runtime paths
+- [sites/cae.md](../sites/cae.md) — routes, homepage/media runtime paths, SEO
 - [sources/cae-ghl-capture.md](cae-ghl-capture.md) — archive still immutable; runtime is lift copies in `apps/cae`
 - [sources/cae-ghl-capture-media.md](cae-ghl-capture-media.md) — new media archive
+- [sources/cae-seo-improvements.md](cae-seo-improvements.md) — head / sitemap / remapper SEO on the lift
 - [sources/cae-independent-app-and-native-landing.md](cae-independent-app-and-native-landing.md) — multi-app/gateway still valid; homepage visual approach superseded
 - [architecture/monorepo.md](../architecture/monorepo.md) — clarify vault archive vs app runtime CSS copies
 - [overview.md](../overview.md) — current focus + context map

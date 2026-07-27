@@ -1,0 +1,71 @@
+---
+/**
+ * Author byline (name, bio, optional photo) with optional publish meta.
+ */
+import type { Author } from "@seo/blog";
+
+interface Props {
+  author: Author;
+  /** Formatted publish date label (e.g. "23 Jul 2026"). */
+  dateLabel?: string;
+  /** ISO datetime for the `<time>` element when `dateLabel` is set. */
+  publishedAt?: string | null;
+  /** Formatted reading-time label (e.g. "12 min read"). */
+  readingLabel?: string;
+}
+
+const { author, dateLabel = "", publishedAt = null, readingLabel = "" } =
+  Astro.props;
+const hasPhoto =
+  typeof author.photoUrl === "string" && author.photoUrl.trim().length > 0;
+const bio =
+  typeof author.bio === "string" && author.bio.trim().length > 0
+    ? author.bio.trim()
+    : "";
+const hasDate =
+  typeof dateLabel === "string" && dateLabel.trim().length > 0;
+const hasReading =
+  typeof readingLabel === "string" && readingLabel.trim().length > 0;
+const datetimeAttr =
+  typeof publishedAt === "string" && publishedAt.trim().length > 0
+    ? publishedAt.trim()
+    : undefined;
+---
+
+<div class="blog-byline">
+  {
+    hasPhoto ? (
+      <div class="blog-byline__photo">
+        <img
+          src={author.photoUrl ?? ""}
+          alt=""
+          width="56"
+          height="56"
+          loading="lazy"
+        />
+      </div>
+    ) : null
+  }
+  <div class="blog-byline__text">
+    <p class="blog-byline__name">{author.name}</p>
+    {
+      hasDate || hasReading ? (
+        <p class="blog-byline__meta">
+          {
+            hasDate ? (
+              <time datetime={datetimeAttr}>{dateLabel.trim()}</time>
+            ) : null
+          }
+          {
+            hasReading ? (
+              <span class:list={[hasDate ? "blog-byline__meta-sep" : null]}>
+                {readingLabel.trim()}
+              </span>
+            ) : null
+          }
+        </p>
+      ) : null
+    }
+    {bio.length > 0 ? <p class="blog-byline__bio">{bio}</p> : null}
+  </div>
+</div>

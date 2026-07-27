@@ -1,0 +1,38 @@
+---
+/**
+ * Public tag chips for a blog post (display only — no tag routes in v1).
+ */
+interface Props {
+  /** Raw tag strings from the Post row. */
+  tags: string[];
+}
+
+const { tags } = Astro.props;
+
+/** Trimmed, non-empty labels preserved in author order. */
+const labels: string[] = [];
+if (Array.isArray(tags)) {
+  for (const tag of tags) {
+    if (typeof tag !== "string") {
+      continue;
+    }
+    const label = tag.trim();
+    if (label.length === 0) {
+      continue;
+    }
+    labels.push(label);
+  }
+}
+---
+
+{
+  labels.length > 0 ? (
+    <ul class="blog-tags" aria-label="Tags">
+      {labels.map((label) => (
+        <li class="blog-tags__item">
+          <span class="blog-tags__chip">{label}</span>
+        </li>
+      ))}
+    </ul>
+  ) : null
+}

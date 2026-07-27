@@ -1,13 +1,294 @@
 ---
 /**
- * CAE blog index scaffold — will list published posts via `@seo/blog`.
+ * CAE public blog index — category filters + paginated uniform card grid.
+ * Pattern inspired by jacksonyew.com/blog (chips + dense discovery grid).
  */
-import BaseLayout from "../../layouts/BaseLayout.astro";
+import { listCategories, listPublishedPostsPage } from "@seo/blog";
+import BlogLayout from "@/components/blog/BlogLayout.astro";
+import PostCard from "@/components/blog/PostCard.astro";
+import {
+  buildBlogIndexHref,
+  requireBlogSupabase,
+} from "@/components/blog/blog-format";
+import { buildBlogIndexJsonLd } from "@/data/blog/jsonld";
+import { toAbsoluteUrl } from "@/lib/site-url";
+import { caeSiteConfig } from "@/site-config";
+import logoAsset from "@/assets/logo.png";
+
+export const prerender = false;
+
+/** Posts per index page — keeps 100+ archives scannable. */
+const PAGE_SIZE = 12;
+
+const INDEX_TITLE = "Insights";
+const INDEX_DESCRIPTION =
+  "Zi Wei Dou Shu, life strategy, and timing — from Cae Goh. Filed by category.";
+const SITE_NAME = "Cae Goh";
+
+/**
+ * Resolves the bundled logo asset to a string src for OG and JSON-LD.
+ *
+ * @param asset - Astro-imported logo module.
+ * @returns Resolved src path, or empty string when invalid.
+ */
+function resolveLogoSrc(asset: typeof logoAsset): string {
+  if (
+    typeof asset === "object" &&
+    asset !== null &&
+    "src" in asset &&
+    typeof asset.src === "string"
+  ) {
+    return asset.src;
+  }
+  if (typeof asset === "string") {
+    return asset;
+  }
+  return "";
+}
+
+/**
+ * Parses a 1-based page number from a query string value.
+ *
+ * @param raw - `page` search param, or null.
+ * @returns Integer >= 1.
+ */
+function parsePageParam(raw: string | null): number {
+  if (typeof raw !== "string" || raw.trim().length === 0) {
+    return 1;
+  }
+  const parsed = Number.parseInt(raw, 10);
+  if (!Number.isFinite(parsed) || parsed < 1) {
+    return 1;
+  }
+  return parsed;
+}
+
+const supabase = requireBlogSupabase(Astro.locals.supabase);
+const siteId = caeSiteConfig.projectId;
+const baseUrl = import.meta.env.BASE_URL;
+
+const categories = await listCategories(supabase, siteId);
+const requestedCategory =
+  Astro.url.searchParams.get("category")?.trim() ?? "";
+const activeCategorySlug = categories.some(
+  (category) => category.slug === requestedCategory,
+)
+  ? requestedCategory
+  : "";
+
+const requestedPage = parsePageParam(Astro.url.searchParams.get("page"));
+const offset = (requestedPage - 1) * PAGE_SIZE;
+
+const { posts, total } = await listPublishedPostsPage(supabase, siteId, {
+  categorySlug: activeCategorySlug.length > 0 ? activeCategorySlug : undefined,
+  limit: PAGE_SIZE,
+  offset,
+});
+
+const totalPages = total > 0 ? Math.ceil(total / PAGE_SIZE) : 1;
+const currentPage = Math.min(requestedPage, totalPages);
+
+/**
+ * When `?page=` is past the last page, re-fetch the last page so the grid
+ * is never empty while pagination chrome still makes sense.
+ */
+let pagePosts = posts;
+if (total > 0 && requestedPage > totalPages) {
+  const last = await listPublishedPostsPage(supabase, siteId, {
+    categorySlug:
+      activeCategorySlug.length > 0 ? activeCategorySlug : undefined,
+    limit: PAGE_SIZE,
+    offset: (totalPages - 1) * PAGE_SIZE,
+  });
+  pagePosts = last.posts;
+}
+
+const logoSrc = resolveLogoSrc(logoAsset);
+if (logoSrc.length === 0) {
+  throw new Error("blog/index: failed to resolve logo asset src.");
+}
+const ogImageUrl = toAbsoluteUrl(logoSrc);
+
+const jsonLd = buildBlogIndexJsonLd({
+  pathname: Astro.url.pathname,
+  name: INDEX_TITLE,
+  description: INDEX_DESCRIPTION,
+  siteName: SITE_NAME,
+  ogImageUrl,
+  posts: pagePosts.map((post) => ({
+    slug: post.slug,
+    title: post.title,
+    datePublished: post.publishedAt,
+  })),
+});
+
+const allHref = buildBlogIndexHref(baseUrl);
+const showPagination = totalPages > 1;
+const prevHref =
+  currentPage > 1
+    ? buildBlogIndexHref(baseUrl, {
+        categorySlug: activeCategorySlug,
+        page: currentPage - 1,
+      })
+    : null;
+const nextHref =
+  currentPage < totalPages
+    ? buildBlogIndexHref(baseUrl, {
+        categorySlug: activeCategorySlug,
+        page: currentPage + 1,
+      })
+    : null;
+
+/** Compact page window around the current page for the pager. */
+const pageNumbers: number[] = [];
+const windowStart = Math.max(1, currentPage - 2);
+const windowEnd = Math.min(totalPages, currentPage + 2);
+for (let page = windowStart; page <= windowEnd; page += 1) {
+  pageNumbers.push(page);
+}
+
+const emptyMessage =
+  activeCategorySlug.length > 0
+    ? "No published posts in this category yet."
+    : "No published posts yet. Check back soon.";
 ---
 
-<BaseLayout title="Blog · CAE">
-  <main>
-    <h1>Blog</h1>
-    <p>Post list will load from Supabase (scoped to CAE <code>site_id</code>).</p>
+<BlogLayout
+  title="Insights · CAE"
+  description={INDEX_DESCRIPTION}
+  jsonLd={jsonLd}
+>
+  <main class="blog-page">
+    <header class="blog-index-intro">
+      <p class="blog-index-intro__eyebrow">Blog</p>
+      <h1 class="blog-index-intro__title">{INDEX_TITLE}</h1>
+      <p class="blog-index-intro__lede">{INDEX_DESCRIPTION}</p>
+    </header>
+
+    {
+      categories.length > 0 ? (
+        <nav class="blog-index-filters" aria-label="Filter by category">
+          <ul class="blog-index-filters__list">
+            <li>
+              <a
+                class:list={[
+                  "blog-index-filters__chip",
+                  activeCategorySlug.length === 0
+                    ? "blog-index-filters__chip--active"
+                    : null,
+                ]}
+                href={allHref}
+                aria-current={
+                  activeCategorySlug.length === 0 ? "page" : undefined
+                }
+              >
+                All posts
+              </a>
+            </li>
+            {categories.map((category) => {
+              const href = buildBlogIndexHref(baseUrl, {
+                categorySlug: category.slug,
+              });
+              const isActive = category.slug === activeCategorySlug;
+              return (
+                <li>
+                  <a
+                    class:list={[
+                      "blog-index-filters__chip",
+                      isActive ? "blog-index-filters__chip--active" : null,
+                    ]}
+                    href={href}
+                    aria-current={isActive ? "page" : undefined}
+                  >
+                    {category.name}
+                  </a>
+                </li>
+              );
+            })}
+          </ul>
+        </nav>
+      ) : null
+    }
+
+    {
+      pagePosts.length === 0 ? (
+        <p class="blog__empty">{emptyMessage}</p>
+      ) : (
+        <section
+          class="blog-index-grid"
+          aria-labelledby="blog-index-articles"
+        >
+          <div class="blog-index-grid__header">
+            <h2 id="blog-index-articles" class="blog-index-grid__title">
+              {activeCategorySlug.length > 0
+                ? (categories.find((c) => c.slug === activeCategorySlug)
+                    ?.name ?? "Articles")
+                : "All articles"}
+            </h2>
+            <p class="blog-index-grid__count">
+              {total === 1 ? "1 post" : `${String(total)} posts`}
+              {showPagination
+                ? ` · Page ${String(currentPage)} of ${String(totalPages)}`
+                : ""}
+            </p>
+          </div>
+          <ul class="blog-grid">
+            {pagePosts.map((post) => (
+              <PostCard post={post} />
+            ))}
+          </ul>
+
+          {
+            showPagination ? (
+              <nav class="blog-pager" aria-label="Blog pagination">
+                {prevHref !== null ? (
+                  <a class="blog-pager__nav" href={prevHref} rel="prev">
+                    ← Previous
+                  </a>
+                ) : (
+                  <span class="blog-pager__nav blog-pager__nav--disabled">
+                    ← Previous
+                  </span>
+                )}
+                <ul class="blog-pager__pages">
+                  {pageNumbers.map((page) => {
+                    const href = buildBlogIndexHref(baseUrl, {
+                      categorySlug: activeCategorySlug,
+                      page,
+                    });
+                    const isCurrent = page === currentPage;
+                    return (
+                      <li>
+                        {isCurrent ? (
+                          <span
+                            class="blog-pager__page blog-pager__page--current"
+                            aria-current="page"
+                          >
+                            {page}
+                          </span>
+                        ) : (
+                          <a class="blog-pager__page" href={href}>
+                            {page}
+                          </a>
+                        )}
+                      </li>
+                    );
+                  })}
+                </ul>
+                {nextHref !== null ? (
+                  <a class="blog-pager__nav" href={nextHref} rel="next">
+                    Next →
+                  </a>
+                ) : (
+                  <span class="blog-pager__nav blog-pager__nav--disabled">
+                    Next →
+                  </span>
+                )}
+              </nav>
+            ) : null
+          }
+        </section>
+      )
+    }
   </main>
-</BaseLayout>
+</BlogLayout>

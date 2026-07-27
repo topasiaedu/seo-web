@@ -2,9 +2,15 @@
 
 Shared project for all sites.
 
-## Tables (migration)
+## Migrations
 
-File: `supabase/migrations/20260722100000_sites_and_posts.sql`
+| File | Role |
+|------|------|
+| `supabase/migrations/20260722100000_sites_and_posts.sql` | `sites`, base `posts`, initial RLS |
+| `supabase/migrations/20260723160000_blog_authors_categories_posts.sql` | `authors`, `categories`, posts editorial columns, Storage bucket `media` |
+| `supabase/migrations/20260727033138_posts_public_read_published_at_gate.sql` | Anon public-read RLS time-gate on `published_at`; index `(site_id, status, published_at DESC NULLS LAST)` |
+
+## Tables
 
 ### `sites`
 
@@ -15,7 +21,27 @@ File: `supabase/migrations/20260722100000_sites_and_posts.sql`
 - `settings` jsonb default `{}`
 - `created_at` timestamptz
 
+### `authors` (one byline profile per site)
+
+- `id` uuid PK
+- `site_id` uuid FK → `sites` (**UNIQUE** — one Author per brand)
+- `name`, `bio`, `photo_url`
+- `updated_at` (trigger-maintained)
+
+Brands do not share Authors. CAE seed: **Cae Goh**.
+
+### `categories` (site-scoped taxonomy)
+
+- `id` uuid PK
+- `site_id` uuid FK → `sites`
+- `slug`, `name`
+- **UNIQUE** `(site_id, slug)`
+
+CAE seed (7): Zi Wei Dou Shu, Life Strategy, Relationships, Career & Business, Consultations, Academy, Speaking & Media.
+
 ### `posts`
+
+Base columns (`20260722100000`):
 
 - `id` uuid PK
 - `site_id` uuid FK → `sites` (cascade delete)
@@ -23,29 +49,69 @@ File: `supabase/migrations/20260722100000_sites_and_posts.sql`
 - `status` text check: `draft` | `published` | `archived` (default `draft`)
 - `published_at`, `updated_at`, `author_id`
 - **UNIQUE** `(site_id, slug)`
-- Index: `(site_id, status)`
+- Indexes: `(site_id, status)`; `(site_id, status, published_at DESC NULLS LAST)` (live list/get)
+
+Editorial / SEO extensions (`20260723160000`):
+
+| Column | Notes |
+|--------|--------|
+| `reading_time_minutes` | Auto ~200 wpm from body; Admin may override |
+| `hero_image_url` / `hero_image_alt` | Cover |
+| `og_image_url` | Social share image |
+| `key_takeaway` | Callout on public post |
+| `faq` jsonb | `[{ question, answer }, …]` |
+| `sources` jsonb | `[{ label, url }, …]` |
+| `category_id` | FK → `categories` (nullable; ON DELETE SET NULL) |
+| `tags` text[] | Free-form labels |
+| `seo_title` / `seo_description` | Per-post SEO |
+| `related_post_ids` uuid[] | Same-site related Posts |
+
+`author_id` FK → `authors.id` (ON DELETE SET NULL). No `featured` column (deferred).
+
+`updated_at` triggers on `posts` and `authors`.
 
 ## RLS
 
-- `Public read published posts` — SELECT for `anon`/`authenticated` where `status = 'published'`
-- `Public read sites` — SELECT sites for `anon`/`authenticated`
-- `Editors manage posts` — ALL for `authenticated` (tighten roles later)
+- **Sites** — public SELECT (`anon` / `authenticated`)
+- **Posts** — anon SELECT where `status = 'published'` **and** `published_at IS NOT NULL` **and** `published_at <= now()` (lazy schedule; matches `@seo/blog` public helpers). Authenticated ALL via `"Editors manage posts"` (Admin can read drafts/scheduled). Tighten roles later.
+- **Authors / categories** — public SELECT; authenticated ALL
+- Site scope for writes is enforced in app queries (CAE Admin hardcodes `site_id = cae`)
+
+Scheduled publishing source: [cae-blog-scheduled-publishing](../sources/cae-blog-scheduled-publishing.md).
+
+## Storage bucket `media`
+
+Public bucket `media` (created in `20260723160000`). Path convention (bucket-relative):
+
+```text
+{site_slug}/
+  site/                 # landing / brand assets (future Media Library)
+  blog/
+    covers/             # hero / cover images
+    body/               # inline body images
+    authors/            # Author profile photos
+```
+
+Examples: `cae/blog/covers/…`, `cae/blog/body/…`, `cae/blog/authors/…`.
+
+RLS on `storage.objects`: public read; authenticated insert/update/delete for bucket `media`.
+
+Full **Media Library** UI + `media` table remain deferred — Admin uploads use these paths directly. Design: `docs/future-enhancements/cms-media-library.md`.
 
 ## Seed
 
-`supabase/seed.sql` inserts `cae` and `dr-jasmine` with fixed UUIDs matching `website/*/config.ts`. CMS is not seeded.
+`supabase/seed.sql` inserts:
+
+- Sites `cae` and `dr-jasmine` (fixed UUIDs matching `apps/cae/src/site-config.ts`)
+- CAE Author **Cae Goh**
+- Seven CAE categories
+
+CMS is not seeded.
 
 ## Client usage
 
-Public sites: anon key + RLS. CMS: user session. No service role in the browser.
+- Public blog / marketing: anon key + RLS via `@seo/db` `createServerClient` / `createBrowserClient`
+- Admin: authenticated session cookies (Astro middleware)
+- Never put service role in the browser
 
-## Deferred: Storage + `media` table
-
-Not migrated yet. Agreed shape (CAE is the clone template):
-
-- **Bucket:** one public bucket `media`
-- **Paths:** `{site_slug}/site/...` and `{site_slug}/blog/covers|body/...`
-- **Table `media`:** `site_id`, `kind` (`site` | `blog`), optional `post_id`, `filename`, `bucket_path`, `public_url`, `alt_text`, `title`, mime/size, `uploaded_by`
-- **RLS (planned):** public read on objects; authenticated insert/update/delete (tighten roles with CMS)
-
-Design: `docs/future-enhancements/cms-media-library.md` · Source: [cms-media-library-and-cae-image-alt](../sources/cms-media-library-and-cae-image-alt.md)
+Package docs: [@seo/db](../packages/db.md) · [@seo/blog](../packages/blog.md)

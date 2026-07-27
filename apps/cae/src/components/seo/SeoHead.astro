@@ -1,0 +1,83 @@
+---
+/**
+ * Shared document-head SEO tags for CAE marketing layouts.
+ * Emits description, robots, canonical, Open Graph, Twitter, favicon, and optional JSON-LD.
+ */
+import logoAsset from "../../assets/logo.png";
+import { requireMetaString } from "@/data/home/meta";
+import { stringifyJsonLd, type JsonLdNode } from "@/data/home/jsonld";
+import { toAbsoluteUrl, toCanonicalUrl } from "@/lib/site-url";
+
+interface Props {
+  title: string;
+  description: string;
+  /** Open Graph / Twitter card type (usually `website`). */
+  ogType?: string;
+  siteName?: string;
+  twitterCard?: string;
+  /** Optional absolute or site-relative OG image; defaults to brand logo. */
+  ogImage?: string;
+  /** When set, embeds a JSON-LD script in `<head>`. */
+  jsonLd?: JsonLdNode;
+}
+
+const {
+  title,
+  description,
+  ogType = "website",
+  siteName = "Cae Goh",
+  twitterCard = "summary_large_image",
+  ogImage,
+  jsonLd,
+} = Astro.props;
+
+const pageTitle = requireMetaString(title, "Cae Goh");
+const metaDescription = requireMetaString(
+  description,
+  "Purple Star Astrology & Life Strategy | Zi Wei Dou Shu | Chinese Astrology | Cae Goh",
+);
+const canonicalUrl = toCanonicalUrl(Astro.url.pathname);
+const logoSrc =
+  typeof logoAsset === "object" &&
+  logoAsset !== null &&
+  "src" in logoAsset &&
+  typeof logoAsset.src === "string"
+    ? logoAsset.src
+    : typeof logoAsset === "string"
+      ? logoAsset
+      : "";
+if (logoSrc.length === 0) {
+  throw new Error("SeoHead: failed to resolve logo asset src for favicon/OG.");
+}
+const resolvedOgImage = toAbsoluteUrl(
+  typeof ogImage === "string" && ogImage.trim().length > 0
+    ? ogImage.trim()
+    : logoSrc,
+);
+const faviconHref = logoSrc;
+const jsonLdText =
+  jsonLd !== undefined ? stringifyJsonLd(jsonLd) : undefined;
+---
+
+<meta name="description" content={metaDescription} />
+<meta name="robots" content="index,follow" />
+<link rel="canonical" href={canonicalUrl} />
+<link rel="icon" href={faviconHref} type="image/png" />
+
+<meta property="og:title" content={pageTitle} />
+<meta property="og:description" content={metaDescription} />
+<meta property="og:url" content={canonicalUrl} />
+<meta property="og:image" content={resolvedOgImage} />
+<meta property="og:type" content={ogType} />
+<meta property="og:site_name" content={siteName} />
+
+<meta name="twitter:card" content={twitterCard} />
+<meta name="twitter:title" content={pageTitle} />
+<meta name="twitter:description" content={metaDescription} />
+<meta name="twitter:image" content={resolvedOgImage} />
+
+{
+  jsonLdText !== undefined ? (
+    <script type="application/ld+json" set:html={jsonLdText} />
+  ) : null
+}

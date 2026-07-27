@@ -1,25 +1,250 @@
 ---
 /**
- * CAE blog post detail scaffold — will load one published post by slug.
+ * CAE public blog Post detail — full-bleed hero + reading column.
+ * Published only; 404 when missing or not published.
  */
-import type { GetStaticPaths } from "astro";
-import BaseLayout from "../../layouts/BaseLayout.astro";
+import {
+  getPublishedPostBySlug,
+  listPublishedPosts,
+} from "@seo/blog";
+import AuthorByline from "@/components/blog/AuthorByline.astro";
+import AuthorCard from "@/components/blog/AuthorCard.astro";
+import BlogLayout from "@/components/blog/BlogLayout.astro";
+import FaqSection from "@/components/blog/FaqSection.astro";
+import KeyTakeaway from "@/components/blog/KeyTakeaway.astro";
+import PostTags from "@/components/blog/PostTags.astro";
+import RelatedPosts from "@/components/blog/RelatedPosts.astro";
+import SourcesSection from "@/components/blog/SourcesSection.astro";
+import TableOfContents from "@/components/blog/TableOfContents.astro";
+import {
+  formatBlogDate,
+  formatReadingTime,
+  joinBlogPath,
+  requireBlogSupabase,
+  resolvePostOgImage,
+  resolvePostSeoDescription,
+  resolvePostSeoTitle,
+} from "@/components/blog/blog-format";
+import { resolveRelatedPublishedPosts } from "@/components/blog/resolve-related";
+import { buildBlogPostJsonLd, type JsonLdNode } from "@/data/blog/jsonld";
+import { renderMarkdownWithToc, type TocHeading } from "@/lib/markdown";
+import { toAbsoluteUrl } from "@/lib/site-url";
+import { caeSiteConfig } from "@/site-config";
+import type { BlogPost } from "@seo/blog";
 
-/**
- * Static scaffold paths until Supabase-backed posts are wired.
- * Returns an empty list so the route exists without generating HTML yet.
- */
-export const getStaticPaths = (() => {
-  return [] as const;
-}) satisfies GetStaticPaths;
+export const prerender = false;
 
-const { slug } = Astro.params;
-const safeSlug = typeof slug === "string" ? slug : "";
+const SITE_NAME = "Cae Goh";
+
+const supabase = requireBlogSupabase(Astro.locals.supabase);
+const siteId = caeSiteConfig.projectId;
+
+const rawSlug = Astro.params.slug;
+const slug = typeof rawSlug === "string" ? rawSlug.trim() : "";
+
+const post =
+  slug.length > 0
+    ? await getPublishedPostBySlug(supabase, siteId, slug)
+    : null;
+
+if (post === null) {
+  Astro.response.status = 404;
+}
+
+const blogIndexHref = joinBlogPath(import.meta.env.BASE_URL, "blog");
+
+/** Rendered only when a published Post was found. */
+let pageTitle = "Post not found · CAE Blog";
+let pageDescription = "This blog post is unavailable.";
+let ogImage: string | undefined;
+let jsonLd: JsonLdNode | undefined;
+let bodyHtml = "";
+let toc: TocHeading[] = [];
+let related: BlogPost[] = [];
+let dateLabel = "";
+let readingLabel = "";
+let categoryName = "";
+let hasHero = false;
+let heroAlt = "";
+let keyTakeaway = "";
+
+if (post !== null) {
+  const rendered = renderMarkdownWithToc(post.bodyMd);
+  bodyHtml = rendered.html;
+  toc = rendered.toc;
+
+  const published = await listPublishedPosts(supabase, siteId);
+  related = resolveRelatedPublishedPosts(post, published);
+
+  const seoTitle = resolvePostSeoTitle(post.seoTitle, post.title);
+  const seoDescription = resolvePostSeoDescription(
+    post.seoDescription,
+    post.excerpt,
+    post.title,
+  );
+
+  pageTitle = `${seoTitle} · CAE`;
+  pageDescription = seoDescription;
+  ogImage = resolvePostOgImage(post.ogImageUrl, post.heroImageUrl);
+  jsonLd = buildBlogPostJsonLd(post, {
+    pathname: Astro.url.pathname,
+    siteName: SITE_NAME,
+    ogImageUrl:
+      ogImage !== undefined ? toAbsoluteUrl(ogImage) : undefined,
+    headline: seoTitle,
+    description: seoDescription,
+  });
+  dateLabel = formatBlogDate(post.publishedAt);
+  readingLabel = formatReadingTime(post.readingTimeMinutes);
+  categoryName =
+    post.category !== null && typeof post.category.name === "string"
+      ? post.category.name.trim()
+      : "";
+  hasHero =
+    typeof post.heroImageUrl === "string" &&
+    post.heroImageUrl.trim().length > 0;
+  heroAlt =
+    typeof post.heroImageAlt === "string" &&
+    post.heroImageAlt.trim().length > 0
+      ? post.heroImageAlt.trim()
+      : post.title;
+  keyTakeaway =
+    typeof post.keyTakeaway === "string" ? post.keyTakeaway.trim() : "";
+}
 ---
 
-<BaseLayout title={`${safeSlug} · CAE Blog`}>
-  <main>
-    <h1>Post: {safeSlug}</h1>
-    <p>Content will load from Supabase for this slug under CAE.</p>
-  </main>
-</BaseLayout>
+{
+  post === null ? (
+    <BlogLayout title={pageTitle} description={pageDescription}>
+      <main class="blog-page">
+        <div class="blog-not-found">
+          <h1 class="blog__title">Post not found</h1>
+          <p>
+            This post does not exist or is not published.{" "}
+            <a href={blogIndexHref}>Back to the blog</a>.
+          </p>
+        </div>
+      </main>
+    </BlogLayout>
+  ) : (
+    <BlogLayout
+      title={pageTitle}
+      description={pageDescription}
+      ogType="article"
+      ogImage={ogImage}
+      jsonLd={jsonLd}
+    >
+      <main class="blog-page blog-page--article">
+        <article>
+          <header
+            class:list={[
+              "blog-post-hero",
+              hasHero ? null : "blog-post-hero--no-image",
+            ]}
+          >
+            {
+              hasHero ? (
+                <div class="blog-post-hero__media">
+                  <img
+                    src={post.heroImageUrl ?? ""}
+                    alt={heroAlt}
+                    loading="eager"
+                    fetchpriority="high"
+                  />
+                </div>
+              ) : null
+            }
+            <div class="blog-post-hero__inner">
+              <a class="blog-post-hero__back" href={blogIndexHref}>
+                ← All articles
+              </a>
+              {
+                categoryName.length > 0 ? (
+                  <p class="blog-post-hero__eyebrow">{categoryName}</p>
+                ) : null
+              }
+              <h1 class="blog-post-hero__title">{post.title}</h1>
+            </div>
+          </header>
+
+          <div class="blog-page__shell blog-page__shell--article">
+            {/* Light reading paper — dark ink on press-band surface under the hero. */}
+            <div class="blog-article-paper">
+              {
+                post.author !== null ? (
+                  <AuthorByline
+                    author={post.author}
+                    dateLabel={dateLabel}
+                    publishedAt={post.publishedAt}
+                    readingLabel={readingLabel}
+                  />
+                ) : dateLabel.length > 0 || readingLabel.length > 0 ? (
+                  <p class="blog-byline blog-byline--meta-only">
+                    {
+                      dateLabel.length > 0 ? (
+                        <time datetime={post.publishedAt ?? undefined}>
+                          {dateLabel}
+                        </time>
+                      ) : null
+                    }
+                    {
+                      readingLabel.length > 0 ? (
+                        <span
+                          class:list={[
+                            dateLabel.length > 0
+                              ? "blog-byline__meta-sep"
+                              : null,
+                          ]}
+                        >
+                          {readingLabel}
+                        </span>
+                      ) : null
+                    }
+                  </p>
+                ) : null
+              }
+
+              <PostTags tags={post.tags} />
+
+              {keyTakeaway.length > 0 ? (
+                <KeyTakeaway text={keyTakeaway} />
+              ) : null}
+
+              <div
+                class:list={[
+                  "blog-article",
+                  toc.length > 0 ? "blog-article--with-toc" : null,
+                ]}
+              >
+                {
+                  toc.length > 0 ? (
+                    <div class="blog-article__toc">
+                      <TableOfContents headings={toc} />
+                    </div>
+                  ) : null
+                }
+
+                <div class="blog-article__main">
+                  {
+                    bodyHtml.length > 0 ? (
+                      <div class="blog-body" set:html={bodyHtml} />
+                    ) : (
+                      <p class="blog__empty">
+                        This post has no body content yet.
+                      </p>
+                    )
+                  }
+
+                  <FaqSection items={post.faq} />
+                  <SourcesSection items={post.sources} />
+                  <AuthorCard author={post.author} />
+                  <RelatedPosts posts={related} />
+                </div>
+              </div>
+            </div>
+          </div>
+        </article>
+      </main>
+    </BlogLayout>
+  )
+}

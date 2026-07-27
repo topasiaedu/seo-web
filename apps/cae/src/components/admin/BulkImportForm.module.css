@@ -1,0 +1,304 @@
+/**
+ * Styles for the CAE Admin bulk Post import island.
+ * Consumes `--admin-*` tokens; complements the shared admin-forms.css classes.
+ */
+
+.root {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  padding-bottom: 4.5rem;
+}
+
+.header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem 1.5rem;
+}
+
+.instructions {
+  margin: 0;
+  font-size: 0.85rem;
+  line-height: 1.5;
+  color: var(--admin-text-muted);
+}
+
+.instructions code {
+  padding: 0.1rem 0.3rem;
+  border-radius: 0.2rem;
+  background: var(--admin-surface-soft);
+  color: var(--admin-text);
+  font-size: 0.85em;
+}
+
+.templateHeader {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem 1rem;
+}
+
+.templateHeader .admin-card__title {
+  margin: 0;
+}
+
+.templateActions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.templateDetails {
+  border: 1px solid var(--admin-border);
+  border-radius: 0.375rem;
+  background: var(--admin-surface);
+  padding: 0.65rem 0.8rem;
+}
+
+.templateSummary {
+  cursor: pointer;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--admin-text-bright);
+}
+
+.templateDetails[open] .templateSummary {
+  margin-bottom: 0.45rem;
+}
+
+.textarea {
+  width: 100%;
+  box-sizing: border-box;
+  min-height: 16rem;
+  padding: 0.75rem 0.85rem;
+  border: 1px solid var(--admin-border);
+  border-radius: 0.375rem;
+  background: var(--admin-surface);
+  color: var(--admin-text-bright);
+  font-family: ui-monospace, "Cascadia Code", "Segoe UI Mono", monospace;
+  font-size: 0.85rem;
+  line-height: 1.5;
+  resize: vertical;
+}
+
+.textarea:focus {
+  outline: 2px solid var(--admin-focus);
+  outline-offset: 1px;
+}
+
+.fileRow {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.65rem;
+}
+
+.fileInput {
+  font: inherit;
+  font-size: 0.85rem;
+  color: var(--admin-text-muted);
+  max-width: 100%;
+}
+
+.chipList {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.25rem 0.5rem;
+  border-radius: 0.25rem;
+  background: var(--admin-accent-soft);
+  border: 1px solid var(--admin-border);
+  font-size: 0.85rem;
+  color: var(--admin-text);
+}
+
+.chipRemove {
+  padding: 0;
+  border: none;
+  background: transparent;
+  color: var(--admin-text-muted);
+  font: inherit;
+  font-size: 1rem;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.chipRemove:hover,
+.chipRemove:focus-visible {
+  color: var(--admin-btn-danger-text);
+}
+
+.heroSlotList {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.heroSlot {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding: 0.85rem 1rem;
+  border: 1px solid var(--admin-border);
+  border-radius: 0.375rem;
+  background: var(--admin-surface);
+}
+
+.heroSlotMeta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem 0.75rem;
+}
+
+.heroSlotIndex {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--admin-text-muted);
+}
+
+.heroSlotTitle {
+  flex: 1 1 12rem;
+  font-weight: 600;
+  color: var(--admin-text-bright);
+}
+
+.heroSlotFilename {
+  font-size: 0.85rem;
+  color: var(--admin-text-muted);
+  word-break: break-all;
+}
+
+.summaryLine {
+  margin: 0;
+  font-size: 0.9rem;
+  color: var(--admin-text-muted);
+}
+
+.summaryLine strong {
+  color: var(--admin-text-bright);
+}
+
+.tableWrap {
+  overflow-x: auto;
+  border: 1px solid var(--admin-border);
+  border-radius: var(--admin-radius);
+  background: var(--admin-bg-elevated);
+}
+
+.table {
+  width: 100%;
+  min-width: 60rem;
+  border-collapse: collapse;
+  font-size: 0.85rem;
+}
+
+.table th,
+.table td {
+  padding: 0.6rem 0.75rem;
+  text-align: left;
+  vertical-align: top;
+  border-bottom: 1px solid var(--admin-border);
+  color: var(--admin-text);
+}
+
+.table th {
+  color: var(--admin-text-muted);
+  font-weight: 600;
+  white-space: nowrap;
+  background: var(--admin-surface-soft);
+}
+
+.table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.rowInvalid {
+  background: var(--admin-danger-bg);
+}
+
+.titleCell {
+  min-width: 12rem;
+  font-weight: 600;
+  color: var(--admin-text-bright);
+}
+
+.slugCell {
+  font-family: ui-monospace, "Cascadia Code", "Segoe UI Mono", monospace;
+  font-size: 0.8rem;
+  color: var(--admin-text-muted);
+  word-break: break-all;
+}
+
+.issueList {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.issueItem {
+  color: var(--admin-danger-text);
+}
+
+.noteItem {
+  color: var(--admin-text-muted);
+}
+
+.pill {
+  display: inline-block;
+  padding: 0.15rem 0.45rem;
+  border-radius: 0.25rem;
+  font-size: 0.78rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.pillReady {
+  background: var(--admin-status-published-bg);
+  color: var(--admin-status-published-text);
+}
+
+.pillBlocked {
+  background: var(--admin-danger-bg);
+  color: var(--admin-danger-text);
+}
+
+.pillCreating {
+  background: var(--admin-status-draft-bg);
+  color: var(--admin-status-draft-text);
+}
+
+.pillCreated {
+  background: var(--admin-status-published-bg);
+  color: var(--admin-status-published-text);
+}
+
+.pillFailed {
+  background: var(--admin-danger-bg);
+  color: var(--admin-danger-text);
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.85rem;
+}

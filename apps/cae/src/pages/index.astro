@@ -2,18 +2,34 @@
 /**
  * CAE homepage route — `/cae/` (gateway proxies here from the edge).
  * GHL section lift: HomeLayout mounts capture CSS; HomePage composes ghl/*.
+ * SSR so the Insights band can read the newest published Posts from Supabase.
  */
+import { listPublishedPostsPage } from "@seo/blog";
 import HomeLayout from "../layouts/HomeLayout.astro";
 import HomePage from "../components/HomePage.astro";
+import { requireBlogSupabase } from "@/components/blog/blog-format";
 import { homeMeta, requireMetaString } from "../data/home/meta.ts";
+import { caeSiteConfig } from "@/site-config";
+
+export const prerender = false;
+
+/** Homepage Insights shows a short recent set only (not the full archive). */
+const HOME_INSIGHTS_LIMIT = 4;
 
 const title = requireMetaString(homeMeta.title, "Cae Goh");
 const description = requireMetaString(
   homeMeta.description,
   "Purple Star Astrology & Life Strategy | Zi Wei Dou Shu | Chinese Astrology | Cae Goh",
 );
+
+const supabase = requireBlogSupabase(Astro.locals.supabase);
+const { posts: recentPosts } = await listPublishedPostsPage(
+  supabase,
+  caeSiteConfig.projectId,
+  { limit: HOME_INSIGHTS_LIMIT, offset: 0 },
+);
 ---
 
 <HomeLayout title={title} description={description}>
-  <HomePage />
+  <HomePage recentPosts={recentPosts} />
 </HomeLayout>

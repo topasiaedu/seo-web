@@ -6,15 +6,32 @@
   "scripts": {
     "dev": "astro dev",
     "build": "astro build",
-    "preview": "astro preview"
+    "preview": "astro preview",
+    "start": "node ./dist/server/entry.mjs",
+    "typecheck": "tsc --noEmit -p tsconfig.json"
   },
   "dependencies": {
+    "@astrojs/node": "^9.5.5",
+    "@astrojs/react": "^4.4.2",
+    "@astrojs/sitemap": "^3.7.3",
     "@seo/blog": "workspace:*",
     "@seo/db": "workspace:*",
-    "astro": "^5.7.0"
+    "@tiptap/extension-link": "^3.28.0",
+    "@tiptap/markdown": "^3.28.0",
+    "@tiptap/pm": "^3.28.0",
+    "@tiptap/react": "^3.28.0",
+    "@tiptap/starter-kit": "^3.28.0",
+    "@types/react": "^19.2.0",
+    "@types/react-dom": "^19.2.0",
+    "astro": "^5.7.0",
+    "js-yaml": "^4.1.0",
+    "marked": "^18.0.7",
+    "react": "^19.2.0",
+    "react-dom": "^19.2.0"
   },
   "devDependencies": {
     "@seo/config-typescript": "workspace:*",
+    "@types/js-yaml": "^4.0.9",
     "typescript": "^5.8.2"
   }
 }

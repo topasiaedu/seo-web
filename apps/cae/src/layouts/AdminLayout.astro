@@ -1,0 +1,176 @@
+---
+/**
+ * Minimal Admin chrome for authenticated CAE authoring routes.
+ * Supports light/dark Admin theme (independent of marketing tokens).
+ * Logout POSTs to `/admin/logout` to clear the Supabase session.
+ */
+import { joinAdminPath } from "../lib/admin-auth";
+import "../styles/global.css";
+import "../styles/admin-theme.css";
+import "../styles/admin-shell.css";
+import "../styles/admin-forms.css";
+
+interface Props {
+  title?: string;
+  /**
+   * When true, widens the main column for dense editors (Post create/edit).
+   */
+  wide?: boolean;
+}
+
+/**
+ * Returns a trimmed non-empty document title, with a brand Admin fallback.
+ *
+ * @param value - Candidate title from the page
+ * @returns Trimmed non-empty title string
+ */
+function resolveTitle(value: unknown): string {
+  if (typeof value === "string" && value.trim().length > 0) {
+    return value.trim();
+  }
+  return "CAE Admin";
+}
+
+/**
+ * Whether a nav href matches the current pathname (prefix-aware for nested routes).
+ *
+ * @param pathname - Current request pathname.
+ * @param href - Absolute-from-origin nav href.
+ * @param exact - When true, only exact match (Dashboard).
+ * @returns Whether the link is the current page.
+ */
+function isNavActive(pathname: string, href: string, exact: boolean): boolean {
+  const normalizedPath =
+    pathname.endsWith("/") && pathname.length > 1
+      ? pathname.slice(0, -1)
+      : pathname;
+  const normalizedHref =
+    href.endsWith("/") && href.length > 1 ? href.slice(0, -1) : href;
+
+  if (exact) {
+    return normalizedPath === normalizedHref;
+  }
+  return (
+    normalizedPath === normalizedHref ||
+    normalizedPath.startsWith(`${normalizedHref}/`)
+  );
+}
+
+const { title, wide = false } = Astro.props;
+const pageTitle = resolveTitle(title);
+const base = import.meta.env.BASE_URL;
+const logoutAction = joinAdminPath(base, "admin/logout");
+const pathname = Astro.url.pathname;
+
+const dashboardHref = joinAdminPath(base, "admin");
+const postsHref = joinAdminPath(base, "admin/posts");
+const authorHref = joinAdminPath(base, "admin/author");
+const categoriesHref = joinAdminPath(base, "admin/categories");
+
+const navItems: ReadonlyArray<{
+  href: string;
+  label: string;
+  exact: boolean;
+}> = [
+  { href: dashboardHref, label: "Dashboard", exact: true },
+  { href: postsHref, label: "Posts", exact: false },
+  { href: authorHref, label: "Author", exact: true },
+  { href: categoriesHref, label: "Categories", exact: false },
+];
+---
+
+<!doctype html>
+<html lang="en" data-theme="light">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex, nofollow" />
+    <title>{pageTitle}</title>
+    <script is:inline>
+      (function () {
+        try {
+          var key = "cae-admin-theme";
+          var stored = localStorage.getItem(key);
+          var theme = stored === "dark" || stored === "light" ? stored : "light";
+          document.documentElement.setAttribute("data-theme", theme);
+        } catch (e) {
+          document.documentElement.setAttribute("data-theme", "light");
+        }
+      })();
+    </script>
+  </head>
+  <body class="cae-admin">
+    <header class="cae-admin__header">
+      <a class="cae-admin__brand" href={dashboardHref}>CAE Admin</a>
+      <nav class="cae-admin__nav" aria-label="Admin">
+        <div class="cae-admin__nav-links">
+          {
+            navItems.map((item) => {
+              const active = isNavActive(pathname, item.href, item.exact);
+              return (
+                <a
+                  href={item.href}
+                  aria-current={active ? "page" : undefined}
+                  class:list={[
+                    "cae-admin__nav-link",
+                    active ? "cae-admin__nav-link--active" : null,
+                  ]}
+                >
+                  {item.label}
+                </a>
+              );
+            })
+          }
+        </div>
+        <div class="cae-admin__nav-tools">
+          <button
+            type="button"
+            class="cae-admin-theme-toggle"
+            data-admin-theme-toggle
+            aria-label="Switch to dark mode"
+          >
+            Dark
+          </button>
+          <form class="cae-admin__logout" method="POST" action={logoutAction}>
+            <button type="submit">Logout</button>
+          </form>
+        </div>
+      </nav>
+    </header>
+    <main
+      class:list={["cae-admin__main", wide ? "cae-admin__main--wide" : null]}
+    >
+      <slot />
+    </main>
+    <script>
+      import {
+        adminThemeToggleLabel,
+        adminThemeToggleText,
+        readStoredAdminTheme,
+        toggleAdminTheme,
+      } from "../lib/admin-theme";
+
+      /**
+       * Syncs toggle button label/text with the active theme.
+       *
+       * @param button - Theme toggle button element.
+       */
+      function syncThemeToggle(button: HTMLButtonElement): void {
+        const theme = readStoredAdminTheme();
+        button.setAttribute("aria-label", adminThemeToggleLabel(theme));
+        button.textContent = adminThemeToggleText(theme);
+      }
+
+      const toggles = document.querySelectorAll<HTMLButtonElement>(
+        "[data-admin-theme-toggle]",
+      );
+      for (const button of toggles) {
+        syncThemeToggle(button);
+        button.addEventListener("click", () => {
+          toggleAdminTheme();
+          syncThemeToggle(button);
+        });
+      }
+    </script>
+  </body>
+</html>

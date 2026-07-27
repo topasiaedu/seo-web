@@ -2,6 +2,71 @@
 
 Append-only timeline. Each entry starts with `## [YYYY-MM-DD] <verb> | <title>` for easy grepping.
 
+## [2026-07-27] ingest | cae-admin-bulk-import
+
+- Raw: `raw/inbox/2026-07-27-cae-admin-bulk-import.md`
+- New source: `wiki/sources/cae-admin-bulk-import.md`
+- Admin Bulk import: multi-post Markdown (`===NEW POST===`), copyable writer/LLM template, per-post hero slots, respects scheduled `publishAt`
+- Updated: `sites/cae`, `packages/blog`, `overview`, glossary, index
+
+## [2026-07-27] ingest | cae-admin-postform-simplifications
+
+- Raw: `raw/inbox/2026-07-27-cae-admin-postform-simplifications.md`
+- New source: `wiki/sources/cae-admin-postform-simplifications.md`
+- Admin PostForm: preview slug/reading time; Summary; hero→OG; no separate SEO fields; auto same-category related; tag typeahead; Published vs Scheduled select
+- Updated: `sites/cae`, `packages/blog`, `overview`, glossary, index
+
+## [2026-07-27] ingest | cae-blog-scheduled-publishing
+
+- Raw: `raw/inbox/2026-07-27-cae-blog-scheduled-publishing.md`
+- New source: `wiki/sources/cae-blog-scheduled-publishing.md`
+- Lazy time-gate: `published` + `published_at <= now()`; Admin Scheduled computed; migration applied on linked remote
+- Updated: `sites/cae`, `packages/blog`, `architecture/supabase`, `overview` (removed from Deferred), glossary, index
+
+## [2026-07-27] sync | CAE scheduled publishing language
+
+- Publish semantics: `status = published` = approved; public live when `published_at <= now()`; Admin **Scheduled** = computed label (no DB status, no cron)
+- Updated: `sites/cae`, `packages/blog`; deferred doc marked Implemented; `apps/cae/CONTEXT.md` language aligned
+- Plan: `docs/implementation-plan/cae-blog-scheduling.md` (Task F)
+
+## [2026-07-27] ingest | cae-homepage-blog-bento
+
+- Raw: `raw/inbox/2026-07-27-cae-homepage-blog-bento.md`
+- New source: `wiki/sources/cae-homepage-blog-bento.md`
+- Homepage Insights soft bento replaces Offerings; home SSR for newest 4 Posts; hero `#insights`
+- Updated: `sites/cae`, `overview`, `architecture/overview`, index
+
+## [2026-07-23] sync | CAE Admin Blog live (T12 wiki + smoke)
+
+- Documented CAE Admin at `/cae/admin` as live authoring surface (login, posts CRUD, Author, categories)
+- Clarified **Admin ≠ CMS**: `sites/cms.md` remains deferred shared platform
+- Synced schema: `authors`, `categories`, posts editorial columns, Storage `media` paths (`cae/blog/covers|body|authors`)
+- Documented public `/cae/blog` + Admin routes; smoke checklist on `sites/cae.md`
+- Updated packages `@seo/db` / `@seo/blog`, overview, architecture overview + monorepo, glossary, index
+- Task split T1–T12 marked done in `docs/cae-admin-blog-agent-tasks.md`
+
+## [2026-07-23] lint | post–SEO-improvements vault health
+
+- Broken wiki links: **0**; index orphans: **0**
+- SEO raw ingested; code spot-check OK (`SeoHead`, `seoHtmlPass`, sitemap, `robots.txt`, `PUBLIC_SITE_ORIGIN`)
+- Uningested inbox (deferred): `2026-07-23-git-init-github-remote.md` (unrelated)
+- Glossary: **SEO remapper pass**; full report: `outputs/lint-2026-07-23-cae-seo.md`
+
+## [2026-07-23] ingest | cae-seo-improvements
+
+- Raw: `raw/inbox/2026-07-23-cae-seo-improvements.md`
+- New source: `wiki/sources/cae-seo-improvements.md`
+- Updated: `sites/cae` (SEO stack), `sources/cae-ghl-section-lift-and-media-page`, `sources/cms-media-library-and-cae-image-alt`, glossary, overview, index
+
+## [2026-07-23] lint | post–section-lift vault health
+
+- Broken wiki links: **0**; index orphans: **0**
+- Ingested missing inbox: `cae-ghl-1to1-native-parity` → superseded source stub
+- Fixed stale: `architecture/supabase.md` (`website/*/config.ts` → `apps/cae/src/site-config.ts`); ADR 0001 historical `website/` deploy wording; independent-app Vercel open question marked resolved
+- Glossary: added **GHL section lift**
+- Code spot-check OK: `HomePage` → `ghl/*`, `/media/` route, vault captures, `vercel.json` → `@seo/cae`
+- Full report: `outputs/lint-2026-07-23-section-lift.md`
+
 ## [2026-07-23] ingest | cae-ghl-section-lift-and-media-page
 
 - Raw: `raw/inbox/2026-07-23-cae-ghl-section-lift-and-media-page.md`

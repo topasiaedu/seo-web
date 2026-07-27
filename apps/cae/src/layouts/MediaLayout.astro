@@ -5,6 +5,11 @@
 import "@/styles/ghl/ghl-runtime.css";
 import "@/styles/ghl/media-page.css";
 import "@/styles/ghl/host-patch.css";
+import SeoHead from "@/components/seo/SeoHead.astro";
+import { mediaMeta, requireMetaString } from "@/data/home/meta";
+import { buildMediaJsonLd } from "@/data/home/jsonld";
+import { toAbsoluteUrl } from "@/lib/site-url";
+import logoAsset from "../assets/logo.png";
 
 interface Props {
   title: string;
@@ -12,14 +17,25 @@ interface Props {
 }
 
 const { title, description } = Astro.props;
-const pageTitle =
-  typeof title === "string" && title.trim().length > 0
-    ? title.trim()
-    : "Media & Press - Cae Goh";
-const metaDescription =
-  typeof description === "string" && description.trim().length > 0
-    ? description.trim()
-    : "Media & Press coverage featuring CAE Goh and the Predictable Destiny System.";
+const pageTitle = requireMetaString(title, mediaMeta.title);
+const metaDescription = requireMetaString(
+  description,
+  mediaMeta.description,
+);
+const logoSrc =
+  typeof logoAsset === "object" &&
+  logoAsset !== null &&
+  "src" in logoAsset &&
+  typeof logoAsset.src === "string"
+    ? logoAsset.src
+    : typeof logoAsset === "string"
+      ? logoAsset
+      : "";
+if (logoSrc.length === 0) {
+  throw new Error("MediaLayout: failed to resolve logo asset src.");
+}
+const ogImageUrl = toAbsoluteUrl(logoSrc);
+const jsonLd = buildMediaJsonLd(Astro.url.pathname, ogImageUrl);
 ---
 
 <!doctype html>
@@ -27,7 +43,15 @@ const metaDescription =
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="description" content={metaDescription} />
+    <SeoHead
+      title={pageTitle}
+      description={metaDescription}
+      ogType={mediaMeta.ogType}
+      siteName={mediaMeta.siteName}
+      twitterCard={mediaMeta.twitterCard}
+      ogImage={ogImageUrl}
+      jsonLd={jsonLd}
+    />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link

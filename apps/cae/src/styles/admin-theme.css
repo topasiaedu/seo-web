@@ -1,0 +1,167 @@
+/**
+ * CAE Admin-only theme tokens (light default + contrast-fixed dark).
+ * Light defaults also live on `:root` in admin-shell.css so Admin never
+ * inherits marketing purple before `data-theme` is applied.
+ */
+
+html[data-theme="light"] {
+  --admin-bg: #f6f3f9;
+  --admin-bg-elevated: #ffffff;
+  --admin-bg-header: #ffffff;
+  --admin-surface: #faf8fc;
+  --admin-surface-soft: #f0ebf5;
+  --admin-text: #1a1224;
+  --admin-text-bright: #12091c;
+  --admin-text-muted: #5c4d6e;
+  --admin-border: #d4c6e0;
+  --admin-border-strong: #9b7aad;
+  --admin-focus: #7a4d9a;
+  --admin-link: #6b3d8c;
+  --admin-link-hover: #4c247a;
+  --admin-accent: #7a4d9a;
+  --admin-accent-soft: rgba(122, 77, 154, 0.12);
+
+  --admin-btn-primary-bg: #4c247a;
+  --admin-btn-primary-text: #ffffff;
+  --admin-btn-primary-border: #4c247a;
+  --admin-btn-primary-hover-bg: #3a1b5e;
+
+  --admin-btn-secondary-bg: transparent;
+  --admin-btn-secondary-text: #3d2f4f;
+  --admin-btn-secondary-border: #c4b0d4;
+  --admin-btn-secondary-hover-border: #7a4d9a;
+  --admin-btn-secondary-hover-text: #4c247a;
+
+  --admin-btn-danger-bg: transparent;
+  --admin-btn-danger-text: #a11f35;
+  --admin-btn-danger-border: #e8a0ab;
+  --admin-btn-danger-hover-text: #7a1528;
+  --admin-btn-danger-hover-border: #c94a5e;
+
+  --admin-danger-bg: #fdecef;
+  --admin-danger-border: #e8a0ab;
+  --admin-danger-text: #7a1528;
+
+  --admin-success-bg: #e8f7ef;
+  --admin-success-border: #8dcfb0;
+  --admin-success-text: #1d6b46;
+
+  --admin-status-draft-bg: rgba(122, 77, 154, 0.14);
+  --admin-status-draft-text: #5c3480;
+  --admin-status-published-bg: rgba(29, 107, 70, 0.14);
+  --admin-status-published-text: #1d6b46;
+  --admin-status-archived-bg: rgba(90, 98, 112, 0.14);
+  --admin-status-archived-text: #4a5360;
+
+  --admin-editor-bg: #ffffff;
+  --admin-editor-chrome: #f4f1f7;
+  --admin-editor-border: #d4c6e0;
+  --admin-editor-text: #1a1224;
+  --admin-editor-muted: #6a5a7a;
+  --admin-editor-active: #4c247a;
+  --admin-editor-active-text: #ffffff;
+  --admin-editor-code-bg: #f0ebf5;
+  --admin-editor-link: #4c247a;
+  --admin-editor-placeholder: #9a8aa8;
+  --admin-editor-hover: #ebe4f2;
+
+  --admin-shadow: 0 1px 2px rgba(18, 9, 28, 0.06);
+  --admin-radius: 0.4rem;
+  --admin-font: var(--cae-font-sans, "Hanken Grotesk", "Segoe UI", sans-serif);
+}
+
+html[data-theme="dark"] {
+  --admin-bg: #0a0114;
+  --admin-bg-elevated: #160828;
+  --admin-bg-header: #12061f;
+  --admin-surface: #1c0c32;
+  --admin-surface-soft: #24103c;
+  --admin-text: #f3eafc;
+  --admin-text-bright: #faf5ff;
+  --admin-text-muted: #d7c4e8;
+  --admin-border: rgba(210, 170, 230, 0.55);
+  --admin-border-strong: #c9a8d8;
+  --admin-focus: #d4aee0;
+  --admin-link: #e0c4f0;
+  --admin-link-hover: #f5eef8;
+  --admin-accent: #c9a8d8;
+  --admin-accent-soft: rgba(185, 139, 200, 0.22);
+
+  --admin-btn-primary-bg: #f9f1ff;
+  --admin-btn-primary-text: #140625;
+  --admin-btn-primary-border: #ffffff;
+  --admin-btn-primary-hover-bg: #ffffff;
+
+  --admin-btn-secondary-bg: transparent;
+  --admin-btn-secondary-text: #e8d8f5;
+  --admin-btn-secondary-border: rgba(210, 170, 230, 0.65);
+  --admin-btn-secondary-hover-border: #e0c4f0;
+  --admin-btn-secondary-hover-text: #faf5ff;
+
+  --admin-btn-danger-bg: transparent;
+  --admin-btn-danger-text: #ffd6dc;
+  --admin-btn-danger-border: rgba(255, 140, 160, 0.65);
+  --admin-btn-danger-hover-text: #ffe4e8;
+  --admin-btn-danger-hover-border: rgba(255, 160, 180, 0.9);
+
+  --admin-danger-bg: rgba(120, 20, 40, 0.4);
+  --admin-danger-border: rgba(220, 80, 100, 0.65);
+  --admin-danger-text: #ffd6dc;
+
+  --admin-success-bg: rgba(40, 120, 90, 0.4);
+  --admin-success-border: rgba(114, 190, 155, 0.7);
+  --admin-success-text: #d7ffe9;
+
+  --admin-status-draft-bg: rgba(185, 139, 200, 0.28);
+  --admin-status-draft-text: #e8d4f5;
+  --admin-status-published-bg: rgba(76, 180, 120, 0.28);
+  --admin-status-published-text: #b8f0d0;
+  --admin-status-archived-bg: rgba(160, 170, 190, 0.28);
+  --admin-status-archived-text: #d0d6e0;
+
+  --admin-editor-bg: #1c0c32;
+  --admin-editor-chrome: #160828;
+  --admin-editor-border: rgba(210, 170, 230, 0.55);
+  --admin-editor-text: #f3eafc;
+  --admin-editor-muted: #d0bcd8;
+  --admin-editor-active: #f9f1ff;
+  --admin-editor-active-text: #140625;
+  --admin-editor-code-bg: #24103c;
+  --admin-editor-link: #e0c4f0;
+  --admin-editor-placeholder: #9a82b0;
+  --admin-editor-hover: #2a1440;
+
+  --admin-shadow: 0 1px 3px rgba(0, 0, 0, 0.35);
+  --admin-radius: 0.4rem;
+  --admin-font: var(--cae-font-sans, "Hanken Grotesk", "Segoe UI", sans-serif);
+}
+
+/**
+ * Theme toggle control shared by AdminLayout header and login page.
+ */
+.cae-admin-theme-toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 2rem;
+  padding: 0.35rem 0.7rem;
+  border: 1px solid var(--admin-border);
+  border-radius: var(--admin-radius);
+  background-color: var(--admin-surface);
+  color: var(--admin-text-muted);
+  font: inherit;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.cae-admin-theme-toggle:hover,
+.cae-admin-theme-toggle:focus-visible {
+  color: var(--admin-text-bright);
+  border-color: var(--admin-border-strong);
+  outline: none;
+}
+
+.cae-admin-theme-toggle:focus-visible {
+  box-shadow: 0 0 0 2px var(--admin-focus);
+}

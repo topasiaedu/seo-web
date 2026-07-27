@@ -1,0 +1,99 @@
+---
+/**
+ * Magazine featured Post for `/cae/blog` — near-bleed hero + CTA.
+ */
+import type { BlogPost } from "@seo/blog";
+import {
+  formatBlogDate,
+  formatReadingTime,
+  joinBlogPath,
+} from "./blog-format";
+
+/**
+ * Props for {@link LeadPost}.
+ */
+interface Props {
+  /** Published Post to feature as the index lead. */
+  post: BlogPost;
+}
+
+const { post } = Astro.props;
+const href = joinBlogPath(import.meta.env.BASE_URL, `blog/${post.slug}`);
+const dateLabel = formatBlogDate(post.publishedAt);
+const readingLabel = formatReadingTime(post.readingTimeMinutes);
+const categoryName =
+  post.category !== null && typeof post.category.name === "string"
+    ? post.category.name.trim()
+    : "";
+const heroImageUrl =
+  typeof post.heroImageUrl === "string" ? post.heroImageUrl.trim() : "";
+const hasHero = heroImageUrl.length > 0;
+const heroAlt =
+  typeof post.heroImageAlt === "string" &&
+  post.heroImageAlt.trim().length > 0
+    ? post.heroImageAlt.trim()
+    : post.title;
+const excerpt =
+  typeof post.excerpt === "string" && post.excerpt.trim().length > 0
+    ? post.excerpt.trim()
+    : "";
+---
+
+<article
+  class:list={["blog-lead", hasHero ? null : "blog-lead--no-hero"]}
+>
+  <div class="blog-lead__frame">
+    {
+      hasHero ? (
+        <a class="blog-lead__hero" href={href} tabindex={-1} aria-hidden="true">
+          <img
+            src={heroImageUrl}
+            alt={heroAlt}
+            loading="eager"
+            fetchpriority="high"
+          />
+        </a>
+      ) : null
+    }
+    <div class="blog-lead__body">
+      {
+        categoryName.length > 0 ? (
+          <p class="blog-lead__eyebrow">{categoryName}</p>
+        ) : null
+      }
+      <h2 class="blog-lead__title">
+        <a href={href}>{post.title}</a>
+      </h2>
+      {
+        excerpt.length > 0 ? (
+          <p class="blog-lead__excerpt">{excerpt}</p>
+        ) : null
+      }
+      {
+        dateLabel.length > 0 || readingLabel.length > 0 ? (
+          <p class="blog-lead__meta">
+            {
+              dateLabel.length > 0 ? (
+                <time datetime={post.publishedAt ?? undefined}>
+                  {dateLabel}
+                </time>
+              ) : null
+            }
+            {
+              readingLabel.length > 0 ? (
+                <span
+                  class:list={[
+                    dateLabel.length > 0 ? "blog-lead__meta-sep" : null,
+                  ]}
+                >
+                  {readingLabel}
+                </span>
+              ) : null
+            }
+          </p>
+        ) : null
+      }
+      <a class="blog-lead__cta" href={href}>Read article →</a>
+    </div>
+  </div>
+</article>

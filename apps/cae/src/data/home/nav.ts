@@ -52,6 +52,10 @@ export const homeNav = {
       href: assertHomeHref("#success-stories"),
     },
     {
+      label: "BLOG",
+      href: assertHomeHref("/blog/"),
+    },
+    {
       label: "MEDIA & PRESS",
       href: assertHomeHref("/media/"),
     },

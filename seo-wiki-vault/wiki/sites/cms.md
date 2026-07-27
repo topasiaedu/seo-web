@@ -6,8 +6,17 @@
 | Slug | `cms` |
 | Project id | `00000000-0000-4000-8000-000000000099` (code identity; not in `seed.sql`) |
 | Domains (planned) | `cms.localhost` |
-| Role | Blog authoring for all public sites |
+| Role | **Future** shared blog authoring across all public brands |
 | Status | **Deferred** — independent `@seo/cms` app not started |
+
+## Admin vs CMS (do not conflate)
+
+| Surface | Where | Scope | Status |
+|---------|-------|-------|--------|
+| **Admin** | Inside each brand app (e.g. `/cae/admin`) | That brand’s Posts / Author / Categories only | **Live for CAE** — see [cae](cae.md) |
+| **CMS** | Planned `apps/cms` | Cross-brand authoring + Media Library | **Deferred** |
+
+CAE Admin is **not** the CMS. Do not scaffold `apps/cms` to “finish” CAE blogging — that work already lives under `apps/cae`. Domain language: [`apps/cae/CONTEXT.md`](../../../apps/cae/CONTEXT.md).
 
 ## Independent app (deferred)
 
@@ -30,6 +39,8 @@ Agreed design (not built): site + kind filters, upload into Supabase Storage `me
 
 - Repo design doc: `docs/future-enhancements/cms-media-library.md`
 - Wiki source: [cms-media-library-and-cae-image-alt](../sources/cms-media-library-and-cae-image-alt.md)
+
+Note: the **`media` Storage bucket and blog path convention are live** (used by CAE Admin uploads). The Media Library **UI/table** remains deferred.
 
 ## Rules
 

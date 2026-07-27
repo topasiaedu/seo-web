@@ -1,0 +1,89 @@
+---
+/**
+ * End-of-article author card — name, photo, bio, and homepage social links.
+ */
+import type { Author } from "@seo/blog";
+import { homeCta } from "@/data/home/cta";
+
+interface Props {
+  /** Post author when set; falls back to site brand name. */
+  author: Author | null;
+}
+
+const { author } = Astro.props;
+
+const name =
+  author !== null &&
+  typeof author.name === "string" &&
+  author.name.trim().length > 0
+    ? author.name.trim()
+    : "Cae Goh";
+
+const photoUrl =
+  author !== null &&
+  typeof author.photoUrl === "string" &&
+  author.photoUrl.trim().length > 0
+    ? author.photoUrl.trim()
+    : "";
+
+const bio =
+  author !== null &&
+  typeof author.bio === "string" &&
+  author.bio.trim().length > 0
+    ? author.bio.trim()
+    : "";
+
+const socials = homeCta.social;
+---
+
+<section class="blog-author-card" aria-labelledby="blog-author-heading">
+  <div class="blog-author-card__inner">
+    {
+      photoUrl.length > 0 ? (
+        <div class="blog-author-card__photo">
+          <img
+            src={photoUrl}
+            alt=""
+            width="96"
+            height="96"
+            loading="lazy"
+          />
+        </div>
+      ) : (
+        <div
+          class="blog-author-card__photo blog-author-card__photo--empty"
+          aria-hidden="true"
+        >
+          <span>{name.slice(0, 1)}</span>
+        </div>
+      )
+    }
+    <div class="blog-author-card__body">
+      <p class="blog-author-card__eyebrow" id="blog-author-heading">
+        Written by
+      </p>
+      <p class="blog-author-card__name">{name}</p>
+      {bio.length > 0 ? <p class="blog-author-card__bio">{bio}</p> : null}
+      {
+        socials.length > 0 ? (
+          <ul class="blog-author-card__socials">
+            {socials.map((link) => (
+              <li>
+                <a
+                  class="blog-author-card__social"
+                  href={link.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  title={link.iconTitle}
+                >
+                  {link.label}
+                  <span aria-hidden="true"> →</span>
+                </a>
+              </li>
+            ))}
+          </ul>
+        ) : null
+      }
+    </div>
+  </div>
+</section>

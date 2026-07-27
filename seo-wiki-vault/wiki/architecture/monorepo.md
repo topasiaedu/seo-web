@@ -17,9 +17,9 @@ pnpm workspaces: `apps/*` + `packages/*`.
 
 | Brand / surface | Location | Status |
 |-----------------|----------|--------|
-| CAE | `apps/cae` | Live — preview via gateway `/cae`; Vercel builds this app |
+| CAE | `apps/cae` | Live — marketing + `/cae/admin` + `/cae/blog`; gateway `/cae`; Vercel builds this app |
 | Dr Jasmine | (not scaffolded) | Independent app **deferred** → `apps/dr-jasmine` |
-| CMS | (not scaffolded) | Independent app **deferred** → `apps/cms` |
+| CMS | (not scaffolded) | Independent app **deferred** → `apps/cms` (≠ CAE Admin) |
 
 Deferred split: [independent-apps-dr-jasmine-and-cms.md](../../../docs/future-enhancements/independent-apps-dr-jasmine-and-cms.md).
 

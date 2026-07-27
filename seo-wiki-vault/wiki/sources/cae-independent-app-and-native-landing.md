@@ -24,5 +24,5 @@ Session locked **one Astro app per brand** for CAE (`apps/cae`), with a **path g
 
 ## Open questions (from raw)
 
-- When to wire Vercel to build/serve `@seo/cae` (root `vercel.json` now builds `@seo/cae` — re-check if still open)
+- ~~When to wire Vercel to build/serve `@seo/cae`~~ — **resolved:** root `vercel.json` builds `@seo/cae` → `apps/cae/dist` (host-based multi-brand routing still deferred; see [routing-vercel](../architecture/routing-vercel.md))
 - Whether parked native `components/home/*` get deleted after superior accepts the lift

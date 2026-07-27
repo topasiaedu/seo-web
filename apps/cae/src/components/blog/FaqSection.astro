@@ -1,0 +1,42 @@
+---
+/**
+ * FAQ section for a published Post — accordion via `<details>`.
+ */
+import type { FaqItem } from "@seo/blog";
+
+interface Props {
+  items: FaqItem[];
+}
+
+const { items } = Astro.props;
+const faqs = Array.isArray(items)
+  ? items.filter(
+      (item) =>
+        typeof item.question === "string" &&
+        item.question.trim().length > 0 &&
+        typeof item.answer === "string" &&
+        item.answer.trim().length > 0,
+    )
+  : [];
+---
+
+{
+  faqs.length > 0 ? (
+    <section
+      class="blog-section blog-section--faq"
+      aria-labelledby="blog-faq-heading"
+    >
+      <h2 id="blog-faq-heading" class="blog-section__title">
+        Frequently asked questions
+      </h2>
+      <div class="blog-faq">
+        {faqs.map((item) => (
+          <details class="blog-faq__item">
+            <summary>{item.question.trim()}</summary>
+            <p class="blog-faq__a">{item.answer.trim()}</p>
+          </details>
+        ))}
+      </div>
+    </section>
+  ) : null
+}

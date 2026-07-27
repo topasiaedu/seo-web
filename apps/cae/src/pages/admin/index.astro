@@ -1,0 +1,246 @@
+---
+/**
+ * CAE Admin dashboard — post status counts and recent drafts.
+ * Auth is enforced by middleware; this page assumes a signed-in Admin user.
+ */
+import { listPosts } from "@seo/blog";
+import {
+  countPostsByStatus,
+  formatAdminDateTime,
+  recentDrafts,
+} from "../../components/admin/admin-post-list";
+import AdminLayout from "../../layouts/AdminLayout.astro";
+import { joinAdminPath, requireLocalsSupabase } from "../../lib/admin-auth";
+import { caeSiteConfig } from "../../site-config";
+
+export const prerender = false;
+
+const base = import.meta.env.BASE_URL;
+const supabase = requireLocalsSupabase(Astro.locals.supabase);
+const siteId = caeSiteConfig.projectId;
+
+const posts = await listPosts(supabase, siteId);
+const counts = countPostsByStatus(posts);
+const drafts = recentDrafts(posts);
+
+const postsListHref = joinAdminPath(base, "admin/posts");
+const newPostHref = joinAdminPath(base, "admin/posts/new");
+const draftsFilterHref = joinAdminPath(base, "admin/posts?status=draft");
+const publishedFilterHref = joinAdminPath(base, "admin/posts?status=published");
+const scheduledFilterHref = joinAdminPath(base, "admin/posts?status=scheduled");
+const archivedFilterHref = joinAdminPath(base, "admin/posts?status=archived");
+---
+
+<AdminLayout title="CAE Admin Dashboard">
+  <div class="admin-dash">
+    <header class="admin-dash__header">
+      <div>
+        <h1 class="admin-page__title">Dashboard</h1>
+        <p class="admin-page__lede">
+          Overview of CAE Posts by status. Create and manage drafts from Posts.
+        </p>
+      </div>
+      <div class="admin-actions">
+        <a class="admin-btn admin-btn--primary" href={newPostHref}>New post</a>
+        <a class="admin-btn" href={postsListHref}>All posts</a>
+      </div>
+    </header>
+
+    <section class="admin-dash__counts" aria-label="Post counts by status">
+      <a class="admin-dash__stat" href={draftsFilterHref}>
+        <span class="admin-dash__stat-value">{counts.draft}</span>
+        <span class="admin-dash__stat-label">Draft</span>
+      </a>
+      <a class="admin-dash__stat" href={publishedFilterHref}>
+        <span class="admin-dash__stat-value">{counts.published}</span>
+        <span class="admin-dash__stat-label">Published</span>
+      </a>
+      <a class="admin-dash__stat" href={scheduledFilterHref}>
+        <span class="admin-dash__stat-value">{counts.scheduled}</span>
+        <span class="admin-dash__stat-label">Scheduled</span>
+      </a>
+      <a class="admin-dash__stat" href={archivedFilterHref}>
+        <span class="admin-dash__stat-value">{counts.archived}</span>
+        <span class="admin-dash__stat-label">Archived</span>
+      </a>
+      <a class="admin-dash__stat" href={postsListHref}>
+        <span class="admin-dash__stat-value">{counts.total}</span>
+        <span class="admin-dash__stat-label">Total</span>
+      </a>
+    </section>
+
+    <section class="admin-dash__drafts" aria-labelledby="recent-drafts-heading">
+      <div class="admin-dash__section-head">
+        <h2 id="recent-drafts-heading" class="admin-dash__section-title">
+          Recent drafts
+        </h2>
+        {
+          drafts.length > 0 ? (
+            <a class="admin-link" href={draftsFilterHref}>
+              View all drafts
+            </a>
+          ) : null
+        }
+      </div>
+
+      {
+        drafts.length === 0 ? (
+          <p class="admin-empty">
+            No drafts yet.{" "}
+            <a href={newPostHref}>Create your first post</a>.
+          </p>
+        ) : (
+          <ul class="admin-dash__draft-list">
+            {drafts.map((post) => {
+              const editHref = joinAdminPath(
+                base,
+                `admin/posts/${post.id}/edit`,
+              );
+              return (
+                <li class="admin-dash__draft-item">
+                  <div class="admin-dash__draft-meta">
+                    <a class="admin-dash__draft-title" href={editHref}>
+                      {post.title}
+                    </a>
+                    <time
+                      class="admin-dash__draft-updated"
+                      datetime={post.updatedAt}
+                    >
+                      Updated {formatAdminDateTime(post.updatedAt)}
+                    </time>
+                  </div>
+                  <a class="admin-link" href={editHref}>
+                    Edit
+                  </a>
+                </li>
+              );
+            })}
+          </ul>
+        )
+      }
+    </section>
+  </div>
+</AdminLayout>
+
+<style>
+  .admin-dash__header {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 1rem 1.5rem;
+    margin-bottom: 1.75rem;
+  }
+
+  .admin-dash__counts {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.75rem;
+    margin-bottom: 2rem;
+  }
+
+  @media (min-width: 40rem) {
+    .admin-dash__counts {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+  }
+
+  @media (min-width: 56rem) {
+    .admin-dash__counts {
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+    }
+  }
+
+  .admin-dash__stat {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    padding: 1rem 1.1rem;
+    border: 1px solid var(--admin-border);
+    border-radius: var(--admin-radius);
+    background: var(--admin-bg-elevated);
+    box-shadow: var(--admin-shadow);
+    text-decoration: none;
+    color: inherit;
+  }
+
+  .admin-dash__stat:hover,
+  .admin-dash__stat:focus-visible {
+    border-color: var(--admin-border-strong);
+  }
+
+  .admin-dash__stat-value {
+    font-size: 1.65rem;
+    font-weight: 700;
+    line-height: 1.1;
+    color: var(--admin-text-bright);
+  }
+
+  .admin-dash__stat-label {
+    font-size: 0.85rem;
+    color: var(--admin-text-muted);
+  }
+
+  .admin-dash__section-head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 0.5rem 1rem;
+    margin-bottom: 0.85rem;
+  }
+
+  .admin-dash__section-title {
+    margin: 0;
+    font-size: 1.15rem;
+    font-weight: 600;
+    color: var(--admin-text-bright);
+  }
+
+  .admin-dash__draft-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    border: 1px solid var(--admin-border);
+    border-radius: var(--admin-radius);
+    background: var(--admin-bg-elevated);
+    overflow: hidden;
+  }
+
+  .admin-dash__draft-item {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.65rem 1rem;
+    padding: 0.85rem 1.1rem;
+    border-bottom: 1px solid var(--admin-border);
+  }
+
+  .admin-dash__draft-item:last-child {
+    border-bottom: none;
+  }
+
+  .admin-dash__draft-meta {
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+    min-width: 0;
+  }
+
+  .admin-dash__draft-title {
+    color: var(--admin-text-bright);
+    text-decoration: none;
+    font-weight: 600;
+  }
+
+  .admin-dash__draft-title:hover,
+  .admin-dash__draft-title:focus-visible {
+    color: var(--admin-link-hover);
+  }
+
+  .admin-dash__draft-updated {
+    color: var(--admin-text-muted);
+    font-size: 0.85rem;
+  }
+</style>

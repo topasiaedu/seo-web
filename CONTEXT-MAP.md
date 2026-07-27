@@ -8,13 +8,13 @@
 
 | Gateway | `apps/gateway/` | Path front door (`:4321`); proxies `/cae` → CAE |
 
-| Site:CAE | `apps/cae/` | Independent Astro app (`@seo/cae`, `base: /cae/`, port 4322); homepage + `/media/` via GHL section lift |
+| Site:CAE | `apps/cae/` | Independent Astro app (`@seo/cae`, `base: /cae/`, port 4322); homepage + `/media/` via GHL section lift; domain language in [`apps/cae/CONTEXT.md`](apps/cae/CONTEXT.md) |
 
 | Shared platform | `packages/`, `supabase/` | Shared DB/blog modules + migrations |
 
 | Site:DrJasmine | (not scaffolded) | Independent app **deferred** → `apps/dr-jasmine` when started |
 
-| CMS | (not scaffolded) | Independent app **deferred** → `apps/cms` when started |
+| CMS | (not scaffolded) | Future shared platform **deferred** → `apps/cms`. CAE authoring for now is **Admin** at `/cae/admin` (see `apps/cae/CONTEXT.md`) — not the CMS. |
 
 | Wiki vault | `seo-wiki-vault/` | LLM wiki: `AGENTS.md` + `raw/` + `wiki/` |
 

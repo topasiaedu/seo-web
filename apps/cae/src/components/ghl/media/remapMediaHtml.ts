@@ -1,9 +1,10 @@
 /**
  * @fileoverview Remap Media & Press fragment tokens to local asset URLs and
- * internal base paths (`/cae/`, `/cae/media/`).
+ * internal base paths (`/cae/`, `/cae/media/`), then apply UI-safe SEO fixes.
  */
 
 import { getHomeImage, type HomeImageAsset } from "@/data/home/images";
+import { applySeoHtmlPass } from "../seoHtmlPass";
 
 /**
  * @param asset - Astro/Vite image import
@@ -69,9 +70,11 @@ export function remapMediaHtml(
   const base = import.meta.env.BASE_URL;
   const normalizedBase = base.endsWith("/") ? base : `${base}/`;
   const mediaHref = `${normalizedBase}media/`;
+  const blogHref = `${normalizedBase}blog/`;
 
   let out = html.replace(/__GHL_BASE__/g, normalizedBase);
   out = out.replace(/__GHL_MEDIA__/g, mediaHref);
+  out = out.replace(/__GHL_BLOG__/g, blogHref);
 
   out = out.replace(TOKEN_RE, (_full, filename: string) => {
     const url = urls[filename];
@@ -85,6 +88,8 @@ export function remapMediaHtml(
     }
     return url;
   });
+
+  out = applySeoHtmlPass(out, urls);
 
   return out;
 }

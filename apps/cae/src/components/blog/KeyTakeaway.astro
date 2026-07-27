@@ -1,0 +1,20 @@
+---
+/**
+ * Key takeaway callout shown above the Post Body when set.
+ */
+interface Props {
+  text: string;
+}
+
+const { text } = Astro.props;
+const trimmed = typeof text === "string" ? text.trim() : "";
+---
+
+{
+  trimmed.length > 0 ? (
+    <aside class="blog-takeaway" aria-label="Key takeaway">
+      <p class="blog-takeaway__label">Key takeaway</p>
+      <p class="blog-takeaway__text">{trimmed}</p>
+    </aside>
+  ) : null
+}

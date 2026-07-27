@@ -1,0 +1,40 @@
+---
+/**
+ * Auto table of contents from H2 headings in the Post Body.
+ * Mobile: collapsible `<details>`; desktop: sticky nav (see blog-page.css).
+ */
+import type { TocHeading } from "@/lib/markdown";
+
+interface Props {
+  headings: TocHeading[];
+}
+
+const { headings } = Astro.props;
+---
+
+{
+  headings.length > 0 ? (
+    <>
+      <nav class="blog-toc blog-toc--desktop" aria-label="On this page">
+        <p class="blog-toc__title">On this page</p>
+        <ol class="blog-toc__list">
+          {headings.map((heading) => (
+            <li>
+              <a href={`#${heading.id}`}>{heading.text}</a>
+            </li>
+          ))}
+        </ol>
+      </nav>
+      <details class="blog-toc blog-toc--mobile">
+        <summary class="blog-toc__summary">On this page</summary>
+        <ol class="blog-toc__list">
+          {headings.map((heading) => (
+            <li>
+              <a href={`#${heading.id}`}>{heading.text}</a>
+            </li>
+          ))}
+        </ol>
+      </details>
+    </>
+  ) : null
+}

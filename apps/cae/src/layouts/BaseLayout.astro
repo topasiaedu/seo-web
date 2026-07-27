@@ -3,6 +3,10 @@
  * Default CAE document chrome for non-homepage marketing pages (e.g. blog).
  */
 import "../styles/global.css";
+import SeoHead from "@/components/seo/SeoHead.astro";
+import { requireMetaString } from "@/data/home/meta";
+import { toAbsoluteUrl } from "@/lib/site-url";
+import logoAsset from "../assets/logo.png";
 
 interface Props {
   title: string;
@@ -24,21 +28,34 @@ function resolveTitle(value: unknown, fallback: string): string {
 }
 
 /**
- * Returns a trimmed meta description, or `undefined` when absent/invalid.
+ * Returns a trimmed meta description, or a brand fallback when absent.
  *
  * @param value - Optional description prop
- * @returns Trimmed string or undefined
+ * @returns Trimmed non-empty description
  */
-function resolveDescription(value: unknown): string | undefined {
-  if (typeof value !== "string" || value.trim().length === 0) {
-    return undefined;
+function resolveDescription(value: unknown): string {
+  if (typeof value === "string" && value.trim().length > 0) {
+    return value.trim();
   }
-  return value.trim();
+  return "Cae Goh — Purple Star Astrology, Zi Wei Dou Shu, and life strategy.";
 }
 
 const { title, description } = Astro.props;
 const pageTitle = resolveTitle(title, "CAE");
 const metaDescription = resolveDescription(description);
+const logoSrc =
+  typeof logoAsset === "object" &&
+  logoAsset !== null &&
+  "src" in logoAsset &&
+  typeof logoAsset.src === "string"
+    ? logoAsset.src
+    : typeof logoAsset === "string"
+      ? logoAsset
+      : "";
+if (logoSrc.length === 0) {
+  throw new Error("BaseLayout: failed to resolve logo asset src.");
+}
+const ogImageUrl = toAbsoluteUrl(logoSrc);
 ---
 
 <!doctype html>
@@ -46,7 +63,11 @@ const metaDescription = resolveDescription(description);
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    {metaDescription ? <meta name="description" content={metaDescription} /> : null}
+    <SeoHead
+      title={pageTitle}
+      description={requireMetaString(metaDescription, metaDescription)}
+      ogImage={ogImageUrl}
+    />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link

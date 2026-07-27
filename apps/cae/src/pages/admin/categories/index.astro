@@ -1,0 +1,396 @@
+---
+/**
+ * CAE Admin Categories page.
+ *
+ * Supports listing, adding, renaming, and removing categories scoped to CAE.
+ * Duplicate names/slugs are blocked with clear inline messages.
+ */
+import AdminLayout from "../../../layouts/AdminLayout.astro";
+import { caeSiteConfig } from "../../../site-config";
+import { requireLocalsSupabase } from "../../../lib/admin-auth";
+import {
+  createCategory,
+  deleteCategory,
+  listCategories,
+  renameCategory,
+} from "@seo/blog";
+import type { Category } from "@seo/blog";
+
+export const prerender = false;
+
+type CategoriesState = {
+  errorMessage: string | null;
+  successMessage: string | null;
+  createNameDraft: string;
+};
+
+const SITE_ID = caeSiteConfig.projectId;
+
+/**
+ * Converts category display text into a URL-safe slug.
+ *
+ * @param name - Human-readable category name.
+ * @returns Lowercase slug.
+ */
+function slugifyCategoryName(name: string): string {
+  const normalized = name.trim().toLowerCase();
+  const collapsed = normalized.replace(/[^a-z0-9]+/g, "-");
+  const trimmed = collapsed.replace(/^-+|-+$/g, "");
+  return trimmed;
+}
+
+/**
+ * Reads and trims a required text field from FormData.
+ *
+ * @param formData - Submitted form payload.
+ * @param key - Field key.
+ * @returns Trimmed non-empty string.
+ */
+function readRequiredText(formData: FormData, key: string): string {
+  const value = formData.get(key);
+  if (typeof value !== "string") {
+    throw new Error(`Missing required field: ${key}`);
+  }
+  const trimmedValue = value.trim();
+  if (trimmedValue.length === 0) {
+    throw new Error(`Field "${key}" cannot be empty.`);
+  }
+  return trimmedValue;
+}
+
+/**
+ * Compares two names case-insensitively.
+ *
+ * @param left - First value.
+ * @param right - Second value.
+ * @returns Whether names are equal (ignoring case and edges).
+ */
+function isSameName(left: string, right: string): boolean {
+  return left.trim().toLowerCase() === right.trim().toLowerCase();
+}
+
+/**
+ * Converts unknown error values into stable user-facing text.
+ *
+ * @param error - Unknown caught value.
+ * @returns User-facing message.
+ */
+function toErrorMessage(error: unknown): string {
+  if (error instanceof Error && error.message.trim().length > 0) {
+    return error.message;
+  }
+  return "Could not update categories. Please try again.";
+}
+
+/**
+ * Resolves a category by id.
+ *
+ * @param categories - Current category list.
+ * @param categoryId - Candidate category id.
+ * @returns Matching category or `undefined`.
+ */
+function findCategoryById(
+  categories: readonly Category[],
+  categoryId: string,
+): Category | undefined {
+  return categories.find((category) => category.id === categoryId);
+}
+
+const supabase = requireLocalsSupabase(Astro.locals.supabase);
+let categories = await listCategories(supabase, SITE_ID);
+
+let state: CategoriesState = {
+  errorMessage: null,
+  successMessage: null,
+  createNameDraft: "",
+};
+
+if (Astro.request.method === "POST") {
+  const formData = await Astro.request.formData();
+  const actionValue = formData.get("action");
+  const action = typeof actionValue === "string" ? actionValue.trim() : "";
+  const submittedCreateName = (() => {
+    const value = formData.get("name");
+    if (typeof value !== "string") {
+      return "";
+    }
+    return value.trim();
+  })();
+
+  try {
+    if (action === "create") {
+      const name = readRequiredText(formData, "name");
+      const slug = slugifyCategoryName(name);
+      if (slug.length === 0) {
+        throw new Error("Category name must include letters or numbers.");
+      }
+
+      const hasNameDuplicate = categories.some((category) =>
+        isSameName(category.name, name),
+      );
+      if (hasNameDuplicate) {
+        throw new Error(`Category "${name}" already exists by name.`);
+      }
+
+      const hasSlugDuplicate = categories.some((category) => category.slug === slug);
+      if (hasSlugDuplicate) {
+        throw new Error(
+          `Category "${name}" conflicts with an existing slug "${slug}".`,
+        );
+      }
+
+      await createCategory(supabase, SITE_ID, { name, slug });
+      categories = await listCategories(supabase, SITE_ID);
+      state = {
+        errorMessage: null,
+        successMessage: `Created category "${name}" (${slug}).`,
+        createNameDraft: "",
+      };
+    } else if (action === "rename") {
+      const categoryId = readRequiredText(formData, "category_id");
+      const nextName = readRequiredText(formData, "name");
+      const existing = findCategoryById(categories, categoryId);
+      if (existing === undefined) {
+        throw new Error("Category not found.");
+      }
+
+      const hasNameDuplicate = categories.some((category) => {
+        if (category.id === categoryId) {
+          return false;
+        }
+        return isSameName(category.name, nextName);
+      });
+      if (hasNameDuplicate) {
+        throw new Error(`Category "${nextName}" already exists by name.`);
+      }
+
+      const derivedSlug = slugifyCategoryName(nextName);
+      const hasDerivedSlugDuplicate = categories.some((category) => {
+        if (category.id === categoryId) {
+          return false;
+        }
+        return category.slug === derivedSlug;
+      });
+      if (hasDerivedSlugDuplicate) {
+        throw new Error(
+          `Category "${nextName}" would duplicate existing slug "${derivedSlug}".`,
+        );
+      }
+
+      await renameCategory(supabase, SITE_ID, categoryId, nextName);
+      categories = await listCategories(supabase, SITE_ID);
+      state = {
+        errorMessage: null,
+        successMessage: `Renamed "${existing.name}" to "${nextName}".`,
+        createNameDraft: "",
+      };
+    } else if (action === "delete") {
+      const categoryId = readRequiredText(formData, "category_id");
+      const existing = findCategoryById(categories, categoryId);
+      if (existing === undefined) {
+        throw new Error("Category not found.");
+      }
+
+      await deleteCategory(supabase, SITE_ID, categoryId);
+      categories = await listCategories(supabase, SITE_ID);
+      state = {
+        errorMessage: null,
+        successMessage: `Removed category "${existing.name}". Posts that used it are now uncategorized.`,
+        createNameDraft: "",
+      };
+    } else {
+      throw new Error("Unknown category action.");
+    }
+  } catch (error) {
+    const createNameDraft = action === "create" ? submittedCreateName : "";
+    state = {
+      errorMessage: toErrorMessage(error),
+      successMessage: null,
+      createNameDraft,
+    };
+  }
+}
+---
+
+<AdminLayout title="CAE Admin Categories">
+  <section class="admin-page">
+    <header>
+      <h1 class="admin-page__title">Categories</h1>
+      <p class="admin-page__lede">
+        Categories are scoped to CAE only. New categories generate a slug from the name.
+        Removing a category leaves posts uncategorized (it does not delete posts).
+      </p>
+    </header>
+
+    {state.errorMessage !== null ? (
+      <p class="admin-message admin-message--error" role="alert">{state.errorMessage}</p>
+    ) : null}
+
+    {state.successMessage !== null ? (
+      <p class="admin-message admin-message--success" role="status">{state.successMessage}</p>
+    ) : null}
+
+    <form method="POST" class="admin-card admin-card--emphasize">
+      <h2 class="admin-card__title">Add category</h2>
+      <p class="admin-help">
+        Enter a display name. The slug is generated automatically on save.
+      </p>
+      <input type="hidden" name="action" value="create" />
+      <label class="admin-field">
+        <span class="admin-field__label">New category name</span>
+        <input
+          class="admin-input"
+          name="name"
+          type="text"
+          required
+          placeholder="e.g. Numerology"
+          value={state.createNameDraft}
+        />
+      </label>
+      <div class="admin-actions">
+        <button class="admin-btn admin-btn--primary" type="submit">Add Category</button>
+      </div>
+    </form>
+
+    <div class="admin-categories">
+      <h2 class="admin-card__title">Existing categories</h2>
+      {categories.length === 0 ? (
+        <p class="admin-empty">
+          No categories yet. Use <strong>Add category</strong> above to create the first one.
+        </p>
+      ) : (
+        <div class="admin-categories__grid">
+          {categories.map((category) => (
+            <article class="admin-card admin-categories__card">
+              <form method="POST" class="admin-categories__rename">
+                <input type="hidden" name="action" value="rename" />
+                <input type="hidden" name="category_id" value={category.id} />
+                <label class="admin-field">
+                  <span class="admin-field__label">Name</span>
+                  <input
+                    class="admin-input"
+                    name="name"
+                    type="text"
+                    required
+                    value={category.name}
+                  />
+                </label>
+                <p class="admin-help">
+                  Slug: <code>{category.slug}</code>
+                </p>
+                <div class="admin-categories__actions">
+                  <button class="admin-btn admin-btn--small" type="submit">
+                    Rename
+                  </button>
+                </div>
+              </form>
+
+              <form
+                method="POST"
+                class="admin-categories__delete"
+                data-category-delete
+                data-category-name={category.name}
+              >
+                <input type="hidden" name="action" value="delete" />
+                <input type="hidden" name="category_id" value={category.id} />
+                <button
+                  class="admin-btn admin-btn--small admin-btn--danger"
+                  type="submit"
+                >
+                  Remove
+                </button>
+              </form>
+            </article>
+          ))}
+        </div>
+      )}
+    </div>
+  </section>
+
+  <script>
+    /**
+     * Confirms category removal before the delete form submits.
+     */
+    function initCategoryDeleteConfirm(): void {
+      const forms = document.querySelectorAll<HTMLFormElement>(
+        "form[data-category-delete]",
+      );
+
+      for (const form of forms) {
+        form.addEventListener("submit", (event: SubmitEvent) => {
+          const rawName = form.dataset.categoryName;
+          const categoryName =
+            typeof rawName === "string" && rawName.trim().length > 0
+              ? rawName.trim()
+              : "this category";
+
+          const confirmed = window.confirm(
+            [
+              "Remove this category?",
+              `Name: ${categoryName}`,
+              "Posts that use it will become uncategorized. This cannot be undone.",
+            ].join("\n"),
+          );
+
+          if (!confirmed) {
+            event.preventDefault();
+          }
+        });
+      }
+    }
+
+    initCategoryDeleteConfirm();
+  </script>
+</AdminLayout>
+
+<style>
+  .admin-categories {
+    display: flex;
+    flex-direction: column;
+    gap: 0.85rem;
+  }
+
+  .admin-categories__grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 0.85rem;
+  }
+
+  @media (min-width: 40rem) {
+    .admin-categories__grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  @media (min-width: 56rem) {
+    .admin-categories__grid {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+  }
+
+  .admin-categories__card {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    height: 100%;
+  }
+
+  .admin-categories__rename {
+    display: flex;
+    flex: 1 1 auto;
+    flex-direction: column;
+    gap: 0.65rem;
+  }
+
+  .admin-categories__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+
+  .admin-categories__delete {
+    margin: 0;
+    padding-top: 0.65rem;
+    border-top: 1px solid var(--admin-border);
+  }
+</style>

@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://caegoh.com/cae/sitemap-index.xml
