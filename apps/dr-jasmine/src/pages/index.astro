@@ -1,9 +1,12 @@
 ---
 /**
- * @fileoverview Native home composed only from GHL registration LDP content.
- * No invented marketing bands (audience / pillars / blog).
+ * @fileoverview Native home composed from GHL registration LDP content,
+ * plus a latest-posts Health Insights band (image tiles).
  */
+import { listPublishedPostsPage } from "@seo/blog";
 import portraitImage from "@/assets/ghl/dr-jasmine-portrait.jpg";
+import { requireBlogSupabase } from "@/components/blog/blog-format";
+import HomeBlog from "@/components/home/HomeBlog.astro";
 import HomeDiscover from "@/components/home/HomeDiscover.astro";
 import HomeFaqTeaser from "@/components/home/HomeFaqTeaser.astro";
 import HomeHero from "@/components/home/HomeHero.astro";
@@ -21,8 +24,12 @@ import {
 import { buildWebSiteJsonLd } from "@/data/seo/jsonld-pages";
 import { defaultPublicOgImageUrl } from "@/data/seo/og-defaults";
 import PublicLayout from "@/layouts/PublicLayout.astro";
+import { drJasmineSiteConfig } from "@/site-config";
 
 export const prerender = false;
+
+/** Newest posts to surface on the homepage blog teaser. */
+const HOME_BLOG_LIMIT = 3;
 
 /** GHL document title from the registration LDP capture. */
 const title = "Reverse Diabetes Workshop";
@@ -35,6 +42,13 @@ const jsonLd = buildWebSiteJsonLd({
   faqs,
 });
 const ogImage = defaultPublicOgImageUrl();
+
+const supabase = requireBlogSupabase(Astro.locals.supabase);
+const { posts: latestPosts } = await listPublishedPostsPage(
+  supabase,
+  drJasmineSiteConfig.projectId,
+  { limit: HOME_BLOG_LIMIT, offset: 0 },
+);
 ---
 
 <PublicLayout title={title} description={description} ogImage={ogImage} jsonLd={jsonLd}>
@@ -42,6 +56,7 @@ const ogImage = defaultPublicOgImageUrl();
   <HomeDiscover copy={workshopCopy} />
   <HomeMeetDoctor credentials={credentials} portrait={portraitImage} />
   <HomeProof testimonials={testimonials} />
+  {latestPosts.length > 0 ? <HomeBlog posts={latestPosts} /> : null}
   <HomeWorkshopBand copy={workshopCopy} />
   <HomeFaqTeaser items={faqs} />
 </PublicLayout>

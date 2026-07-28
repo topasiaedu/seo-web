@@ -12,7 +12,7 @@
 | Domains (config) | `dr-jasmine.localhost`, `doctorjasmine.com`, `www.doctorjasmine.com` |
 | Seed domains | `dr-jasmine.localhost` only |
 | SEO origin | `PUBLIC_SITE_ORIGIN` (default `https://doctorjasmine.com`) + `base: "/dr-jasmine/"` |
-| Status | **Active** — single-home public site + Admin Blog + public `/dr-jasmine/blog` |
+| Status | **Active** — single-home public site (GHL bands + Health Insights teaser) + Admin Blog + public `/dr-jasmine/blog` |
 
 Domain language: [`apps/dr-jasmine/CONTEXT.md`](../../../apps/dr-jasmine/CONTEXT.md) — **Admin ≠ CMS**.
 
@@ -60,12 +60,22 @@ All public routes use `PublicLayout` (SiteNav + SiteFooter). Nav: Home (logo), A
 
 | Route | Purpose |
 |-------|---------|
-| `/dr-jasmine/` | Brand home — GHL LDP bands + Meet + testimonials + FAQ accordion; **SSR**; CTAs → `registerUrl` |
+| `/dr-jasmine/` | Brand home — GHL LDP bands + Meet + testimonials + **Health Insights** (latest 3 Posts) + FAQ accordion; **SSR**; CTAs → `registerUrl` |
 | `/dr-jasmine/blog/` | Live post list — light ivory magazine index |
 | `/dr-jasmine/blog/[slug]` | Live post detail — **light** promise-first story (takeaway → dek → byline/socials → body); not CAE dark immersive |
 | `/dr-jasmine/admin/**` | Brand Admin (login-only) |
 
 **Removed** (do not recreate without CONTEXT + wiki update): `/about`, `/faq`, `/programs`, `/workshop`.
+
+### Home stack (top → bottom)
+
+1. Hero (GHL split)
+2. Discover
+3. Meet Dr. Jasmine (`#dj-home-meet`)
+4. Testimonials (marquee)
+5. **Health Insights** (`HomeBlog`) — newest **3** live Posts as image `PostCard` tiles; omitted when empty; View all → `/blog` ([source](../sources/dr-jasmine-homepage-blog-band.md))
+6. Workshop closing CTA
+7. FAQ accordion
 
 ### Admin (authenticated; no public signup)
 
@@ -114,7 +124,7 @@ Use gateway (`pnpm dev` → `:4321`) or DJ alone (`:4323`).
 
 | Check | Notes |
 |-------|--------|
-| `/dr-jasmine/` home | GHL copy bands; Join free workshop / Secure My Seat → `registerUrl` |
+| `/dr-jasmine/` home | GHL copy bands; Health Insights after Proof when ≥1 live Post; Join free workshop / Secure My Seat → `registerUrl` |
 | No `/about` `/workshop` `/faq` `/programs` | Expect 404 |
 | `/dr-jasmine/blog` | Light ivory index |
 | `/dr-jasmine/blog/[slug]` | Green H1; takeaway/dek/byline socials; light body |
@@ -129,5 +139,5 @@ Use gateway (`pnpm dev` → `:4321`) or DJ alone (`:4323`).
 
 ## Related
 
-- [Home IA polish](../sources/dr-jasmine-home-ia-and-polish.md) · [Admin theme + blog readability](../sources/dr-jasmine-admin-theme-and-blog-readability.md) · [Option A tokens](../sources/dr-jasmine-option-a-true-website.md) · [Responsive audit](../sources/dr-jasmine-responsive-audit.md)
+- [Home IA polish](../sources/dr-jasmine-home-ia-and-polish.md) · [Homepage Health Insights band](../sources/dr-jasmine-homepage-blog-band.md) · [Admin theme + blog readability](../sources/dr-jasmine-admin-theme-and-blog-readability.md) · [Option A tokens](../sources/dr-jasmine-option-a-true-website.md) · [Responsive audit](../sources/dr-jasmine-responsive-audit.md)
 - [Overview](../overview.md) · [CAE](cae.md) · [CMS](cms.md)

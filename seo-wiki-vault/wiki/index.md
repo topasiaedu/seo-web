@@ -20,7 +20,7 @@ Read this first when answering queries, then open linked pages.
 ## Sites
 
 - [CAE](sites/cae.md) — `apps/cae` GHL lift (home + `/media/`) + homepage Insights Blog bento + Admin (`/cae/admin`, Published/Scheduled intent, simplified PostForm, Bulk import) + public `/cae/blog` (slug Immersive Story)
-- [Dr Jasmine](sites/dr-jasmine.md) — `apps/dr-jasmine` single-home (GHL LDP copy) + light `/blog` + Admin (`/dr-jasmine/admin`); CMS still deferred
+- [Dr Jasmine](sites/dr-jasmine.md) — `apps/dr-jasmine` single-home (GHL LDP copy + Health Insights teaser) + light `/blog` + Admin (`/dr-jasmine/admin`); CMS still deferred
 - [CMS](sites/cms.md) — deferred shared platform; **not** brand Admin
 
 ## Packages
@@ -59,3 +59,4 @@ Read this first when answering queries, then open linked pages.
 - [Dr Jasmine home IA collapse + polish](sources/dr-jasmine-home-ia-and-polish.md) — from `raw/inbox/` (2026-07-28); single home; removed about/workshop/programs/faq pages
 - [Dr Jasmine Admin theme + light blog readability](sources/dr-jasmine-admin-theme-and-blog-readability.md) — from `raw/inbox/` (2026-07-28); forest Admin; light blog; promise-first slug
 - [Dr Jasmine responsive audit — no code changes](sources/dr-jasmine-responsive-audit.md) — from `raw/inbox/` (2026-07-28); public mobile-friendly pass; polish deferred
+- [Dr Jasmine homepage Health Insights band (Option B)](sources/dr-jasmine-homepage-blog-band.md) — from `raw/inbox/` (2026-07-28); latest 3 `PostCard` tiles after Proof

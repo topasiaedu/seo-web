@@ -17,6 +17,7 @@
 - Home copy from GHL registration LDP only; FAQ accordion on home; Meet section + Instagram/LinkedIn.
 - Brand tokens/fonts aligned to patient portal: Forest/Ivory/Gold; **DM Serif Display** + **Plus Jakarta Sans**.
 - Dan Henry not shown on native public site; GHL fragments remain archive only.
+- **Superseded (home blog only):** raw locked “no invented blog band”; later session added Health Insights teaser — see [homepage blog band](dr-jasmine-homepage-blog-band.md).
 
 ## Affects
 

@@ -7,7 +7,7 @@ Last updated: 2026-07-27 (ingest Option A + brand token sheet)
 ## Current focus
 
 - Primary site: **CAE** (`apps/cae` / `@seo/cae`) — **homepage** (GHL lift + Insights Blog soft bento after Press; home **SSR**); **Media & Press**; **Admin Blog** at `/cae/admin` with **Published vs Scheduled** UI + lazy `published_at` gate; simplified PostForm; **Bulk import** (`/cae/admin/posts/import`) for multi-post Markdown; **public blog SSR** at `/cae/blog` (slug = **Immersive Story** dark feature layout); preview via **gateway** `/cae`
-- Second brand: **Dr Jasmine** (`apps/dr-jasmine` / `@seo/dr-jasmine`) — **single-home** native site (`/` GHL LDP copy + Meet/FAQ; **no** `/about` `/workshop` `/programs` `/faq` pages) + Admin + **light** public `/blog`; gateway `/dr-jasmine` → `:4323`; GHL capture archive/reference only
+- Second brand: **Dr Jasmine** (`apps/dr-jasmine` / `@seo/dr-jasmine`) — **single-home** native site (`/` GHL LDP copy + Meet/FAQ + **Health Insights** latest-3 Post tiles; home **SSR**; **no** `/about` `/workshop` `/programs` `/faq` pages) + Admin + **light** public `/blog`; gateway `/dr-jasmine` → `:4323`; GHL capture archive/reference only
 - Path gateway: `apps/gateway` (`@seo/gateway`) on port **4321** (proxies `/cae` + `/dr-jasmine`; `/cms` still not migrated)
 - Legacy `website/` shell: **removed** — future brands/CMS scaffold under `apps/` only
 - Deploy: root `vercel.json` builds **`@seo/cae`** → `apps/cae/dist` (`base: "/cae/"`; server output + Node adapter). DJ build is separate (`pnpm build:dr-jasmine`)
@@ -22,7 +22,7 @@ Last updated: 2026-07-27 (ingest Option A + brand token sheet)
 |---------|------|--------|
 | Gateway | `apps/gateway/` | Proxies `/cae` → 4322, `/dr-jasmine` → 4323; `/cms` “not migrated yet” |
 | Site:CAE | `apps/cae/` | Marketing GHL lift + homepage Insights Blog bento + Admin Blog + public `/blog`; vault scrapes in `raw/research/cae-ghl-capture*` |
-| Site:DrJasmine | `apps/dr-jasmine/` | Single-home marketing (GHL LDP copy) + Admin Blog + light public `/blog`; GHL capture archive in `raw/research/dr-jasmine-ghl-capture/` |
+| Site:DrJasmine | `apps/dr-jasmine/` | Single-home marketing (GHL LDP copy + Health Insights teaser) + Admin Blog + light public `/blog`; GHL capture archive in `raw/research/dr-jasmine-ghl-capture/` |
 | Shared platform | `packages/`, `supabase/` | `@seo/db` clients + `@seo/blog` CRUD; authors/categories/posts + Storage `media` |
 | CMS | (not scaffolded) | Deferred → `apps/cms` (not the same as brand Admin) |
 | Wiki vault | `seo-wiki-vault/` | See `AGENTS.md` |
@@ -35,7 +35,7 @@ CMS (only) still deferred: [independent-apps-dr-jasmine-and-cms.md](../../docs/f
 
 - **One Astro app per brand** + path gateway ([ADR 0003](decisions/0003-astro-single-app-per-site-folders.md))
 - CAE marketing: sanitized GHL section lift in-app; homepage Insights soft bento replaces Offerings ([cae](sites/cae.md), [homepage blog bento](sources/cae-homepage-blog-bento.md))
-- Dr Jasmine marketing: single home (GHL copy); all CTAs → live `registerUrl`; light ivory blog ([dr-jasmine](sites/dr-jasmine.md), [home IA](sources/dr-jasmine-home-ia-and-polish.md), [blog readability](sources/dr-jasmine-admin-theme-and-blog-readability.md))
+- Dr Jasmine marketing: single home (GHL copy + Health Insights Post tiles); all CTAs → live `registerUrl`; light ivory blog ([dr-jasmine](sites/dr-jasmine.md), [home IA](sources/dr-jasmine-home-ia-and-polish.md), [homepage blog band](sources/dr-jasmine-homepage-blog-band.md), [blog readability](sources/dr-jasmine-admin-theme-and-blog-readability.md))
 - Brand Admin + public blog (+ CAE home for recent Posts): server mode, Supabase Auth where needed, `@seo/blog` queries scoped by `site_id`; public posts are **live** only (`published_at <= now()`)
 - Local front door is gateway ([routing](architecture/routing-vercel.md))
 - Shared Supabase ([schema](architecture/supabase.md))
@@ -63,7 +63,7 @@ seo-website/
 
 ### Per-brand app contract
 
-Astro app under `apps/<slug>` with `base: "/<slug>/"`, own port, own `.env*`, registered in the gateway proxy map. CAE and DJ run `output: "server"`. CAE Media stays `prerender = true`; CAE **home is SSR** so the Insights Blog band can read published Posts.
+Astro app under `apps/<slug>` with `base: "/<slug>/"`, own port, own `.env*`, registered in the gateway proxy map. CAE and DJ run `output: "server"`. CAE Media stays `prerender = true`; CAE **home is SSR** so the Insights Blog band can read published Posts; DJ **home is SSR** for the Health Insights teaser (latest 3 Posts).
 
 Sites: [CAE](sites/cae.md) · [Dr Jasmine](sites/dr-jasmine.md) · [CMS](sites/cms.md)
 
@@ -110,7 +110,7 @@ Smoke: [CAE](sites/cae.md#smoke-checklist-admin--public-blog) · [Dr Jasmine](si
 - Shared `@seo/ui`
 - ISR, i18n, multi-role CMS auth
 - **CMS Media Library UI** + `media` table (bucket/paths already live for Admin uploads; design: `docs/future-enhancements/cms-media-library.md`)
-- **Featured Posts** pin / homepage surfacing (design: `docs/future-enhancements/featured-posts.md`) — CAE homepage currently shows newest 4 chronologically only
+- **Featured Posts** pin / homepage surfacing (design: `docs/future-enhancements/featured-posts.md`) — CAE homepage shows newest 4 chronologically; DJ homepage shows newest 3 chronologically
 - Delete parked CAE native BEM under `components/home/*` after superior accepts GHL lift (**except** wired `HomeInsights`)
 - Decide fate of unwired Offerings GHL fragments
 - DJ residual human QA: Auth/CRUD/publish smoke; `supabase db reset` when Docker available (see [dr-jasmine](sites/dr-jasmine.md)). Public responsive baseline **passed** 2026-07-28 — no code changes ([responsive audit](sources/dr-jasmine-responsive-audit.md))
@@ -127,6 +127,7 @@ Smoke: [CAE](sites/cae.md#smoke-checklist-admin--public-blog) · [Dr Jasmine](si
 - [dr-jasmine-home-ia-and-polish](../raw/inbox/2026-07-28-dr-jasmine-home-ia-and-polish.md) → [sources/dr-jasmine-home-ia-and-polish.md](sources/dr-jasmine-home-ia-and-polish.md)
 - [dr-jasmine-admin-theme-and-blog-readability](../raw/inbox/2026-07-28-dr-jasmine-admin-theme-and-blog-readability.md) → [sources/dr-jasmine-admin-theme-and-blog-readability.md](sources/dr-jasmine-admin-theme-and-blog-readability.md)
 - [dr-jasmine-responsive-audit](../raw/inbox/2026-07-28-dr-jasmine-responsive-audit.md) → [sources/dr-jasmine-responsive-audit.md](sources/dr-jasmine-responsive-audit.md)
+- [dr-jasmine-homepage-blog-band](../raw/inbox/2026-07-28-dr-jasmine-homepage-blog-band.md) → [sources/dr-jasmine-homepage-blog-band.md](sources/dr-jasmine-homepage-blog-band.md)
 - [cae-ghl-1to1-native-parity](../raw/inbox/2026-07-23-cae-ghl-1to1-native-parity.md) → [sources/cae-ghl-1to1-native-parity.md](sources/cae-ghl-1to1-native-parity.md) (superseded)
 - [cae-ghl-section-lift-and-media-page](../raw/inbox/2026-07-23-cae-ghl-section-lift-and-media-page.md) → [sources/cae-ghl-section-lift-and-media-page.md](sources/cae-ghl-section-lift-and-media-page.md)
 - [cae-seo-improvements](../raw/inbox/2026-07-23-cae-seo-improvements.md) → [sources/cae-seo-improvements.md](sources/cae-seo-improvements.md)

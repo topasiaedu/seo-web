@@ -1,0 +1,49 @@
+---
+/**
+ * @fileoverview Homepage Health Insights teaser — latest published posts as image tiles.
+ */
+import type { BlogPost } from "@seo/blog";
+import PostCard from "@/components/blog/PostCard.astro";
+import { joinBlogPath } from "@/components/blog/blog-format";
+import "@/styles/blog-tokens.css";
+import "@/components/blog/blog-page.css";
+
+interface Props {
+  /** Newest live posts to surface (caller omits section when empty). */
+  posts: readonly BlogPost[];
+}
+
+const { posts } = Astro.props;
+
+/** Section copy aligned with `/blog` index. */
+const SECTION_EYEBROW = "Blog";
+const SECTION_HEADING = "Health Insights";
+const SECTION_LEDE =
+  "Evidence-based articles on diabetes reversal, blood sugar, and metabolic health from Dr Jasmine.";
+
+const blogIndexHref = joinBlogPath(import.meta.env.BASE_URL, "blog");
+---
+
+<section
+  class="dj-home-section dj-home-section--soft dj-home-blog"
+  aria-labelledby="dj-home-blog-heading"
+>
+  <div class="dj-public-container">
+    <header class="dj-home-blog__header">
+      <div>
+        <p class="dj-home-eyebrow">{SECTION_EYEBROW}</p>
+        <h2 class="dj-home-heading" id="dj-home-blog-heading">
+          {SECTION_HEADING}
+        </h2>
+        <p class="dj-home-lede">{SECTION_LEDE}</p>
+      </div>
+      <a class="dj-home-text-link dj-home-blog__all" href={blogIndexHref}>
+        View all
+      </a>
+    </header>
+
+    <ul class="blog-grid" aria-label="Latest health insights">
+      {posts.map((post) => <PostCard post={post} titleTag="h3" />)}
+    </ul>
+  </div>
+</section>

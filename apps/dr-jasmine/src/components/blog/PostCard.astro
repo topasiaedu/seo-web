@@ -12,9 +12,15 @@ import {
 
 interface Props {
   post: BlogPost;
+  /**
+   * Title element tag. Use `h3` under a page section that already has an `h2`
+   * (e.g. homepage teaser). Defaults to `h2` for the blog index.
+   */
+  titleTag?: "h2" | "h3";
 }
 
-const { post } = Astro.props;
+const { post, titleTag = "h2" } = Astro.props;
+const TitleTag = titleTag === "h3" ? "h3" : "h2";
 const href = joinBlogPath(import.meta.env.BASE_URL, `blog/${post.slug}`);
 const dateLabel = formatBlogDate(post.publishedAt);
 const readingLabel = formatReadingTime(post.readingTimeMinutes);
@@ -52,9 +58,9 @@ const excerpt =
         <p class="blog-tile__eyebrow">{categoryName}</p>
       ) : null
     }
-    <h2 class="blog-tile__title">
+    <TitleTag class="blog-tile__title">
       <a href={href}>{post.title}</a>
-    </h2>
+    </TitleTag>
     {
       excerpt.length > 0 ? (
         <p class="blog-tile__excerpt">{excerpt}</p>

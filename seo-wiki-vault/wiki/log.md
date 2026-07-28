@@ -2,6 +2,13 @@
 
 Append-only timeline. Each entry starts with `## [YYYY-MM-DD] <verb> | <title>` for easy grepping.
 
+## [2026-07-28] ingest | Dr Jasmine homepage Health Insights band (Option B)
+
+- Raw: `raw/inbox/2026-07-28-dr-jasmine-homepage-blog-band.md`
+- Source: `wiki/sources/dr-jasmine-homepage-blog-band.md`
+- Updated: `sites/dr-jasmine.md` (home stack + Insights), `packages/blog.md` consumers, overview, architecture overview, index; note on home IA source that no-blog-band rule is superseded for this teaser
+- Locked: latest 3 image `PostCard`s after Proof; omit when empty
+
 ## [2026-07-28] ingest | Dr Jasmine responsive audit — no code changes
 
 - Raw: `raw/inbox/2026-07-28-dr-jasmine-responsive-audit.md`
