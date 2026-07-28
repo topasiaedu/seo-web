@@ -1,0 +1,63 @@
+---
+/**
+ * Dr Jasmine Admin — edit an existing Post by id.
+ * Enforces site scope (`drJasmineSiteConfig.projectId`) and slug-lock for ever-published Posts.
+ */
+import {
+  getAuthorForSite,
+  getPostById,
+  listCategories,
+  listPosts,
+} from "@seo/blog";
+import { PostForm } from "../../../../components/admin/PostForm";
+import { collectUniqueTags } from "../../../../components/admin/TagsInput";
+import AdminLayout from "../../../../layouts/AdminLayout.astro";
+import { joinAdminPath, requireLocalsSupabase } from "../../../../lib/admin-auth";
+import { isPostSlugLocked } from "../../../../lib/post-slug";
+import { drJasmineSiteConfig } from "../../../../site-config";
+
+export const prerender = false;
+
+const base = import.meta.env.BASE_URL;
+const siteId = drJasmineSiteConfig.projectId;
+const supabase = requireLocalsSupabase(Astro.locals.supabase);
+
+const rawId = Astro.params.id;
+if (typeof rawId !== "string" || rawId.trim().length === 0) {
+  return new Response("Not found", { status: 404, statusText: "Not Found" });
+}
+
+const postId = rawId.trim();
+const post = await getPostById(supabase, siteId, postId);
+if (post === null) {
+  return new Response("Not found", { status: 404, statusText: "Not Found" });
+}
+
+const [author, categories, posts] = await Promise.all([
+  getAuthorForSite(supabase, siteId),
+  listCategories(supabase, siteId),
+  listPosts(supabase, siteId),
+]);
+
+/** Flatten + dedupe tags from every Post for the TagsInput typeahead. */
+const existingTags = collectUniqueTags(posts.flatMap((item) => item.tags));
+
+const postsListHref = joinAdminPath(base, "admin/posts");
+const postsBaseHref = joinAdminPath(base, "admin/posts");
+const slugLocked = isPostSlugLocked(post);
+---
+
+<AdminLayout title={`Dr Jasmine Admin — Edit: ${post.title}`} wide>
+  <PostForm
+    client:load
+    mode="edit"
+    siteId={siteId}
+    postsListHref={postsListHref}
+    postsBaseHref={postsBaseHref}
+    author={author}
+    categories={categories}
+    existingTags={existingTags}
+    initialPost={post}
+    slugLocked={slugLocked}
+  />
+</AdminLayout>

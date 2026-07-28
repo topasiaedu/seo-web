@@ -1,0 +1,49 @@
+/**
+ * Primary workshop registration CTA button (T3).
+ */
+
+.dj-register-cta {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--dj-public-space-2);
+  min-height: 2.75rem;
+  padding: var(--dj-public-space-3) var(--dj-public-space-5);
+  border: 1px solid transparent;
+  border-radius: var(--dj-public-radius-full);
+  font-family: var(--dj-public-font-body);
+  font-size: 0.9375rem;
+  font-weight: var(--dj-public-font-weight-semibold);
+  line-height: 1.2;
+  text-decoration: none;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.dj-register-cta--primary {
+  background: var(--dj-public-teal);
+  /* Explicit white — beats `.dj-public a { color: teal }` specificity traps. */
+  color: #ffffff;
+}
+
+.dj-register-cta--primary:hover,
+.dj-register-cta--primary:focus-visible {
+  background: var(--dj-public-teal-deep);
+  color: #ffffff;
+}
+
+.dj-register-cta--secondary {
+  background: transparent;
+  border-color: var(--dj-public-teal);
+  color: var(--dj-public-teal);
+}
+
+.dj-register-cta--secondary:hover,
+.dj-register-cta--secondary:focus-visible {
+  background: var(--dj-public-teal-soft);
+  color: var(--dj-public-teal-deep);
+}
+
+.dj-register-cta--block {
+  width: 100%;
+}

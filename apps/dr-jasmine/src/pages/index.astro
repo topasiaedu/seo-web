@@ -1,0 +1,47 @@
+---
+/**
+ * @fileoverview Native home composed only from GHL registration LDP content.
+ * No invented marketing bands (audience / pillars / blog).
+ */
+import portraitImage from "@/assets/ghl/dr-jasmine-portrait.jpg";
+import HomeDiscover from "@/components/home/HomeDiscover.astro";
+import HomeFaqTeaser from "@/components/home/HomeFaqTeaser.astro";
+import HomeHero from "@/components/home/HomeHero.astro";
+import HomeMeetDoctor from "@/components/home/HomeMeetDoctor.astro";
+import HomeProof from "@/components/home/HomeProof.astro";
+import HomeWorkshopBand from "@/components/home/HomeWorkshopBand.astro";
+import "@/components/home/home.css";
+import {
+  credentials,
+  faqs,
+  homeCopy,
+  testimonials,
+  workshopCopy,
+} from "@/data/site";
+import { buildWebSiteJsonLd } from "@/data/seo/jsonld-pages";
+import { defaultPublicOgImageUrl } from "@/data/seo/og-defaults";
+import PublicLayout from "@/layouts/PublicLayout.astro";
+
+export const prerender = false;
+
+/** GHL document title from the registration LDP capture. */
+const title = "Reverse Diabetes Workshop";
+/** Meta description built from GHL hero subcopy only. */
+const description = homeCopy.subhead;
+
+const jsonLd = buildWebSiteJsonLd({
+  pathname: Astro.url.pathname,
+  description,
+  faqs,
+});
+const ogImage = defaultPublicOgImageUrl();
+---
+
+<PublicLayout title={title} description={description} ogImage={ogImage} jsonLd={jsonLd}>
+  <HomeHero copy={homeCopy} portrait={portraitImage} />
+  <HomeDiscover copy={workshopCopy} />
+  <HomeMeetDoctor credentials={credentials} portrait={portraitImage} />
+  <HomeProof testimonials={testimonials} />
+  <HomeWorkshopBand copy={workshopCopy} />
+  <HomeFaqTeaser items={faqs} />
+</PublicLayout>

@@ -1,0 +1,42 @@
+---
+/**
+ * Minimal story TOC — desktop sticky rail with markers; mobile collapsible.
+ */
+import type { TocHeading } from "@/lib/markdown";
+
+interface Props {
+  headings: TocHeading[];
+}
+
+const { headings } = Astro.props;
+---
+
+{
+  headings.length > 0 ? (
+    <>
+      <nav class="blog-toc blog-toc--desktop blog-toc--rail" aria-label="On this page">
+        <p class="blog-toc__title">Contents</p>
+        <ol class="blog-toc__list">
+          {headings.map((heading) => (
+            <li>
+              <a href={`#${heading.id}`}>
+                <span class="blog-toc__dot" aria-hidden="true" />
+                <span class="blog-toc__label">{heading.text}</span>
+              </a>
+            </li>
+          ))}
+        </ol>
+      </nav>
+      <details class="blog-toc blog-toc--mobile">
+        <summary class="blog-toc__summary">On this page</summary>
+        <ol class="blog-toc__list">
+          {headings.map((heading) => (
+            <li>
+              <a href={`#${heading.id}`}>{heading.text}</a>
+            </li>
+          ))}
+        </ol>
+      </details>
+    </>
+  ) : null
+}

@@ -1,0 +1,36 @@
+---
+/**
+ * @fileoverview Shared GHL fragment renderer — remaps asset tokens then
+ * injects sanitized capture HTML (GHL class/IDs preserved).
+ */
+import {
+  buildAssetUrlMap,
+  remapGhlHtml,
+  DEFAULT_REGISTER_URL,
+} from "./remapHtml";
+
+interface Props {
+  /** Raw HTML fragment from `fragments/*.html` (via `?raw`). */
+  fragment: string;
+  /**
+   * Optional override for Secure My Seat / register CTAs.
+   * Defaults to https://doctorjasmine.com/register.
+   */
+  registerUrl?: string;
+}
+
+const { fragment, registerUrl } = Astro.props;
+if (typeof fragment !== "string" || fragment.length === 0) {
+  throw new Error("GhlFragment: fragment prop must be a non-empty string.");
+}
+
+const resolvedRegister =
+  typeof registerUrl === "string" && registerUrl.length > 0
+    ? registerUrl
+    : DEFAULT_REGISTER_URL;
+
+const urls = buildAssetUrlMap();
+const html = remapGhlHtml(fragment, urls, { registerUrl: resolvedRegister });
+---
+
+<Fragment set:html={html} />

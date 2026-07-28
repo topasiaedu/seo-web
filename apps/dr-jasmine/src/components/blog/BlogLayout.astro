@@ -1,0 +1,80 @@
+---
+/**
+ * Blog document shell — wraps PublicLayout (SiteNav + SiteFooter) with blog surface styles.
+ * Immersive story content stays in page components; only site chrome is unified (T4).
+ */
+import PublicLayout from "@/layouts/PublicLayout.astro";
+import { blogMeta } from "@/data/blog/meta";
+import type { JsonLdNode } from "@/data/blog/jsonld";
+import { drJasmineSiteConfig } from "@/site-config";
+import "@/styles/blog-tokens.css";
+import "./blog-page.css";
+
+interface Props {
+  title: string;
+  description?: string;
+  /** Open Graph type — use `article` on Post detail. */
+  ogType?: string;
+  /** Absolute or site-relative OG image. */
+  ogImage?: string;
+  /** Optional JSON-LD graph for `SeoHead`. */
+  jsonLd?: JsonLdNode;
+}
+
+/**
+ * Returns a trimmed non-empty page title, falling back when invalid.
+ *
+ * @param value - Candidate title from the page.
+ * @param fallback - Fallback when invalid.
+ * @returns Trimmed non-empty string.
+ */
+function resolveTitle(value: unknown, fallback: string): string {
+  if (typeof value !== "string" || value.trim().length === 0) {
+    return fallback;
+  }
+  return value.trim();
+}
+
+/**
+ * Returns a trimmed meta description, or a brand fallback when absent.
+ *
+ * @param value - Optional description prop.
+ * @returns Trimmed non-empty description.
+ */
+function resolveDescription(value: unknown): string {
+  if (typeof value === "string" && value.trim().length > 0) {
+    return value.trim();
+  }
+  return blogMeta.defaultDescription;
+}
+
+const { title, description, ogType = "website", ogImage, jsonLd } =
+  Astro.props;
+const pageTitle = resolveTitle(title, `Blog · ${drJasmineSiteConfig.name}`);
+const metaDescription = resolveDescription(description);
+---
+
+<PublicLayout
+  title={pageTitle}
+  description={metaDescription}
+  ogType={ogType}
+  ogImage={ogImage}
+  jsonLd={jsonLd}
+>
+  <slot />
+</PublicLayout>
+
+<style>
+  /**
+   * Blog pages render their own light surface inside public main — reset public
+   * padding so ivory chrome matches site tokens between sections.
+   */
+  :global(.dj-public-layout__main:has(.blog-page)) {
+    padding: 0;
+    background-color: var(--dj-bg, #faf8f5);
+  }
+
+  :global(.dj-public-layout__main > .blog-page) {
+    min-height: 100%;
+  }
+</style>

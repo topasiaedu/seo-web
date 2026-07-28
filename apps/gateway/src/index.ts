@@ -1,7 +1,7 @@
 /**
  * Path-based HTTP gateway for local multi-app development.
  *
- * Listens on `PORT` (default 4321) and proxies `/cae` to the CAE Astro app.
+ * Listens on `PORT` (default 4321) and proxies `/cae` and `/dr-jasmine` to their Astro apps.
  */
 
 import http from "node:http";
@@ -10,7 +10,14 @@ import {
   resolveListenPort,
   type DeferredPathPrefix,
 } from "./config.js";
-import { isCaePath, proxyCaeUpgrade, proxyToCae } from "./proxy.js";
+import {
+  isCaePath,
+  isDrJasminePath,
+  proxyCaeUpgrade,
+  proxyDrJasmineUpgrade,
+  proxyToCae,
+  proxyToDrJasmine,
+} from "./proxy.js";
 import {
   sendGatewayIndex,
   sendNotMigratedYet,
@@ -66,6 +73,11 @@ const server = http.createServer((req, res) => {
     return;
   }
 
+  if (isDrJasminePath(pathname)) {
+    proxyToDrJasmine(req, res);
+    return;
+  }
+
   const deferred = matchDeferredPrefix(pathname);
   if (deferred !== null) {
     sendNotMigratedYet(res, deferred);
@@ -79,7 +91,7 @@ const server = http.createServer((req, res) => {
       "404 Not Found",
       "",
       "No route for " + pathname + ".",
-      "Try /cae (requires @seo/cae on port 4322).",
+      "Try /cae (port 4322) or /dr-jasmine (port 4323).",
     ].join("\n"),
   );
 });
@@ -92,6 +104,11 @@ server.on("upgrade", (req, socket, head) => {
     return;
   }
 
+  if (isDrJasminePath(pathname)) {
+    proxyDrJasmineUpgrade(req, socket, head);
+    return;
+  }
+
   socket.destroy();
 });
 
@@ -100,7 +117,8 @@ server.listen(port, "0.0.0.0", () => {
     [
       "[@seo/gateway] listening on http://127.0.0.1:" + String(port),
       "  /cae → http://127.0.0.1:4322",
-      "  /dr-jasmine, /cms → 404 (not migrated yet)",
+      "  /dr-jasmine → http://127.0.0.1:4323",
+      "  /cms → 404 (not migrated yet)",
       "",
     ].join("\n"),
   );

@@ -79,6 +79,70 @@ importers:
         specifier: ^5.8.2
         version: 5.9.3
 
+  apps/dr-jasmine:
+    dependencies:
+      '@astrojs/node':
+        specifier: ^9.5.5
+        version: 9.5.5(astro@5.18.2(@types/node@24.13.3)(rollup@4.62.2)(tsx@4.23.1)(typescript@5.9.3))
+      '@astrojs/react':
+        specifier: ^4.4.2
+        version: 4.4.2(@types/node@24.13.3)(@types/react-dom@19.2.3(@types/react@19.2.17))(@types/react@19.2.17)(react-dom@19.2.8(react@19.2.8))(react@19.2.8)(tsx@4.23.1)
+      '@astrojs/sitemap':
+        specifier: ^3.7.3
+        version: 3.7.3
+      '@seo/blog':
+        specifier: workspace:*
+        version: link:../../packages/blog
+      '@seo/db':
+        specifier: workspace:*
+        version: link:../../packages/db
+      '@tiptap/extension-link':
+        specifier: ^3.28.0
+        version: 3.28.0(@tiptap/core@3.28.0(@tiptap/pm@3.28.0))(@tiptap/pm@3.28.0)
+      '@tiptap/markdown':
+        specifier: ^3.28.0
+        version: 3.28.0(@tiptap/core@3.28.0(@tiptap/pm@3.28.0))(@tiptap/pm@3.28.0)
+      '@tiptap/pm':
+        specifier: ^3.28.0
+        version: 3.28.0
+      '@tiptap/react':
+        specifier: ^3.28.0
+        version: 3.28.0(@floating-ui/dom@1.8.0)(@tiptap/core@3.28.0(@tiptap/pm@3.28.0))(@tiptap/pm@3.28.0)(@types/react-dom@19.2.3(@types/react@19.2.17))(@types/react@19.2.17)(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
+      '@tiptap/starter-kit':
+        specifier: ^3.28.0
+        version: 3.28.0
+      '@types/react':
+        specifier: ^19.2.0
+        version: 19.2.17
+      '@types/react-dom':
+        specifier: ^19.2.0
+        version: 19.2.3(@types/react@19.2.17)
+      astro:
+        specifier: ^5.7.0
+        version: 5.18.2(@types/node@24.13.3)(rollup@4.62.2)(tsx@4.23.1)(typescript@5.9.3)
+      js-yaml:
+        specifier: ^4.1.0
+        version: 4.3.0
+      marked:
+        specifier: ^18.0.7
+        version: 18.0.7
+      react:
+        specifier: ^19.2.0
+        version: 19.2.8
+      react-dom:
+        specifier: ^19.2.0
+        version: 19.2.8(react@19.2.8)
+    devDependencies:
+      '@seo/config-typescript':
+        specifier: workspace:*
+        version: link:../../packages/config-typescript
+      '@types/js-yaml':
+        specifier: ^4.0.9
+        version: 4.0.9
+      typescript:
+        specifier: ^5.8.2
+        version: 5.9.3
+
   apps/gateway:
     dependencies:
       http-proxy:

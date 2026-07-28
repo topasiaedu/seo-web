@@ -1,0 +1,29 @@
+---
+/**
+ * @fileoverview Home FAQ band — GHL Q&A as a ruled accordion.
+ */
+import FaqAccordion from "@/components/faq/FaqAccordion.astro";
+import type { FaqItem } from "@/data/site";
+
+interface Props {
+  /** Full FAQ list from GHL. */
+  items: readonly FaqItem[];
+}
+
+const { items } = Astro.props;
+---
+
+<section class="dj-home-section dj-home-faq" aria-labelledby="dj-home-faq-heading">
+  <div class="dj-public-container">
+    <header class="dj-home-faq__header">
+      <h2 class="dj-home-heading" id="dj-home-faq-heading">Frequently Asked Questions</h2>
+    </header>
+
+    <FaqAccordion
+      items={items}
+      variant="ruled"
+      questionHeading="h3"
+      accordionId="dj-home-faq-accordion"
+    />
+  </div>
+</section>

@@ -1,0 +1,100 @@
+---
+/**
+ * Dr Jasmine Admin login — email/password only (no public signup).
+ * Admin users are provisioned in the Supabase Auth dashboard.
+ */
+import { LoginForm } from "../../components/admin/LoginForm";
+import { drJasmineSiteConfig } from "../../site-config";
+import {
+  joinAdminPath,
+  requireLocalsSupabase,
+} from "../../lib/admin-auth";
+import "../../styles/global.css";
+import "../../styles/public-fonts.css";
+import "../../styles/admin-theme.css";
+import "../../styles/admin-shell.css";
+import "../../styles/admin-forms.css";
+
+export const prerender = false;
+
+const adminBrandLabel = `${drJasmineSiteConfig.name} Admin`;
+const base = import.meta.env.BASE_URL;
+const adminHomePath = joinAdminPath(base, "admin/");
+const supabase = requireLocalsSupabase(Astro.locals.supabase);
+
+const {
+  data: { user },
+} = await supabase.auth.getUser();
+
+if (user !== null) {
+  return Astro.redirect(adminHomePath);
+}
+---
+
+<!doctype html>
+<html lang="en" data-theme="light">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex, nofollow" />
+    <title>{adminBrandLabel} Login</title>
+    <script is:inline define:vars={{ themeKey: "dr-jasmine-admin-theme" }}>
+      (function () {
+        try {
+          var stored = localStorage.getItem(themeKey);
+          var theme = stored === "dark" || stored === "light" ? stored : "light";
+          document.documentElement.setAttribute("data-theme", theme);
+        } catch (e) {
+          document.documentElement.setAttribute("data-theme", "light");
+        }
+      })();
+    </script>
+  </head>
+  <body class="cae-login">
+    <div class="cae-login__theme">
+      <button
+        type="button"
+        class="cae-admin-theme-toggle"
+        data-admin-theme-toggle
+        aria-label="Switch to dark mode"
+      >
+        Dark
+      </button>
+    </div>
+    <main class="cae-login__panel">
+      <h1 class="cae-login__title">{adminBrandLabel}</h1>
+      <p class="cae-login__hint">Sign in with your Admin account.</p>
+      <LoginForm client:load redirectTo={adminHomePath} />
+    </main>
+    <script>
+      import {
+        adminThemeToggleLabel,
+        adminThemeToggleText,
+        readStoredAdminTheme,
+        toggleAdminTheme,
+      } from "../../lib/admin-theme";
+
+      /**
+       * Syncs toggle button label/text with the active theme.
+       *
+       * @param button - Theme toggle button element.
+       */
+      function syncThemeToggle(button: HTMLButtonElement): void {
+        const theme = readStoredAdminTheme();
+        button.setAttribute("aria-label", adminThemeToggleLabel(theme));
+        button.textContent = adminThemeToggleText(theme);
+      }
+
+      const toggles = document.querySelectorAll<HTMLButtonElement>(
+        "[data-admin-theme-toggle]",
+      );
+      for (const button of toggles) {
+        syncThemeToggle(button);
+        button.addEventListener("click", () => {
+          toggleAdminTheme();
+          syncThemeToggle(button);
+        });
+      }
+    </script>
+  </body>
+</html>

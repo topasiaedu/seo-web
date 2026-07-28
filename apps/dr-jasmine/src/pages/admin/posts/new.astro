@@ -1,0 +1,49 @@
+---
+/**
+ * Dr Jasmine Admin — create a new Post.
+ * Loads site Author, categories, and existing tags for the React PostForm island.
+ */
+import {
+  getAuthorForSite,
+  listCategories,
+  listPosts,
+} from "@seo/blog";
+import { PostForm } from "../../../components/admin/PostForm";
+import { collectUniqueTags } from "../../../components/admin/TagsInput";
+import AdminLayout from "../../../layouts/AdminLayout.astro";
+import { joinAdminPath, requireLocalsSupabase } from "../../../lib/admin-auth";
+import { drJasmineSiteConfig } from "../../../site-config";
+
+export const prerender = false;
+
+const base = import.meta.env.BASE_URL;
+const siteId = drJasmineSiteConfig.projectId;
+const supabase = requireLocalsSupabase(Astro.locals.supabase);
+
+const [author, categories, posts] = await Promise.all([
+  getAuthorForSite(supabase, siteId),
+  listCategories(supabase, siteId),
+  listPosts(supabase, siteId),
+]);
+
+/** Flatten + dedupe tags from every Post for the TagsInput typeahead. */
+const existingTags = collectUniqueTags(posts.flatMap((post) => post.tags));
+
+const postsListHref = joinAdminPath(base, "admin/posts");
+const postsBaseHref = joinAdminPath(base, "admin/posts");
+---
+
+<AdminLayout title="Dr Jasmine Admin — New post" wide>
+  <PostForm
+    client:load
+    mode="create"
+    siteId={siteId}
+    postsListHref={postsListHref}
+    postsBaseHref={postsBaseHref}
+    author={author}
+    categories={categories}
+    existingTags={existingTags}
+    initialPost={null}
+    slugLocked={false}
+  />
+</AdminLayout>

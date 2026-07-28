@@ -6,11 +6,13 @@
     "node": ">=22"
   },
   "scripts": {
-    "dev": "concurrently -n gateway,cae -c blue,green \"pnpm --filter @seo/gateway dev\" \"pnpm --filter @seo/cae dev\"",
+    "dev": "concurrently -n gateway,cae,dr-jasmine -c blue,green,magenta \"pnpm --filter @seo/gateway dev\" \"pnpm --filter @seo/cae dev\" \"pnpm --filter @seo/dr-jasmine dev\"",
     "dev:gateway": "pnpm --filter @seo/gateway dev",
     "dev:cae": "pnpm --filter @seo/cae dev",
+    "dev:dr-jasmine": "pnpm --filter @seo/dr-jasmine dev",
     "build": "pnpm --filter @seo/cae build",
     "build:cae": "pnpm --filter @seo/cae build",
+    "build:dr-jasmine": "pnpm --filter @seo/dr-jasmine build",
     "preview": "pnpm --filter @seo/cae preview",
     "typecheck:gateway": "pnpm --filter @seo/gateway typecheck"
   },

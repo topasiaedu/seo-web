@@ -1,0 +1,15 @@
+---
+/**
+ * @fileoverview Closing CTA (`section-4vgQdH__sU`).
+ */
+import GhlFragment from "./GhlFragment.astro";
+import fragment from "./fragments/closing-cta.html?raw";
+
+interface Props {
+  registerUrl?: string;
+}
+
+const { registerUrl } = Astro.props;
+---
+
+<GhlFragment fragment={fragment} registerUrl={registerUrl} />

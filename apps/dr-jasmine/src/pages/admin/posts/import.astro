@@ -1,0 +1,40 @@
+---
+/**
+ * Dr Jasmine Admin — bulk import Posts from one pasted/uploaded Markdown document.
+ * Loads site Author, categories, and existing slugs for the BulkImportForm island.
+ */
+import { getAuthorForSite, listCategories, listPosts } from "@seo/blog";
+import { BulkImportForm } from "../../../components/admin/BulkImportForm";
+import AdminLayout from "../../../layouts/AdminLayout.astro";
+import { joinAdminPath, requireLocalsSupabase } from "../../../lib/admin-auth";
+import { drJasmineSiteConfig } from "../../../site-config";
+
+export const prerender = false;
+
+const base = import.meta.env.BASE_URL;
+const siteId = drJasmineSiteConfig.projectId;
+const supabase = requireLocalsSupabase(Astro.locals.supabase);
+
+const [author, categories, posts] = await Promise.all([
+  getAuthorForSite(supabase, siteId),
+  listCategories(supabase, siteId),
+  listPosts(supabase, siteId),
+]);
+
+const existingSlugs = posts.map((post) => post.slug);
+
+const postsListHref = joinAdminPath(base, "admin/posts");
+const postsBaseHref = joinAdminPath(base, "admin/posts");
+---
+
+<AdminLayout title="Dr Jasmine Admin — Bulk import posts" wide>
+  <BulkImportForm
+    client:load
+    siteId={siteId}
+    postsListHref={postsListHref}
+    postsBaseHref={postsBaseHref}
+    author={author}
+    categories={categories}
+    existingSlugs={existingSlugs}
+  />
+</AdminLayout>

@@ -1,0 +1,338 @@
+/**
+ * Dr Jasmine Admin chrome (header, main, body overrides).
+ * Lives in a real stylesheet — Astro layout `<style>` blocks were not winning
+ * against `global.css` body / marketing tokens in practice.
+ */
+
+/* Ensure light Admin tokens exist even before data-theme is set. */
+:root {
+  --admin-bg: #faf8f5;
+  --admin-bg-elevated: #ffffff;
+  --admin-bg-header: #ffffff;
+  --admin-surface: #ede8e1;
+  --admin-surface-soft: #e5dfd8;
+  --admin-text: #1c1917;
+  --admin-text-bright: #1c1917;
+  --admin-text-muted: #78716c;
+  --admin-border: #e5dfd8;
+  --admin-border-strong: #2d5e4c;
+  --admin-focus: #2d5e4c;
+  --admin-link: #2d5e4c;
+  --admin-link-hover: #244d3f;
+  --admin-accent: #2d5e4c;
+  --admin-accent-soft: rgba(45, 94, 76, 0.12);
+  --admin-btn-primary-bg: #2d5e4c;
+  --admin-btn-primary-text: #faf8f5;
+  --admin-btn-primary-border: #2d5e4c;
+  --admin-btn-primary-hover-bg: #244d3f;
+  --admin-btn-secondary-bg: transparent;
+  --admin-btn-secondary-text: #44403c;
+  --admin-btn-secondary-border: #e5dfd8;
+  --admin-btn-secondary-hover-border: #2d5e4c;
+  --admin-btn-secondary-hover-text: #244d3f;
+  --admin-btn-danger-bg: transparent;
+  --admin-btn-danger-text: #a11f35;
+  --admin-btn-danger-border: #e8a0ab;
+  --admin-btn-danger-hover-text: #7a1528;
+  --admin-btn-danger-hover-border: #c94a5e;
+  --admin-danger-bg: #fdecef;
+  --admin-danger-border: #e8a0ab;
+  --admin-danger-text: #7a1528;
+  --admin-success-bg: #eef5f1;
+  --admin-success-border: #bfd9cc;
+  --admin-success-text: #244d3f;
+  --admin-status-draft-bg: rgba(184, 134, 11, 0.14);
+  --admin-status-draft-text: #8a6508;
+  --admin-status-published-bg: rgba(45, 94, 76, 0.14);
+  --admin-status-published-text: #244d3f;
+  --admin-status-archived-bg: rgba(120, 113, 108, 0.14);
+  --admin-status-archived-text: #57534e;
+  --admin-editor-bg: #ffffff;
+  --admin-editor-chrome: #faf8f5;
+  --admin-editor-border: #e5dfd8;
+  --admin-editor-text: #1c1917;
+  --admin-editor-muted: #78716c;
+  --admin-editor-active: #2d5e4c;
+  --admin-editor-active-text: #faf8f5;
+  --admin-editor-code-bg: #ede8e1;
+  --admin-editor-link: #2d5e4c;
+  --admin-editor-placeholder: #a8a29e;
+  --admin-editor-hover: #eef5f1;
+  --admin-shadow: 0 1px 2px rgba(28, 25, 23, 0.06);
+  --admin-radius: 0.5rem;
+  --admin-font: "Plus Jakarta Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+}
+
+/**
+ * Beat `global.css` body background so Admin stays on brand ivory/forest chrome.
+ */
+body.cae-admin,
+body.cae-login {
+  margin: 0;
+  min-height: 100vh;
+  color: var(--admin-text);
+  background-color: var(--admin-bg);
+  background-image: none;
+  font-family: var(--admin-font);
+  -webkit-font-smoothing: antialiased;
+}
+
+body.cae-admin a:not(.admin-btn):not(.admin-link):not(.cae-admin__nav-link):not(.cae-admin__brand),
+body.cae-login a:not(.admin-btn):not(.admin-link) {
+  color: inherit;
+}
+
+/* Anchor buttons must keep their own text colors (beat `a { color: inherit }`). */
+body.cae-admin a.admin-btn,
+body.cae-login a.admin-btn {
+  color: var(--admin-btn-secondary-text);
+}
+
+body.cae-admin a.admin-btn--primary,
+body.cae-login a.admin-btn--primary {
+  color: var(--admin-btn-primary-text);
+}
+
+body.cae-admin a.admin-btn--primary:hover,
+body.cae-admin a.admin-btn--primary:focus-visible,
+body.cae-login a.admin-btn--primary:hover,
+body.cae-login a.admin-btn--primary:focus-visible {
+  color: var(--admin-btn-primary-text);
+}
+
+/* Beat `global.css` `main:not(.cae-home)` max-width: 40rem. */
+body.cae-admin main.cae-admin__main {
+  max-width: 56rem;
+  margin: 0 auto;
+  padding: 1.5rem 1.5rem 2rem;
+  font-family: var(--admin-font);
+  color: var(--admin-text);
+}
+
+body.cae-admin main.cae-admin__main--wide {
+  max-width: 72rem;
+}
+
+.cae-admin__header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem 1.25rem;
+  padding: 0.85rem 1.5rem;
+  border-bottom: 1px solid var(--admin-border);
+  background-color: var(--admin-bg-header);
+  color: var(--admin-text);
+}
+
+.cae-admin__brand {
+  flex: 0 0 auto;
+  font-weight: 700;
+  font-size: 1.05rem;
+  text-decoration: none;
+  color: var(--admin-text-bright);
+}
+
+.cae-admin__brand:hover,
+.cae-admin__brand:focus-visible {
+  color: var(--admin-link-hover);
+}
+
+.cae-admin__nav {
+  display: flex;
+  flex: 1 1 auto;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.35rem 0.25rem;
+  min-width: 0;
+}
+
+.cae-admin__nav-links {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.15rem 0.15rem;
+}
+
+.cae-admin__nav-link {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.4rem 0.65rem;
+  border-radius: var(--admin-radius);
+  color: var(--admin-text-muted);
+  text-decoration: none;
+  font-size: 0.92rem;
+}
+
+.cae-admin__nav-link:hover,
+.cae-admin__nav-link:focus-visible {
+  color: var(--admin-link-hover);
+  background-color: var(--admin-accent-soft);
+}
+
+.cae-admin__nav-link--active {
+  color: var(--admin-text-bright);
+  font-weight: 600;
+  background-color: var(--admin-accent-soft);
+}
+
+.cae-admin__nav-tools {
+  display: flex;
+  flex-wrap: nowrap;
+  align-items: center;
+  gap: 0.5rem;
+  margin-left: 0.5rem;
+  padding-left: 0.75rem;
+  border-left: 1px solid var(--admin-border);
+}
+
+.cae-admin__logout {
+  display: inline-flex;
+  margin: 0;
+}
+
+.cae-admin__logout button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 2rem;
+  margin: 0;
+  padding: 0.35rem 0.7rem;
+  border: 1px solid var(--admin-border);
+  border-radius: var(--admin-radius);
+  background: transparent;
+  color: var(--admin-text-muted);
+  font: inherit;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.cae-admin__logout button:hover,
+.cae-admin__logout button:focus-visible {
+  color: var(--admin-text-bright);
+  border-color: var(--admin-border-strong);
+  outline: none;
+}
+
+@media (max-width: 40rem) {
+  .cae-admin__nav {
+    flex-basis: 100%;
+    justify-content: flex-start;
+  }
+
+  .cae-admin__nav-tools {
+    margin-left: 0;
+    padding-left: 0;
+    border-left: none;
+  }
+}
+
+/* —— Login page —— */
+
+body.cae-login {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem;
+}
+
+.cae-login__theme {
+  position: fixed;
+  top: 1rem;
+  right: 1rem;
+  z-index: 2;
+}
+
+.cae-login__panel {
+  width: 100%;
+  max-width: 22rem;
+  padding: 1.75rem;
+  border: 1px solid var(--admin-border);
+  border-radius: var(--admin-radius);
+  background-color: var(--admin-bg-elevated);
+  box-shadow: var(--admin-shadow);
+  color: var(--admin-text);
+}
+
+.cae-login__title {
+  margin: 0 0 0.5rem;
+  font-size: 1.5rem;
+  color: var(--admin-text-bright);
+}
+
+.cae-login__hint {
+  margin: 0 0 1.25rem;
+  color: var(--admin-text-muted);
+  font-size: 0.95rem;
+}
+
+.cae-login-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.cae-login-form__field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.cae-login-form__label {
+  font-size: 0.9rem;
+  color: var(--admin-text-muted);
+}
+
+.cae-login-form__input {
+  padding: 0.65rem 0.75rem;
+  border: 1px solid var(--admin-border);
+  border-radius: 0.25rem;
+  background-color: var(--admin-surface);
+  color: var(--admin-text-bright);
+  font: inherit;
+}
+
+.cae-login-form__input:focus {
+  outline: 2px solid var(--admin-focus);
+  outline-offset: 1px;
+}
+
+.cae-login-form__input:disabled {
+  opacity: 0.65;
+}
+
+.cae-login-form__error {
+  margin: 0;
+  padding: 0.65rem 0.75rem;
+  border: 1px solid var(--admin-danger-border);
+  border-radius: var(--admin-radius);
+  background-color: var(--admin-danger-bg);
+  color: var(--admin-danger-text);
+  font-size: 0.9rem;
+}
+
+.cae-login-form__submit {
+  margin-top: 0.25rem;
+  padding: 0.75rem 1rem;
+  border: 1px solid var(--admin-btn-primary-border);
+  border-radius: var(--admin-radius);
+  background-color: var(--admin-btn-primary-bg);
+  color: var(--admin-btn-primary-text);
+  font: inherit;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  cursor: pointer;
+}
+
+.cae-login-form__submit:hover:not(:disabled),
+.cae-login-form__submit:focus-visible:not(:disabled) {
+  background-color: var(--admin-btn-primary-hover-bg);
+}
+
+.cae-login-form__submit:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}

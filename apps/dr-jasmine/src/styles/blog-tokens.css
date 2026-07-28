@@ -1,0 +1,22 @@
+/**
+ * Dr Jasmine blog design tokens — light ivory / forest (matches public site).
+ * Consumed by `blog-page.css` under `.blog-page`.
+ */
+:root {
+  --dj-gutter: 1.25rem;
+  --dj-font-sans: "Plus Jakarta Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --dj-font-display: "DM Serif Display", Georgia, "Times New Roman", serif;
+  --dj-bg: #faf8f5;
+  --dj-bg-deep: #ede8e1;
+  --dj-surface: #ffffff;
+  --dj-text: #1c1917;
+  --dj-text-bright: #1c1917;
+  --dj-text-soft: #44403c;
+  --dj-text-muted: #78716c;
+  --dj-text-muted-hero: #57534e;
+  --dj-accent: #2d5e4c;
+  --dj-accent-bright: #3a735c;
+  --dj-accent-soft: #244d3f;
+  --dj-border: rgba(28, 25, 23, 0.12);
+  --dj-cta-border: rgba(45, 94, 76, 0.45);
+}

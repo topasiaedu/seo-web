@@ -1,0 +1,117 @@
+/**
+ * Public site footer — Option A Clinical Trust (T3).
+ */
+
+.dj-site-footer {
+  margin-top: auto;
+  border-top: 1px solid var(--dj-public-border-subtle);
+  background: var(--dj-public-bg-soft);
+  padding-block: var(--dj-public-space-12);
+}
+
+.dj-site-footer__grid {
+  display: grid;
+  gap: var(--dj-public-space-8);
+}
+
+.dj-site-footer__brand {
+  max-width: 28rem;
+}
+
+.dj-site-footer__title {
+  margin: 0 0 var(--dj-public-space-3);
+  font-family: var(--dj-public-font-display);
+  font-size: 1.25rem;
+  font-weight: var(--dj-public-font-weight-regular);
+  color: var(--dj-public-text-bright);
+}
+
+.dj-site-footer__blurb {
+  margin: 0;
+  color: var(--dj-public-text-muted);
+  font-size: 0.9375rem;
+  line-height: 1.65;
+}
+
+.dj-site-footer__section-title {
+  margin: 0 0 var(--dj-public-space-3);
+  font-size: 0.8125rem;
+  font-weight: var(--dj-public-font-weight-semibold);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--dj-public-text-soft);
+}
+
+.dj-site-footer__links {
+  display: flex;
+  flex-direction: column;
+  gap: var(--dj-public-space-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.dj-site-footer__link {
+  color: var(--dj-public-text-soft);
+  font-size: 0.9375rem;
+  text-decoration: none;
+}
+
+.dj-site-footer__link:hover {
+  color: var(--dj-public-teal);
+}
+
+.dj-site-footer__socials {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--dj-public-space-3);
+}
+
+.dj-site-footer__social {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--dj-public-space-2);
+  padding: var(--dj-public-space-2) var(--dj-public-space-3);
+  border: 1px solid var(--dj-public-border);
+  border-radius: var(--dj-public-radius-full);
+  background: var(--dj-public-bg-elevated);
+  color: var(--dj-public-text-soft);
+  font-size: 0.875rem;
+  font-weight: var(--dj-public-font-weight-medium);
+  text-decoration: none;
+}
+
+.dj-site-footer__social:hover {
+  border-color: var(--dj-public-teal);
+  color: var(--dj-public-teal);
+}
+
+.dj-site-footer__legal {
+  margin-top: var(--dj-public-space-8);
+  padding-top: var(--dj-public-space-6);
+  border-top: 1px solid var(--dj-public-border-subtle);
+}
+
+.dj-site-footer__disclaimer {
+  margin: 0 0 var(--dj-public-space-3);
+  color: var(--dj-public-text-muted);
+  font-size: 0.8125rem;
+  line-height: 1.6;
+}
+
+.dj-site-footer__meta {
+  margin: 0;
+  color: var(--dj-public-text-muted);
+  font-size: 0.8125rem;
+}
+
+.dj-site-footer__meta a {
+  color: var(--dj-public-teal);
+}
+
+@media (min-width: 768px) {
+  .dj-site-footer__grid {
+    grid-template-columns: 1.4fr 1fr 1fr;
+    align-items: start;
+  }
+}

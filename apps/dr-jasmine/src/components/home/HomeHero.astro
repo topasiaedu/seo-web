@@ -1,0 +1,47 @@
+---
+/**
+ * @fileoverview Home hero from GHL `hero.html` copy + GHL portrait asset.
+ * Layout is native; all visible strings come from the LDP.
+ */
+import type { ImageMetadata } from "astro";
+import RegisterCta from "@/components/site/RegisterCta.astro";
+import { landingImageAlts } from "@/data/landing/images";
+import type { HomeCopy } from "@/data/site";
+
+interface Props {
+  /** Exact GHL hero copy. */
+  copy: HomeCopy;
+  /** Doctor portrait from GHL CDN asset. */
+  portrait: ImageMetadata;
+}
+
+const { copy, portrait } = Astro.props;
+const portraitAlt = landingImageAlts.drJasminePortrait;
+/** GHL primary CTA label from the registration LDP. */
+const GHL_CTA_LABEL = "Secure My Seat";
+---
+
+<section class="dj-home-hero" aria-labelledby="dj-home-hero-headline">
+  <div class="dj-home-hero__grid">
+    <div class="dj-home-hero__copy">
+      <p class="dj-home-hero__tagline">{copy.eyebrow}</p>
+      <h1 class="dj-home-hero__headline" id="dj-home-hero-headline">{copy.headline}</h1>
+      <p class="dj-home-hero__subhead">{copy.subhead}</p>
+      <div class="dj-home-hero__cta">
+        <RegisterCta label={GHL_CTA_LABEL} />
+      </div>
+    </div>
+
+    <figure class="dj-home-hero__portrait">
+      <img
+        class="dj-home-hero__portrait-img"
+        src={portrait.src}
+        width={portrait.width}
+        height={portrait.height}
+        alt={portraitAlt}
+        decoding="async"
+        fetchpriority="high"
+      />
+    </figure>
+  </div>
+</section>

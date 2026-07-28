@@ -1,0 +1,68 @@
+---
+/**
+ * Shared document-head SEO tags for Dr Jasmine blog layouts.
+ * Emits description, robots, canonical, Open Graph, Twitter, and optional JSON-LD.
+ */
+import { blogMeta, requireMetaString } from "@/data/blog/meta";
+import { stringifyJsonLd, type JsonLdNode } from "@/data/blog/jsonld";
+import { toAbsoluteUrl, toCanonicalUrl } from "@/lib/site-url";
+
+interface Props {
+  title: string;
+  description: string;
+  /** Open Graph / Twitter card type (usually `website`). */
+  ogType?: string;
+  siteName?: string;
+  twitterCard?: string;
+  /** Optional absolute or site-relative OG image. */
+  ogImage?: string;
+  /** When set, embeds a JSON-LD script in `<head>`. */
+  jsonLd?: JsonLdNode;
+}
+
+const {
+  title,
+  description,
+  ogType = "website",
+  siteName = blogMeta.siteName,
+  twitterCard = blogMeta.twitterCard,
+  ogImage,
+  jsonLd,
+} = Astro.props;
+
+const pageTitle = requireMetaString(title, blogMeta.siteName);
+const metaDescription = requireMetaString(
+  description,
+  blogMeta.defaultDescription,
+);
+const canonicalUrl = toCanonicalUrl(Astro.url.pathname);
+const defaultOgImage = toAbsoluteUrl(import.meta.env.BASE_URL);
+const resolvedOgImage =
+  typeof ogImage === "string" && ogImage.trim().length > 0
+    ? toAbsoluteUrl(ogImage.trim())
+    : defaultOgImage;
+const jsonLdText =
+  jsonLd !== undefined ? stringifyJsonLd(jsonLd) : undefined;
+---
+
+<meta name="description" content={metaDescription} />
+<meta name="robots" content="index,follow" />
+<link rel="canonical" href={canonicalUrl} />
+
+<meta property="og:title" content={pageTitle} />
+<meta property="og:description" content={metaDescription} />
+<meta property="og:url" content={canonicalUrl} />
+<meta property="og:image" content={resolvedOgImage} />
+<meta property="og:type" content={ogType} />
+<meta property="og:site_name" content={siteName} />
+
+<meta name="twitter:card" content={twitterCard} />
+<meta name="twitter:title" content={pageTitle} />
+<meta name="twitter:description" content={metaDescription} />
+<meta name="twitter:image" content={resolvedOgImage} />
+
+{
+  jsonLdText !== undefined ? (
+    <script type="application/ld+json" set:html={jsonLdText} />
+  ) : null
+}

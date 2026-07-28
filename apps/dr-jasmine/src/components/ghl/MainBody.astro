@@ -1,0 +1,16 @@
+---
+/**
+ * @fileoverview Authority + primary CTA + discover + countdown
+ * (`section-0Po5h7CrMv` — plan inventory items 3–6 in one GHL section).
+ */
+import GhlFragment from "./GhlFragment.astro";
+import fragment from "./fragments/main-body.html?raw";
+
+interface Props {
+  registerUrl?: string;
+}
+
+const { registerUrl } = Astro.props;
+---
+
+<GhlFragment fragment={fragment} registerUrl={registerUrl} />

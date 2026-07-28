@@ -1,0 +1,15 @@
+---
+/**
+ * @fileoverview LIVE strip banner (`section--f-kMZ9azH`).
+ */
+import GhlFragment from "./GhlFragment.astro";
+import fragment from "./fragments/banner-live.html?raw";
+
+interface Props {
+  registerUrl?: string;
+}
+
+const { registerUrl } = Astro.props;
+---
+
+<GhlFragment fragment={fragment} registerUrl={registerUrl} />

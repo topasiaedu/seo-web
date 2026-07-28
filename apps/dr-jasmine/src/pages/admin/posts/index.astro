@@ -1,0 +1,439 @@
+---
+/**
+ * Dr Jasmine Admin Posts list — filter by status; link to create / edit routes.
+ * Auth is enforced by middleware; this page assumes a signed-in Admin user.
+ */
+import { isPostLive, isPostScheduled, listPosts, type BlogPost } from "@seo/blog";
+import {
+  formatAdminDateTime,
+  formatPostDisplayLabel,
+  formatPostFilterLabel,
+  listPostsOptionsForFilter,
+  parseStatusFilter,
+  type PostStatusFilter,
+} from "../../../components/admin/admin-post-list";
+import AdminLayout from "../../../layouts/AdminLayout.astro";
+import { joinAdminPath, requireLocalsSupabase } from "../../../lib/admin-auth";
+import { drJasmineSiteConfig } from "../../../site-config";
+
+export const prerender = false;
+
+const base = import.meta.env.BASE_URL;
+const supabase = requireLocalsSupabase(Astro.locals.supabase);
+const siteId = drJasmineSiteConfig.projectId;
+
+const activeFilter = parseStatusFilter(Astro.url.searchParams.get("status"));
+const fetchedPosts = await listPosts(
+  supabase,
+  siteId,
+  listPostsOptionsForFilter(activeFilter),
+);
+
+const posts = ((): readonly BlogPost[] => {
+  if (activeFilter === "published") {
+    return fetchedPosts.filter((post) => isPostLive(post));
+  }
+  if (activeFilter === "scheduled") {
+    return fetchedPosts.filter((post) => isPostScheduled(post));
+  }
+  return fetchedPosts;
+})();
+
+const newPostCreateHref = joinAdminPath(base, "admin/posts/new");
+const bulkImportHref = joinAdminPath(base, "admin/posts/import");
+const postsBaseHref = joinAdminPath(base, "admin/posts");
+
+/**
+ * Builds a Posts list href for a given status filter tab.
+ *
+ * @param filter - Target filter (`all` omits the query string).
+ * @returns Absolute-from-origin Admin path.
+ */
+function filterHref(filter: PostStatusFilter): string {
+  if (filter === "all") {
+    return postsBaseHref;
+  }
+  return `${postsBaseHref}?status=${filter}`;
+}
+
+const filterTabs: ReadonlyArray<{
+  filter: PostStatusFilter;
+  label: string;
+}> = [
+  { filter: "all", label: "All" },
+  { filter: "draft", label: "Draft" },
+  { filter: "published", label: "Published" },
+  { filter: "scheduled", label: "Scheduled" },
+  { filter: "archived", label: "Archived" },
+];
+
+/**
+ * CSS modifier for a status pill.
+ *
+ * @param post - Post row; scheduled posts use a dedicated modifier.
+ * @returns BEM modifier class name.
+ */
+function statusModifier(post: BlogPost): string {
+  if (isPostScheduled(post)) {
+    return "admin-posts__status--scheduled";
+  }
+  return `admin-posts__status--${post.status}`;
+}
+---
+
+<AdminLayout title="Dr Jasmine Admin Posts">
+  <div class="admin-posts">
+    <header class="admin-posts__header">
+      <div>
+        <h1 class="admin-page__title">Posts</h1>
+        <p class="admin-page__lede">
+          Manage Dr Jasmine drafts, published posts, and archived entries.
+        </p>
+      </div>
+      <div class="admin-posts__header-actions">
+        <a class="admin-btn" href={bulkImportHref}>Bulk import</a>
+        <a class="admin-btn admin-btn--primary" href={newPostCreateHref}>New post</a>
+      </div>
+    </header>
+
+    <nav class="admin-posts__filters" aria-label="Filter by status">
+      {
+        filterTabs.map(({ filter, label }) => {
+          const isActive = filter === activeFilter;
+          return (
+            <a
+              class:list={[
+                "admin-posts__filter",
+                isActive ? "admin-posts__filter--active" : null,
+              ]}
+              href={filterHref(filter)}
+              aria-current={isActive ? "page" : undefined}
+            >
+              {label}
+            </a>
+          );
+        })
+      }
+    </nav>
+
+    {
+      posts.length === 0 ? (
+        <p class="admin-empty">
+          {activeFilter === "all" ? (
+            <>
+              No posts yet. <a href={newPostCreateHref}>Create your first post</a>.
+            </>
+          ) : activeFilter === "scheduled" ? (
+            <>
+              No scheduled posts. Set a future &ldquo;Publish at&rdquo; date when
+              publishing a post.
+            </>
+          ) : (
+            <>
+              No {formatPostFilterLabel(activeFilter).toLowerCase()} posts.{" "}
+              <a href={filterHref("all")}>Show all</a> or{" "}
+              <a href={newPostCreateHref}>create a post</a>.
+            </>
+          )}
+        </p>
+      ) : (
+        <>
+          <div class="admin-posts__table-wrap">
+            <table class="admin-posts__table">
+              <thead>
+                <tr>
+                  <th scope="col">Title</th>
+                  <th scope="col">Slug</th>
+                  <th scope="col">Status</th>
+                  <th scope="col">Category</th>
+                  <th scope="col">Author</th>
+                  <th scope="col">Updated</th>
+                  <th scope="col">
+                    <span class="admin-posts__sr-only">Actions</span>
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                {posts.map((post) => {
+                  const editHref = joinAdminPath(
+                    base,
+                    `admin/posts/${post.id}/edit`,
+                  );
+                  const categoryName = post.category?.name ?? "—";
+                  const authorName = post.author?.name ?? "—";
+                  return (
+                    <tr>
+                      <td data-label="Title">
+                        <a class="admin-posts__title-link" href={editHref}>
+                          {post.title}
+                        </a>
+                      </td>
+                      <td data-label="Slug">
+                        <code class="admin-posts__slug">{post.slug}</code>
+                      </td>
+                      <td data-label="Status">
+                        <span
+                          class:list={[
+                            "admin-posts__status",
+                            statusModifier(post),
+                          ]}
+                        >
+                          {formatPostDisplayLabel(post)}
+                        </span>
+                      </td>
+                      <td data-label="Category">{categoryName}</td>
+                      <td data-label="Author">{authorName}</td>
+                      <td data-label="Updated">
+                        <time datetime={post.updatedAt}>
+                          {formatAdminDateTime(post.updatedAt)}
+                        </time>
+                      </td>
+                      <td data-label="Actions">
+                        <a class="admin-link" href={editHref}>
+                          Edit
+                        </a>
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+
+          <ul class="admin-posts__cards">
+            {posts.map((post) => {
+              const editHref = joinAdminPath(
+                base,
+                `admin/posts/${post.id}/edit`,
+              );
+              const categoryName = post.category?.name ?? "—";
+              const authorName = post.author?.name ?? "—";
+              return (
+                <li class="admin-posts__card">
+                  <div class="admin-posts__card-top">
+                    <a class="admin-posts__title-link" href={editHref}>
+                      {post.title}
+                    </a>
+                    <span
+                      class:list={[
+                        "admin-posts__status",
+                        statusModifier(post),
+                      ]}
+                    >
+                      {formatPostDisplayLabel(post)}
+                    </span>
+                  </div>
+                  <p class="admin-posts__card-meta">
+                    <code class="admin-posts__slug">{post.slug}</code>
+                  </p>
+                  <p class="admin-posts__card-meta">
+                    {categoryName} · {authorName}
+                  </p>
+                  <div class="admin-posts__card-footer">
+                    <time datetime={post.updatedAt}>
+                      Updated {formatAdminDateTime(post.updatedAt)}
+                    </time>
+                    <a class="admin-link" href={editHref}>
+                      Edit
+                    </a>
+                  </div>
+                </li>
+              );
+            })}
+          </ul>
+        </>
+      )
+    }
+  </div>
+</AdminLayout>
+
+<style>
+  .admin-posts__header {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 1rem 1.5rem;
+    margin-bottom: 1.25rem;
+  }
+
+  .admin-posts__header-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.6rem;
+  }
+
+  .admin-posts__filters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    margin-bottom: 1.25rem;
+  }
+
+  .admin-posts__filter {
+    padding: 0.35rem 0.75rem;
+    border: 1px solid transparent;
+    border-radius: 0.3rem;
+    color: var(--admin-text-muted);
+    text-decoration: none;
+    font-size: 0.9rem;
+  }
+
+  .admin-posts__filter:hover,
+  .admin-posts__filter:focus-visible {
+    color: var(--admin-link-hover);
+  }
+
+  .admin-posts__filter--active {
+    border-color: var(--admin-border);
+    background: var(--admin-surface);
+    color: var(--admin-text-bright);
+    font-weight: 600;
+  }
+
+  .admin-posts__table-wrap {
+    overflow-x: auto;
+    border: 1px solid var(--admin-border);
+    border-radius: var(--admin-radius);
+    background: var(--admin-bg-elevated);
+  }
+
+  .admin-posts__table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.9rem;
+  }
+
+  .admin-posts__table th,
+  .admin-posts__table td {
+    padding: 0.7rem 0.85rem;
+    text-align: left;
+    vertical-align: top;
+    border-bottom: 1px solid var(--admin-border);
+    color: var(--admin-text);
+  }
+
+  .admin-posts__table th {
+    color: var(--admin-text-muted);
+    font-weight: 600;
+    white-space: nowrap;
+    background: var(--admin-surface-soft);
+  }
+
+  .admin-posts__table tbody tr:last-child td {
+    border-bottom: none;
+  }
+
+  .admin-posts__title-link {
+    color: var(--admin-text-bright);
+    text-decoration: none;
+    font-weight: 600;
+  }
+
+  .admin-posts__title-link:hover,
+  .admin-posts__title-link:focus-visible {
+    color: var(--admin-link-hover);
+  }
+
+  .admin-posts__slug {
+    font-size: 0.8rem;
+    color: var(--admin-text-muted);
+    word-break: break-all;
+  }
+
+  .admin-posts__status {
+    display: inline-block;
+    padding: 0.15rem 0.45rem;
+    border-radius: 0.25rem;
+    font-size: 0.8rem;
+    font-weight: 600;
+    white-space: nowrap;
+  }
+
+  .admin-posts__status--draft {
+    background: var(--admin-status-draft-bg);
+    color: var(--admin-status-draft-text);
+  }
+
+  .admin-posts__status--published {
+    background: var(--admin-status-published-bg);
+    color: var(--admin-status-published-text);
+  }
+
+  .admin-posts__status--scheduled {
+    background: rgba(180, 120, 20, 0.14);
+    color: #8a5a10;
+  }
+
+  .admin-posts__status--archived {
+    background: var(--admin-status-archived-bg);
+    color: var(--admin-status-archived-text);
+  }
+
+  .admin-posts__sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+  }
+
+  .admin-posts__cards {
+    display: none;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    gap: 0.75rem;
+  }
+
+  .admin-posts__card {
+    display: flex;
+    flex-direction: column;
+    gap: 0.45rem;
+    padding: 1rem 1.1rem;
+    border: 1px solid var(--admin-border);
+    border-radius: var(--admin-radius);
+    background: var(--admin-bg-elevated);
+    box-shadow: var(--admin-shadow);
+  }
+
+  .admin-posts__card-top {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 0.5rem;
+  }
+
+  .admin-posts__card-meta {
+    margin: 0;
+    color: var(--admin-text-muted);
+    font-size: 0.85rem;
+  }
+
+  .admin-posts__card-footer {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+    margin-top: 0.25rem;
+    color: var(--admin-text-muted);
+    font-size: 0.85rem;
+  }
+
+  @media (max-width: 47.99rem) {
+    .admin-posts__table-wrap {
+      display: none;
+    }
+
+    .admin-posts__cards {
+      display: flex;
+      flex-direction: column;
+    }
+  }
+</style>

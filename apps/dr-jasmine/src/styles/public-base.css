@@ -1,0 +1,87 @@
+/**
+ * Public site base reset and typography utilities (T1).
+ *
+ * Import order for PublicLayout (T3):
+ *   1. public-fonts.css
+ *   2. tokens-public.css
+ *   3. public-base.css
+ *
+ * Wrap public page content in `.dj-public` so Admin/blog global styles stay untouched.
+ */
+
+@import "./public-fonts.css";
+@import "./tokens-public.css";
+
+.dj-public {
+  color: var(--dj-public-text);
+  background-color: var(--dj-public-bg);
+  font-family: var(--dj-public-font-body);
+  font-weight: var(--dj-public-font-weight-regular);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+
+.dj-public *,
+.dj-public *::before,
+.dj-public *::after {
+  box-sizing: border-box;
+}
+
+.dj-public img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+}
+
+.dj-public a {
+  color: var(--dj-public-teal);
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.15em;
+}
+
+.dj-public a:hover {
+  color: var(--dj-public-teal-bright);
+}
+
+/**
+ * Primary CTAs must keep light label text — the generic `a` color above
+ * would otherwise paint forest-on-forest and hide the label.
+ */
+.dj-public a.dj-register-cta--primary,
+.dj-public a.dj-register-cta--primary:hover,
+.dj-public a.dj-register-cta--primary:focus-visible {
+  color: #ffffff;
+  text-decoration: none;
+}
+
+.dj-public :focus-visible {
+  outline: var(--dj-public-focus-offset) solid var(--dj-public-focus);
+  outline-offset: var(--dj-public-focus-offset);
+  box-shadow: var(--dj-public-focus-ring);
+}
+
+.dj-public-display {
+  font-family: var(--dj-public-font-display);
+  font-weight: var(--dj-public-font-weight-regular);
+  line-height: 1.15;
+  color: var(--dj-public-text-bright);
+  letter-spacing: -0.01em;
+}
+
+.dj-public-body {
+  font-family: var(--dj-public-font-body);
+  color: var(--dj-public-text);
+}
+
+.dj-public-muted {
+  color: var(--dj-public-text-muted);
+}
+
+.dj-public-container {
+  width: min(100% - (var(--dj-public-gutter) * 2), var(--dj-public-max-width));
+  margin-inline: auto;
+}
+
+.dj-public-section {
+  padding-block: var(--dj-public-section-y);
+}

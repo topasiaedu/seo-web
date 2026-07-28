@@ -1,0 +1,296 @@
+---
+/**
+ * Dr Jasmine public blog Post detail — story layout with a promise-first lead.
+ * Hero → key takeaway → dek → byline → body; tags / FAQ / sources sit below.
+ * Published + live only via `getPublishedPostBySlug`; 404 when missing.
+ */
+import {
+  getPublishedPostBySlug,
+  listPublishedPosts,
+} from "@seo/blog";
+import AuthorByline from "@/components/blog/AuthorByline.astro";
+import AuthorCard from "@/components/blog/AuthorCard.astro";
+import BlogLayout from "@/components/blog/BlogLayout.astro";
+import FaqSection from "@/components/blog/FaqSection.astro";
+import KeyTakeaway from "@/components/blog/KeyTakeaway.astro";
+import PostTags from "@/components/blog/PostTags.astro";
+import RelatedPosts from "@/components/blog/RelatedPosts.astro";
+import SourcesSection from "@/components/blog/SourcesSection.astro";
+import TableOfContents from "@/components/blog/TableOfContents.astro";
+import {
+  buildBlogIndexHref,
+  formatBlogDate,
+  formatReadingTime,
+  joinBlogPath,
+  requireBlogSupabase,
+  resolvePostOgImage,
+  resolvePostSeoDescription,
+  resolvePostSeoTitle,
+} from "@/components/blog/blog-format";
+import { resolveRelatedPublishedPosts } from "@/components/blog/resolve-related";
+import { buildBlogPostJsonLd, type JsonLdNode } from "@/data/blog/jsonld";
+import { renderMarkdownWithToc, type TocHeading } from "@/lib/markdown";
+import { toAbsoluteUrl } from "@/lib/site-url";
+import { drJasmineSiteConfig } from "@/site-config";
+import type { BlogPost } from "@seo/blog";
+
+export const prerender = false;
+
+const SITE_NAME = drJasmineSiteConfig.name;
+
+const supabase = requireBlogSupabase(Astro.locals.supabase);
+const siteId = drJasmineSiteConfig.projectId;
+
+const rawSlug = Astro.params.slug;
+const slug = typeof rawSlug === "string" ? rawSlug.trim() : "";
+
+const post =
+  slug.length > 0
+    ? await getPublishedPostBySlug(supabase, siteId, slug)
+    : null;
+
+if (post === null) {
+  Astro.response.status = 404;
+}
+
+const blogIndexHref = joinBlogPath(import.meta.env.BASE_URL, "blog");
+
+/** Rendered only when a published Post was found. */
+let pageTitle = `Post not found · ${SITE_NAME} Blog`;
+let pageDescription = "This blog post is unavailable.";
+let ogImage: string | undefined;
+let jsonLd: JsonLdNode | undefined;
+let bodyHtml = "";
+let toc: TocHeading[] = [];
+let related: BlogPost[] = [];
+let dateLabel = "";
+let readingLabel = "";
+let categoryName = "";
+let categoryHref = "";
+let hasHero = false;
+let heroAlt = "";
+let keyTakeaway = "";
+let dek = "";
+
+if (post !== null) {
+  const rendered = renderMarkdownWithToc(post.bodyMd);
+  bodyHtml = rendered.html;
+  toc = rendered.toc;
+
+  const published = await listPublishedPosts(supabase, siteId);
+  related = resolveRelatedPublishedPosts(post, published);
+
+  const seoTitle = resolvePostSeoTitle(post.seoTitle, post.title);
+  const seoDescription = resolvePostSeoDescription(
+    post.seoDescription,
+    post.excerpt,
+    post.title,
+  );
+
+  pageTitle = `${seoTitle} · ${SITE_NAME}`;
+  pageDescription = seoDescription;
+  ogImage = resolvePostOgImage(post.ogImageUrl, post.heroImageUrl);
+  jsonLd = buildBlogPostJsonLd(post, {
+    pathname: Astro.url.pathname,
+    siteName: SITE_NAME,
+    ogImageUrl:
+      ogImage !== undefined ? toAbsoluteUrl(ogImage) : undefined,
+    headline: seoTitle,
+    description: seoDescription,
+  });
+  dateLabel = formatBlogDate(post.publishedAt);
+  readingLabel = formatReadingTime(post.readingTimeMinutes);
+  categoryName =
+    post.category !== null && typeof post.category.name === "string"
+      ? post.category.name.trim()
+      : "";
+  const categorySlug =
+    post.category !== null && typeof post.category.slug === "string"
+      ? post.category.slug.trim()
+      : "";
+  categoryHref =
+    categorySlug.length > 0
+      ? buildBlogIndexHref(import.meta.env.BASE_URL, {
+          categorySlug,
+        })
+      : "";
+  hasHero =
+    typeof post.heroImageUrl === "string" &&
+    post.heroImageUrl.trim().length > 0;
+  heroAlt =
+    typeof post.heroImageAlt === "string" &&
+    post.heroImageAlt.trim().length > 0
+      ? post.heroImageAlt.trim()
+      : post.title;
+  keyTakeaway =
+    typeof post.keyTakeaway === "string" ? post.keyTakeaway.trim() : "";
+  dek = typeof post.excerpt === "string" ? post.excerpt.trim() : "";
+}
+---
+
+{
+  post === null ? (
+    <BlogLayout title={pageTitle} description={pageDescription}>
+      <div class="blog-page">
+        <div class="blog-not-found">
+          <h1 class="blog__title">Post not found</h1>
+          <p>
+            This post does not exist or is not published.{" "}
+            <a href={blogIndexHref}>Back to the blog</a>.
+          </p>
+        </div>
+      </div>
+    </BlogLayout>
+  ) : (
+    <BlogLayout
+      title={pageTitle}
+      description={pageDescription}
+      ogType="article"
+      ogImage={ogImage}
+      jsonLd={jsonLd}
+    >
+      <div class="blog-page blog-page--article blog-page--immersive">
+        <article>
+          <header
+            class:list={[
+              "blog-post-hero",
+              hasHero ? null : "blog-post-hero--no-image",
+            ]}
+          >
+            {
+              hasHero ? (
+                <div class="blog-post-hero__media">
+                  <img
+                    src={post.heroImageUrl ?? ""}
+                    alt={heroAlt}
+                    loading="eager"
+                    fetchpriority="high"
+                  />
+                </div>
+              ) : null
+            }
+            <div class="blog-post-hero__inner">
+              <div class="blog-post-hero__nav">
+                <a class="blog-post-hero__back" href={blogIndexHref}>
+                  <svg
+                    class="blog-post-hero__back-icon"
+                    width="16"
+                    height="16"
+                    viewBox="0 0 16 16"
+                    fill="none"
+                    aria-hidden="true"
+                  >
+                    <path
+                      d="M10 3.5 5.5 8 10 12.5"
+                      stroke="currentColor"
+                      stroke-width="1.5"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                    />
+                  </svg>
+                  <span>All articles</span>
+                </a>
+                {
+                  categoryName.length > 0 ? (
+                    categoryHref.length > 0 ? (
+                      <a class="blog-post-hero__category" href={categoryHref}>
+                        {categoryName}
+                      </a>
+                    ) : (
+                      <span class="blog-post-hero__category">
+                        {categoryName}
+                      </span>
+                    )
+                  ) : null
+                }
+              </div>
+              <h1 class="blog-post-hero__title">{post.title}</h1>
+              {
+                dateLabel.length > 0 || readingLabel.length > 0 ? (
+                  <p class="blog-post-hero__meta">
+                    {
+                      dateLabel.length > 0 ? (
+                        <time datetime={post.publishedAt ?? undefined}>
+                          {dateLabel}
+                        </time>
+                      ) : null
+                    }
+                    {
+                      readingLabel.length > 0 ? (
+                        <span
+                          class:list={[
+                            dateLabel.length > 0
+                              ? "blog-post-hero__meta-sep"
+                              : null,
+                          ]}
+                        >
+                          {readingLabel}
+                        </span>
+                      ) : null
+                    }
+                  </p>
+                ) : null
+              }
+            </div>
+          </header>
+
+          <div class="blog-page__shell blog-page__shell--article">
+            <div
+              class:list={[
+                "blog-article",
+                toc.length > 0 ? "blog-article--with-toc" : null,
+              ]}
+            >
+              {
+                toc.length > 0 ? (
+                  <div class="blog-article__toc">
+                    <TableOfContents headings={toc} />
+                  </div>
+                ) : null
+              }
+
+              <div class="blog-article__main">
+                <div class="blog-article__lead">
+                  {
+                    keyTakeaway.length > 0 ? (
+                      <KeyTakeaway text={keyTakeaway} />
+                    ) : null
+                  }
+                  {
+                    dek.length > 0 ? (
+                      <p class="blog-article__dek">{dek}</p>
+                    ) : null
+                  }
+                  {
+                    post.author !== null ? (
+                      <AuthorByline author={post.author} showBio={false} />
+                    ) : null
+                  }
+                </div>
+
+                {
+                  bodyHtml.length > 0 ? (
+                    <div class="blog-body" set:html={bodyHtml} />
+                  ) : (
+                    <p class="blog__empty">
+                      This post has no body content yet.
+                    </p>
+                  )
+                }
+
+                <div class="blog-article__endmatter">
+                  <PostTags tags={post.tags} />
+                  <FaqSection items={post.faq} />
+                  <SourcesSection items={post.sources} />
+                  <AuthorCard author={post.author} />
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <RelatedPosts posts={related} />
+        </article>
+      </div>
+    </BlogLayout>
+  )
+}

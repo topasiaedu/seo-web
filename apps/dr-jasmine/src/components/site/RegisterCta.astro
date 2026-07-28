@@ -1,0 +1,59 @@
+---
+/**
+ * @fileoverview Primary workshop CTA for public marketing pages.
+ * Always links to the live GHL register funnel (`registerUrl`).
+ */
+import { drJasmineSiteConfig } from "@/site-config";
+import "./register-cta.css";
+
+/** Visual style for the CTA control. */
+type RegisterCtaVariant = "primary" | "secondary";
+
+interface Props {
+  /**
+   * Explicit href override. When omitted, uses `drJasmineSiteConfig.registerUrl`.
+   */
+  href?: string;
+  /** Button label; defaults to site config `ctaLabel`. */
+  label?: string;
+  /** Visual variant. */
+  variant?: RegisterCtaVariant;
+  /** When true, stretches to full container width (mobile nav). */
+  block?: boolean;
+  /** Optional extra class names. */
+  class?: string;
+}
+
+const {
+  href,
+  label,
+  variant = "primary",
+  block = false,
+  class: className = "",
+} = Astro.props;
+
+const resolvedHref =
+  typeof href === "string" && href.trim().length > 0
+    ? href.trim()
+    : drJasmineSiteConfig.registerUrl;
+const resolvedLabel =
+  typeof label === "string" && label.trim().length > 0
+    ? label.trim()
+    : drJasmineSiteConfig.ctaLabel;
+const isExternalLink = /^https?:\/\//i.test(resolvedHref);
+---
+
+<a
+  href={resolvedHref}
+  class:list={[
+    "dj-register-cta",
+    variant === "secondary" ? "dj-register-cta--secondary" : "dj-register-cta--primary",
+    block ? "dj-register-cta--block" : null,
+    className.length > 0 ? className : null,
+  ]}
+  {...isExternalLink
+    ? { target: "_blank", rel: "noopener noreferrer" }
+    : {}}
+>
+  {resolvedLabel}
+</a>

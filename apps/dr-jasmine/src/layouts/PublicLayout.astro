@@ -1,0 +1,72 @@
+---
+/**
+ * @fileoverview Reusable public marketing layout — nav, main slot, footer (T3).
+ * Applies `.dj-public` scope and public design tokens. Admin routes must not use this layout.
+ */
+import SeoHead from "@/components/seo/SeoHead.astro";
+import SiteFooter from "@/components/site/SiteFooter.astro";
+import SiteNav from "@/components/site/SiteNav.astro";
+import { blogMeta, requireMetaString } from "@/data/blog/meta";
+import type { JsonLdNode } from "@/data/blog/jsonld";
+import "@/styles/public-base.css";
+
+interface Props {
+  /** Document `<title>` text. */
+  title: string;
+  /** Meta description; falls back to blog default when omitted. */
+  description?: string;
+  /** Open Graph type (defaults to `website`). */
+  ogType?: string;
+  /** Optional absolute or site-relative OG image. */
+  ogImage?: string;
+  /** Optional JSON-LD graph node for structured data. */
+  jsonLd?: JsonLdNode;
+}
+
+const { title, description, ogType = "website", ogImage, jsonLd } = Astro.props;
+
+const pageTitle = requireMetaString(title, blogMeta.siteName);
+const metaDescription = requireMetaString(
+  description,
+  blogMeta.defaultDescription,
+);
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <SeoHead
+      title={pageTitle}
+      description={metaDescription}
+      ogType={ogType}
+      siteName={blogMeta.siteName}
+      twitterCard={blogMeta.twitterCard}
+      ogImage={ogImage}
+      jsonLd={jsonLd}
+    />
+    <title>{pageTitle}</title>
+  </head>
+  <body class="dj-public">
+    <div class="dj-public-layout">
+      <SiteNav />
+      <main class="dj-public-layout__main" id="main-content">
+        <slot />
+      </main>
+      <SiteFooter />
+    </div>
+  </body>
+</html>
+
+<style>
+  .dj-public-layout {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+  }
+
+  .dj-public-layout__main {
+    flex: 1 0 auto;
+  }
+</style>

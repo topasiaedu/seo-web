@@ -1,0 +1,47 @@
+---
+/**
+ * Sources / citations section for a published Post (`sources` jsonb).
+ */
+import type { SourceItem } from "@seo/blog";
+
+interface Props {
+  items: SourceItem[];
+}
+
+const { items } = Astro.props;
+const sources = Array.isArray(items)
+  ? items.filter(
+      (item) => typeof item.label === "string" && item.label.trim().length > 0,
+    )
+  : [];
+---
+
+{
+  sources.length > 0 ? (
+    <section class="blog-section" aria-labelledby="blog-sources-heading">
+      <h2 id="blog-sources-heading" class="blog-section__title">
+        Sources
+      </h2>
+      <ol class="blog-sources">
+        {sources.map((item) => {
+          const label = item.label.trim();
+          const url =
+            typeof item.url === "string" && item.url.trim().length > 0
+              ? item.url.trim()
+              : "";
+          return (
+            <li>
+              {url.length > 0 ? (
+                <a href={url} rel="noopener noreferrer" target="_blank">
+                  {label}
+                </a>
+              ) : (
+                label
+              )}
+            </li>
+          );
+        })}
+      </ol>
+    </section>
+  ) : null
+}

@@ -1,0 +1,23 @@
+[
+  {
+    "key": "danHenryPortrait",
+    "file": "dan-henry-portrait.jpg",
+    "url": "https://assets.cdn.filesafe.space/vApgjQvAYFiY3wNcOOg7/media/697376e3ef7d8ec82d869ab4.jpg",
+    "alt": "Dan Henry",
+    "token": "__GHL_ASSET_danHenryPortrait__"
+  },
+  {
+    "key": "drJasminePortrait",
+    "file": "dr-jasmine-portrait.jpg",
+    "url": "https://assets.cdn.filesafe.space/GC8FZE6R9fWuTZschaXf/media/69a1b392524b714c4459dfa3.jpg",
+    "alt": "Dr. Jasmine",
+    "token": "__GHL_ASSET_drJasminePortrait__"
+  },
+  {
+    "key": "disclaimerBg",
+    "file": "disclaimer-bg.jpeg",
+    "url": "https://assets.cdn.filesafe.space/c3cmUrbBhdgs54adfIYP/media/666136581848ae65069c5b9f.jpeg",
+    "alt": "",
+    "token": "__GHL_ASSET_disclaimerBg__"
+  }
+]

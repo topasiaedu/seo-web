@@ -2,6 +2,79 @@
 
 Append-only timeline. Each entry starts with `## [YYYY-MM-DD] <verb> | <title>` for easy grepping.
 
+## [2026-07-28] ingest | Dr Jasmine responsive audit — no code changes
+
+- Raw: `raw/inbox/2026-07-28-dr-jasmine-responsive-audit.md`
+- Source: `wiki/sources/dr-jasmine-responsive-audit.md`
+- Updated: `sites/dr-jasmine.md` (responsive pass; no polish PR), overview residual QA, index
+- Decision: public site mobile-responsive — ship as-is
+
+## [2026-07-28] lint | DJ home IA + Admin/blog readability ingest
+
+- Broken wiki links: see `outputs/lint-2026-07-28-dr-jasmine.md`
+- Fixed stale Option A multi-page IA claims in `sites/dr-jasmine.md` + `overview.md` + `index.md`
+- Ingested home IA collapse + Admin theme / light blog readability sources
+
+## [2026-07-28] ingest | Dr Jasmine Admin brand theme + light blog readability
+
+- Raw: `raw/inbox/2026-07-28-dr-jasmine-admin-theme-and-blog-readability.md`
+- Source: `wiki/sources/dr-jasmine-admin-theme-and-blog-readability.md`
+- Updated: `sites/dr-jasmine.md` (Admin forest theme; light blog; slug conventions; site_id isolation note)
+
+## [2026-07-28] ingest | Dr Jasmine home IA collapse + polish
+
+- Raw: `raw/inbox/2026-07-28-dr-jasmine-home-ia-and-polish.md`
+- Source: `wiki/sources/dr-jasmine-home-ia-and-polish.md`
+- Updated: `sites/dr-jasmine.md` (single-home IA; removed about/workshop/programs/faq), overview, index
+
+## [2026-07-27] ingest | Dr Jasmine Option A true website + brand tokens
+
+- Raw: `raw/inbox/2026-07-27-dr-jasmine-option-a-true-website.md`
+- Source page: `wiki/sources/dr-jasmine-option-a-true-website.md`
+- Updated: `sites/dr-jasmine.md` (Forest/Gold/Ivory brand token table + intended vs interim CSS note), index, overview Deferred
+- Open: reconcile `tokens-public.css` to product palette
+
+## [2026-07-27] sync | Dr Jasmine Option A true website T12 closeout
+
+- Status: Option A Clinical Trust public IA live — Home, About, Programs, Workshop, Blog, FAQ (native Astro; GHL lift archive only)
+- Wiki: `sites/dr-jasmine.md` site map + Option A smoke; overview / architecture / index one-liners
+- Root: `CONTEXT.md`, `CONTEXT-MAP.md`, `README.md` — DJ described as Option A marketing site (not GHL homepage)
+- Plan: `docs/implementation-plan/dr-jasmine-true-website.md` T1–T12 marked done; residual human QA listed
+- Smoke (agent): typecheck + build pass; gateway `:4321` all six public routes + admin login/gate OK; workshop → `registerUrl`; blog PublicLayout chrome; desktop/mobile + Auth CRUD = human
+
+## [2026-07-27] sync | Dr Jasmine T12 closeout — active app
+
+- Status: `@seo/dr-jasmine` is an **active** independent app (no longer deferred)
+- Wiki: `sites/dr-jasmine.md` (routes, env, smoke); source `sources/dr-jasmine-ghl-capture.md`
+- Updated: overview, architecture overview/monorepo/routing-vercel, index, cms Admin-vs-CMS note
+- Root: `CONTEXT.md`, `CONTEXT-MAP.md`, `README.md` — DJ live; CMS deferred
+- Future-enhancements: Workstream A superseded by `docs/implementation-plan/dr-jasmine-landing-and-admin.md`
+- Smoke (agent): typecheck + build pass; direct `:4323` landing/blog/login OK; gateway/`/cms` verified in code; Auth/CRUD/CTA human; Docker `db reset` pending; missing `admin/author.astro` residual
+- Plan: T1–T12 marked done
+
+## [2026-07-27] sync | Dr Jasmine implementation started
+
+- Status: scaffolding in progress (no longer deferred forever)
+- Seed: DJ Author + 6 starter Categories in `supabase/seed.sql` (`site_id` `…0002`)
+- Domain language: `apps/dr-jasmine/CONTEXT.md` (`registerUrl` placeholder → `https://doctorjasmine.com/register`)
+- Plan: `docs/implementation-plan/dr-jasmine-landing-and-admin.md` (T3 Wave-0 stub; full closeout is T12)
+- Updated: `sites/dr-jasmine.md`
+
+## [2026-07-27] lint | post–immersive-story vault health
+
+- Broken wiki links: **0**; index orphans: **0**
+- Code spot-check OK: `blog-page--immersive`; no `blog-article-paper` in `apps/cae/src`
+- Reading-paper claims only as historical/superseded
+- Uningested inbox (deferred): admin-blog-posting-accepted, first Zi Wei post, git-init, admin-ui-ux, public-blog-redesign, **reading-paper (superseded)**, blog-post-polish, zi-wei-9-post-series
+- Full report: `outputs/lint-2026-07-27-immersive-story.md`
+
+## [2026-07-27] ingest | cae-blog-immersive-story-redesign
+
+- Raw: `raw/inbox/2026-07-27-cae-blog-immersive-story-redesign.md`
+- New source: `wiki/sources/cae-blog-immersive-story-redesign.md`
+- Public `/cae/blog/[slug]` Immersive Story: dark continuous scroll, in-hero takeaway, 56rem column, TOC rail, related strip; light paper removed
+- Updated: `sites/cae`, `overview`, glossary, `sources/cae-homepage-blog-bento`, index
+
 ## [2026-07-27] ingest | cae-admin-bulk-import
 
 - Raw: `raw/inbox/2026-07-27-cae-admin-bulk-import.md`

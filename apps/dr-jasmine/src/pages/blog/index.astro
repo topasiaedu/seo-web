@@ -1,0 +1,268 @@
+---
+/**
+ * Dr Jasmine public blog index — category filters + paginated card grid.
+ * Lists live posts only (`listPublishedPostsPage` + `isPostLive` via `@seo/blog`).
+ */
+import { listCategories, listPublishedPostsPage } from "@seo/blog";
+import BlogLayout from "@/components/blog/BlogLayout.astro";
+import PostCard from "@/components/blog/PostCard.astro";
+import {
+  buildBlogIndexHref,
+  requireBlogSupabase,
+} from "@/components/blog/blog-format";
+import { buildBlogIndexJsonLd } from "@/data/blog/jsonld";
+import { toAbsoluteUrl } from "@/lib/site-url";
+import { drJasmineSiteConfig } from "@/site-config";
+
+export const prerender = false;
+
+/** Posts per index page — keeps archives scannable. */
+const PAGE_SIZE = 12;
+
+const INDEX_TITLE = "Health Insights";
+const INDEX_DESCRIPTION =
+  "Evidence-based articles on diabetes reversal, blood sugar, and metabolic health from Dr Jasmine.";
+const SITE_NAME = drJasmineSiteConfig.name;
+
+/**
+ * Parses a 1-based page number from a query string value.
+ *
+ * @param raw - `page` search param, or null.
+ * @returns Integer >= 1.
+ */
+function parsePageParam(raw: string | null): number {
+  if (typeof raw !== "string" || raw.trim().length === 0) {
+    return 1;
+  }
+  const parsed = Number.parseInt(raw, 10);
+  if (!Number.isFinite(parsed) || parsed < 1) {
+    return 1;
+  }
+  return parsed;
+}
+
+const supabase = requireBlogSupabase(Astro.locals.supabase);
+const siteId = drJasmineSiteConfig.projectId;
+const baseUrl = import.meta.env.BASE_URL;
+
+const categories = await listCategories(supabase, siteId);
+const requestedCategory =
+  Astro.url.searchParams.get("category")?.trim() ?? "";
+const activeCategorySlug = categories.some(
+  (category) => category.slug === requestedCategory,
+)
+  ? requestedCategory
+  : "";
+
+const requestedPage = parsePageParam(Astro.url.searchParams.get("page"));
+const offset = (requestedPage - 1) * PAGE_SIZE;
+
+const { posts, total } = await listPublishedPostsPage(supabase, siteId, {
+  categorySlug: activeCategorySlug.length > 0 ? activeCategorySlug : undefined,
+  limit: PAGE_SIZE,
+  offset,
+});
+
+const totalPages = total > 0 ? Math.ceil(total / PAGE_SIZE) : 1;
+const currentPage = Math.min(requestedPage, totalPages);
+
+/**
+ * When `?page=` is past the last page, re-fetch the last page so the grid
+ * is never empty while pagination chrome still makes sense.
+ */
+let pagePosts = posts;
+if (total > 0 && requestedPage > totalPages) {
+  const last = await listPublishedPostsPage(supabase, siteId, {
+    categorySlug:
+      activeCategorySlug.length > 0 ? activeCategorySlug : undefined,
+    limit: PAGE_SIZE,
+    offset: (totalPages - 1) * PAGE_SIZE,
+  });
+  pagePosts = last.posts;
+}
+
+const ogImageUrl = toAbsoluteUrl(baseUrl);
+
+const jsonLd = buildBlogIndexJsonLd({
+  pathname: Astro.url.pathname,
+  name: INDEX_TITLE,
+  description: INDEX_DESCRIPTION,
+  siteName: SITE_NAME,
+  ogImageUrl,
+  posts: pagePosts.map((post) => ({
+    slug: post.slug,
+    title: post.title,
+    datePublished: post.publishedAt,
+  })),
+});
+
+const allHref = buildBlogIndexHref(baseUrl);
+const showPagination = totalPages > 1;
+const prevHref =
+  currentPage > 1
+    ? buildBlogIndexHref(baseUrl, {
+        categorySlug: activeCategorySlug,
+        page: currentPage - 1,
+      })
+    : null;
+const nextHref =
+  currentPage < totalPages
+    ? buildBlogIndexHref(baseUrl, {
+        categorySlug: activeCategorySlug,
+        page: currentPage + 1,
+      })
+    : null;
+
+/** Compact page window around the current page for the pager. */
+const pageNumbers: number[] = [];
+const windowStart = Math.max(1, currentPage - 2);
+const windowEnd = Math.min(totalPages, currentPage + 2);
+for (let page = windowStart; page <= windowEnd; page += 1) {
+  pageNumbers.push(page);
+}
+
+const emptyMessage =
+  activeCategorySlug.length > 0
+    ? "No published posts in this category yet."
+    : "No published posts yet. Check back soon.";
+---
+
+<BlogLayout
+  title={`${INDEX_TITLE} · ${SITE_NAME}`}
+  description={INDEX_DESCRIPTION}
+  jsonLd={jsonLd}
+>
+  <div class="blog-page">
+    <header class="blog-index-intro">
+      <p class="blog-index-intro__eyebrow">Blog</p>
+      <h1 class="blog-index-intro__title">{INDEX_TITLE}</h1>
+      <p class="blog-index-intro__lede">{INDEX_DESCRIPTION}</p>
+    </header>
+
+    {
+      categories.length > 0 ? (
+        <nav class="blog-index-filters" aria-label="Filter by category">
+          <ul class="blog-index-filters__list">
+            <li>
+              <a
+                class:list={[
+                  "blog-index-filters__chip",
+                  activeCategorySlug.length === 0
+                    ? "blog-index-filters__chip--active"
+                    : null,
+                ]}
+                href={allHref}
+                aria-current={
+                  activeCategorySlug.length === 0 ? "page" : undefined
+                }
+              >
+                All posts
+              </a>
+            </li>
+            {categories.map((category) => {
+              const href = buildBlogIndexHref(baseUrl, {
+                categorySlug: category.slug,
+              });
+              const isActive = category.slug === activeCategorySlug;
+              return (
+                <li>
+                  <a
+                    class:list={[
+                      "blog-index-filters__chip",
+                      isActive ? "blog-index-filters__chip--active" : null,
+                    ]}
+                    href={href}
+                    aria-current={isActive ? "page" : undefined}
+                  >
+                    {category.name}
+                  </a>
+                </li>
+              );
+            })}
+          </ul>
+        </nav>
+      ) : null
+    }
+
+    {
+      pagePosts.length === 0 ? (
+        <p class="blog__empty">{emptyMessage}</p>
+      ) : (
+        <section
+          class="blog-index-grid"
+          aria-labelledby="blog-index-articles"
+        >
+          <div class="blog-index-grid__header">
+            <h2 id="blog-index-articles" class="blog-index-grid__title">
+              {activeCategorySlug.length > 0
+                ? (categories.find((c) => c.slug === activeCategorySlug)
+                    ?.name ?? "Articles")
+                : "All articles"}
+            </h2>
+            <p class="blog-index-grid__count">
+              {total === 1 ? "1 post" : `${String(total)} posts`}
+              {showPagination
+                ? ` · Page ${String(currentPage)} of ${String(totalPages)}`
+                : ""}
+            </p>
+          </div>
+          <ul class="blog-grid">
+            {pagePosts.map((post) => (
+              <PostCard post={post} />
+            ))}
+          </ul>
+
+          {
+            showPagination ? (
+              <nav class="blog-pager" aria-label="Blog pagination">
+                {prevHref !== null ? (
+                  <a class="blog-pager__nav" href={prevHref} rel="prev">
+                    ← Previous
+                  </a>
+                ) : (
+                  <span class="blog-pager__nav blog-pager__nav--disabled">
+                    ← Previous
+                  </span>
+                )}
+                <ul class="blog-pager__pages">
+                  {pageNumbers.map((page) => {
+                    const href = buildBlogIndexHref(baseUrl, {
+                      categorySlug: activeCategorySlug,
+                      page,
+                    });
+                    const isCurrent = page === currentPage;
+                    return (
+                      <li>
+                        {isCurrent ? (
+                          <span
+                            class="blog-pager__page blog-pager__page--current"
+                            aria-current="page"
+                          >
+                            {page}
+                          </span>
+                        ) : (
+                          <a class="blog-pager__page" href={href}>
+                            {page}
+                          </a>
+                        )}
+                      </li>
+                    );
+                  })}
+                </ul>
+                {nextHref !== null ? (
+                  <a class="blog-pager__nav" href={nextHref} rel="next">
+                    Next →
+                  </a>
+                ) : (
+                  <span class="blog-pager__nav blog-pager__nav--disabled">
+                    Next →
+                  </span>
+                )}
+              </nav>
+            ) : null
+          }
+        </section>
+      )
+    }
+  </div>
+</BlogLayout>

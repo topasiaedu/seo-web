@@ -1,0 +1,12 @@
+/**
+ * @fileoverview Local section background images — overrides GHL CDN URLs
+ * stripped from ghl-page.css. Vite resolves these relative to this file.
+ */
+
+.bg-section-IPYkI1fQ26g {
+  background-image: url("../../assets/ghl/disclaimer-bg.jpeg") !important;
+  background-size: cover !important;
+  background-repeat: no-repeat !important;
+  background-position: center center !important;
+  opacity: 1 !important;
+}

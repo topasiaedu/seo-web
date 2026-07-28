@@ -14,14 +14,14 @@ Read this first when answering queries, then open linked pages.
 
 - [Overview](architecture/overview.md) — system design short form
 - [Monorepo](architecture/monorepo.md) — `apps/*` + `packages/*`
-- [Routing / Vercel](architecture/routing-vercel.md) — gateway preview + `@seo/cae` deploy
+- [Routing / Vercel](architecture/routing-vercel.md) — gateway preview (`/cae`, `/dr-jasmine`; `/cms` deferred) + `@seo/cae` deploy
 - [Supabase](architecture/supabase.md) — sites/posts + authors/categories/editorial columns; Storage bucket `media`; anon posts RLS time-gate on `published_at`
 
 ## Sites
 
-- [CAE](sites/cae.md) — `apps/cae` GHL lift (home + `/media/`) + homepage Insights Blog bento + Admin (`/cae/admin`, Published/Scheduled intent, simplified PostForm, Bulk import) + public `/cae/blog`
-- [CMS](sites/cms.md) — deferred shared platform; **not** CAE Admin
-- [Dr Jasmine](sites/dr-jasmine.md) — deferred; planned `apps/dr-jasmine`
+- [CAE](sites/cae.md) — `apps/cae` GHL lift (home + `/media/`) + homepage Insights Blog bento + Admin (`/cae/admin`, Published/Scheduled intent, simplified PostForm, Bulk import) + public `/cae/blog` (slug Immersive Story)
+- [Dr Jasmine](sites/dr-jasmine.md) — `apps/dr-jasmine` single-home (GHL LDP copy) + light `/blog` + Admin (`/dr-jasmine/admin`); CMS still deferred
+- [CMS](sites/cms.md) — deferred shared platform; **not** brand Admin
 
 ## Packages
 
@@ -53,3 +53,9 @@ Read this first when answering queries, then open linked pages.
 - [CAE blog scheduled publishing](sources/cae-blog-scheduled-publishing.md) — from `raw/inbox/` (2026-07-27); lazy `published_at` gate + Admin Scheduled label
 - [CAE Admin PostForm simplifications](sources/cae-admin-postform-simplifications.md) — from `raw/inbox/` (2026-07-27); previews, Summary, tags typeahead, auto related, Published vs Scheduled select
 - [CAE Admin bulk Post import](sources/cae-admin-bulk-import.md) — from `raw/inbox/` (2026-07-27); multi-post Markdown + per-post heroes + schedule-aware frontmatter
+- [CAE blog Immersive Story redesign](sources/cae-blog-immersive-story-redesign.md) — from `raw/inbox/` (2026-07-27); dark feature slug UI (replaces light paper)
+- [Dr Jasmine GHL capture (register/join)](sources/dr-jasmine-ghl-capture.md) — from `raw/research/dr-jasmine-ghl-capture/`; runtime lift in `apps/dr-jasmine`
+- [Dr Jasmine Option A true website + brand tokens](sources/dr-jasmine-option-a-true-website.md) — from `raw/inbox/` (2026-07-27); Clinical Trust palette sheet (multi-page IA later collapsed)
+- [Dr Jasmine home IA collapse + polish](sources/dr-jasmine-home-ia-and-polish.md) — from `raw/inbox/` (2026-07-28); single home; removed about/workshop/programs/faq pages
+- [Dr Jasmine Admin theme + light blog readability](sources/dr-jasmine-admin-theme-and-blog-readability.md) — from `raw/inbox/` (2026-07-28); forest Admin; light blog; promise-first slug
+- [Dr Jasmine responsive audit — no code changes](sources/dr-jasmine-responsive-audit.md) — from `raw/inbox/` (2026-07-28); public mobile-friendly pass; polish deferred

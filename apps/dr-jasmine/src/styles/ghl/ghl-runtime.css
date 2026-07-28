@@ -1,0 +1,39 @@
+/**
+ * @fileoverview Host chrome for the Dr Jasmine GHL section lift — page bg + font vars.
+ * Section look comes from ghl-page.css under `.hl_page-preview--content`.
+ */
+
+:root {
+  --headlinefont: "Poppins", "Montserrat", sans-serif;
+  --contentfont: "Poppins", "Segoe UI", sans-serif;
+  --poppins: "Poppins";
+  --montserrat: "Montserrat";
+  --color-lx2pyibt: #ff6240;
+  --color-lx3d0bih: #222639;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  min-height: 100vh;
+  background-color: #ffffff;
+  color: #111827;
+  font-family: var(--contentfont);
+  -webkit-font-smoothing: antialiased;
+}
+
+#preview-container.hl_page-preview--content {
+  display: block;
+  width: 100%;
+  overflow-x: clip;
+  background-color: #ffffff;
+}
+
+/* GHL empty spacer columns need a minimum height on desktop. */
+.empty-component-min-height {
+  min-height: 1px;
+}

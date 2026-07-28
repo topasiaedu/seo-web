@@ -56,10 +56,10 @@ export function sendGatewayIndex(res: ServerResponse, port: number): void {
     "Listening on port " + String(port) + ".",
     "",
     "Available:",
-    "  /cae  →  http://127.0.0.1:4322  (@seo/cae)",
+    "  /cae         →  http://127.0.0.1:4322  (@seo/cae)",
+    "  /dr-jasmine  →  http://127.0.0.1:4323  (@seo/dr-jasmine)",
     "",
     "Deferred (not migrated yet):",
-    "  /dr-jasmine",
     "  /cms",
   ].join("\n");
 

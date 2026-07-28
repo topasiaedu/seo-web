@@ -45,7 +45,7 @@ Public helpers return **live** posts only: `status = published`, non-null `publi
 
 ## Consumers
 
-- **CAE public blog** — `apps/cae/src/pages/blog/*` + `components/blog/*`
+- **CAE public blog** — `apps/cae/src/pages/blog/*` + `components/blog/*` (slug = Immersive Story; see [cae-blog-immersive-story-redesign](../sources/cae-blog-immersive-story-redesign.md))
 - **CAE Admin** — `apps/cae/src/pages/admin/*` + `components/admin/*`
 
 Always filter by `site_id`. CAE hardcodes its project id from `site-config.ts`.

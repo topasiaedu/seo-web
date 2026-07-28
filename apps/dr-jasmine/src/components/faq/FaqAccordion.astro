@@ -1,0 +1,126 @@
+---
+/**
+ * @fileoverview Accessible FAQ accordion for public pages.
+ * Uses button triggers with `aria-expanded` and client-side toggle script.
+ */
+import type { FaqItem } from "@/data/site/faqs";
+import "./faq-page.css";
+
+/** Visual treatment for the accordion list. */
+type FaqAccordionVariant = "panel" | "ruled";
+
+/** Semantic heading level for each question trigger. */
+type FaqQuestionHeading = "h2" | "h3";
+
+interface Props {
+  /** FAQ entries from site content data. */
+  items: ReadonlyArray<FaqItem>;
+  /**
+   * `panel` — bordered elevated items.
+   * `ruled` — hairline dividers (home FAQ band).
+   */
+  variant?: FaqAccordionVariant;
+  /** Heading tag wrapping each question button. */
+  questionHeading?: FaqQuestionHeading;
+  /** Optional id for the accordion root (defaults to `dj-faq-accordion`). */
+  accordionId?: string;
+}
+
+const {
+  items,
+  variant = "panel",
+  questionHeading = "h2",
+  accordionId = "dj-faq-accordion",
+} = Astro.props;
+
+/**
+ * Keeps only FAQ rows with non-empty question and answer text.
+ *
+ * @param entry - Raw FAQ item
+ * @returns Whether the row should render
+ */
+function isValidFaqItem(entry: FaqItem): boolean {
+  return (
+    typeof entry.question === "string" &&
+    entry.question.trim().length > 0 &&
+    typeof entry.answer === "string" &&
+    entry.answer.trim().length > 0
+  );
+}
+
+const faqItems = items.filter(isValidFaqItem);
+const useH3 = questionHeading === "h3";
+const rootClass = [
+  "dj-faq-accordion",
+  variant === "ruled" ? "dj-faq-accordion--ruled" : "dj-faq-accordion--panel",
+].join(" ");
+---
+
+{
+  faqItems.length > 0 ? (
+    <div class={rootClass} id={accordionId} data-faq-accordion>
+      {faqItems.map((item, index) => {
+        const triggerId = `${accordionId}-trigger-${String(index)}`;
+        const panelId = `${accordionId}-panel-${String(index)}`;
+        const isFirst = index === 0;
+        const question = item.question.trim();
+        const answer = item.answer.trim();
+
+        const trigger = (
+          <button
+            type="button"
+            class="dj-faq-accordion__trigger"
+            id={triggerId}
+            aria-expanded={isFirst ? "true" : "false"}
+            aria-controls={panelId}
+            data-faq-trigger
+          >
+            <span>{question}</span>
+            <svg
+              class="dj-faq-accordion__icon"
+              viewBox="0 0 20 20"
+              fill="currentColor"
+              aria-hidden="true"
+            >
+              <path
+                fill-rule="evenodd"
+                d="M5.23 7.21a.75.75 0 0 1 1.06.02L10 11.168l3.71-3.938a.75.75 0 1 1 1.08 1.04l-4.25 4.5a.75.75 0 0 1-1.08 0l-4.25-4.5a.75.75 0 0 1 .02-1.06Z"
+                clip-rule="evenodd"
+              />
+            </svg>
+          </button>
+        );
+
+        return (
+          <article
+            class="dj-faq-accordion__item"
+            data-faq-item
+            data-open={isFirst ? "true" : "false"}
+          >
+            {useH3 ? (
+              <h3 class="dj-faq-accordion__heading">{trigger}</h3>
+            ) : (
+              <h2 class="dj-faq-accordion__heading">{trigger}</h2>
+            )}
+            <div
+              class="dj-faq-accordion__panel"
+              id={panelId}
+              role="region"
+              aria-labelledby={triggerId}
+              hidden={isFirst ? undefined : true}
+              data-faq-panel
+            >
+              <p class="dj-faq-accordion__answer">{answer}</p>
+            </div>
+          </article>
+        );
+      })}
+    </div>
+  ) : (
+    <p class="dj-public-muted">No questions are available right now.</p>
+  )
+}
+
+<script>
+  import "@/scripts/faq-public-accordion";
+</script>

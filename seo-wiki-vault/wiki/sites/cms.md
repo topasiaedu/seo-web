@@ -13,10 +13,10 @@
 
 | Surface | Where | Scope | Status |
 |---------|-------|-------|--------|
-| **Admin** | Inside each brand app (e.g. `/cae/admin`) | That brand’s Posts / Author / Categories only | **Live for CAE** — see [cae](cae.md) |
+| **Admin** | Inside each brand app (e.g. `/cae/admin`, `/dr-jasmine/admin`) | That brand’s Posts / Author / Categories only | **Live for CAE and Dr Jasmine** — see [cae](cae.md) · [dr-jasmine](dr-jasmine.md) |
 | **CMS** | Planned `apps/cms` | Cross-brand authoring + Media Library | **Deferred** |
 
-CAE Admin is **not** the CMS. Do not scaffold `apps/cms` to “finish” CAE blogging — that work already lives under `apps/cae`. Domain language: [`apps/cae/CONTEXT.md`](../../../apps/cae/CONTEXT.md).
+Brand Admin is **not** the CMS. Do not scaffold `apps/cms` to “finish” blogging — that work already lives under each brand app.
 
 ## Independent app (deferred)
 
@@ -40,7 +40,7 @@ Agreed design (not built): site + kind filters, upload into Supabase Storage `me
 - Repo design doc: `docs/future-enhancements/cms-media-library.md`
 - Wiki source: [cms-media-library-and-cae-image-alt](../sources/cms-media-library-and-cae-image-alt.md)
 
-Note: the **`media` Storage bucket and blog path convention are live** (used by CAE Admin uploads). The Media Library **UI/table** remains deferred.
+Note: the **`media` Storage bucket and blog path convention are live** (used by CAE and Dr Jasmine Admin uploads). The Media Library **UI/table** remains deferred.
 
 ## Rules
 

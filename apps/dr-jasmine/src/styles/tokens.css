@@ -1,0 +1,15 @@
+/**
+ * Dr Jasmine brand design tokens — minimal set for Admin and scaffold pages.
+ * Aligned with public marketing palette (warm ivory + stone text).
+ */
+
+:root {
+  --dj-bg: #faf8f5;
+  --dj-bg-deep: #0f1a16;
+  --dj-bg-elevated: #ffffff;
+  --dj-text: #1c1917;
+  --dj-text-bright: #1c1917;
+  --dj-text-muted: #78716c;
+  --dj-font-sans: "Plus Jakarta Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --dj-gutter: 1.25rem;
+}

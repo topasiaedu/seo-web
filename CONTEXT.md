@@ -20,9 +20,11 @@ Read this first, then open the wiki vault:
 
 - **Primary site:** CAE (`apps/cae` / `@seo/cae`) — homepage (GHL lift + Insights Blog soft bento; home SSR) + `/media/`; Admin + public `/blog`; preview via gateway `/cae`
 
-- **Path gateway:** `apps/gateway` (`@seo/gateway`) on port **4321**
+- **Second brand:** Dr Jasmine (`apps/dr-jasmine` / `@seo/dr-jasmine`) — Option A Clinical Trust native site (`/`, `/blog`; Meet + FAQ on home) + Admin; gateway `/dr-jasmine`
 
-- **Deferred:** independent `apps/dr-jasmine` + `apps/cms` — see [docs/future-enhancements/independent-apps-dr-jasmine-and-cms.md](docs/future-enhancements/independent-apps-dr-jasmine-and-cms.md)
+- **Path gateway:** `apps/gateway` (`@seo/gateway`) on port **4321** (proxies `/cae` + `/dr-jasmine`)
+
+- **Deferred:** shared CMS only (`apps/cms`) — see [docs/future-enhancements/independent-apps-dr-jasmine-and-cms.md](docs/future-enhancements/independent-apps-dr-jasmine-and-cms.md) (DJ Workstream A superseded by [dr-jasmine-landing-and-admin.md](docs/implementation-plan/dr-jasmine-landing-and-admin.md) + [dr-jasmine-true-website.md](docs/implementation-plan/dr-jasmine-true-website.md))
 
 
 
@@ -40,7 +42,9 @@ Read this first, then open the wiki vault:
 
 | [apps/cae/](apps/cae/) | CAE Astro app (`base: /cae/`, port 4322) |
 
-| [apps/gateway/](apps/gateway/) | Local path gateway (proxies `/cae` → 4322) |
+| [apps/dr-jasmine/](apps/dr-jasmine/) | Dr Jasmine Astro app (`base: /dr-jasmine/`, port 4323) |
+
+| [apps/gateway/](apps/gateway/) | Local path gateway (proxies `/cae` → 4322, `/dr-jasmine` → 4323) |
 
 | [packages/](packages/) | Shared `@seo/db`, `@seo/blog` |
 
@@ -58,23 +62,23 @@ pnpm install
 
 pnpm dev
 
-# gateway :4321 + CAE :4322 — open http://127.0.0.1:4321/cae
+# gateway :4321 + CAE :4322 + DJ :4323 — open http://127.0.0.1:4321/cae and /dr-jasmine
 
 ```
 
 
 
-Or separately: `pnpm dev:gateway` and `pnpm dev:cae`.
+Or separately: `pnpm dev:gateway`, `pnpm dev:cae`, `pnpm dev:dr-jasmine`.
 
 
 
-Env for CAE: `apps/cae/.env.example` → `apps/cae/.env.local`.
+Env: `apps/cae/.env.example` → `.env.local`; `apps/dr-jasmine/.env.example` → `.env.local`.
 
 
 
 ## Deploy note (`vercel.json`)
 
-Root `vercel.json` currently assumes a **static** `@seo/cae` → `apps/cae/dist` build. CAE Admin requires **server mode** (`@astrojs/node`); deploy config must move to a Node host (or a Vercel SSR adapter) before Admin works in production. Host-based multi-brand routing remains deferred.
+Root `vercel.json` currently assumes a **static** `@seo/cae` → `apps/cae/dist` build. CAE Admin requires **server mode** (`@astrojs/node`); deploy config must move to a Node host (or a Vercel SSR adapter) before Admin works in production. Dr Jasmine uses the same Node/server pattern locally (`pnpm build:dr-jasmine`); production DJ wiring is separate. Host-based multi-brand routing remains deferred.
 
 
 
@@ -83,4 +87,3 @@ Root `vercel.json` currently assumes a **static** `@seo/cae` → `apps/cae/dist`
 
 
 After any schema, routing, or package change, update the matching page under `seo-wiki-vault/wiki/` and append `seo-wiki-vault/wiki/log.md` in the same session (see vault `AGENTS.md`).
-

@@ -1,0 +1,49 @@
+/**
+ * Dr Jasmine global base styles. Admin and blog pages rely on these defaults.
+ */
+
+@import "./tokens.css";
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  color: var(--dj-text);
+  background-color: var(--dj-bg);
+  font-family: var(--dj-font-sans);
+  -webkit-font-smoothing: antialiased;
+}
+
+img {
+  max-width: 100%;
+  height: auto;
+}
+
+a {
+  color: inherit;
+}
+
+/* Non-home pages keep a readable content column. */
+main:not(.dj-home) {
+  max-width: 40rem;
+  margin: 0 auto;
+  padding: 2rem var(--dj-gutter);
+  font-family: var(--dj-font-sans);
+}
+
+.dj-home {
+  display: block;
+  width: 100%;
+  overflow-x: clip;
+  background-color: var(--dj-bg);
+  color: var(--dj-text);
+}

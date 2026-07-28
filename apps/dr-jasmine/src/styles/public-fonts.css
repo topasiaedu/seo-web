@@ -1,0 +1,14 @@
+/**
+ * Public site font loading — matched to the patient portal brand.
+ *
+ * Display: DM Serif Display — calm serif for brand and section headings.
+ * Body: Plus Jakarta Sans — same UI face as the portal app.
+ *
+ * Import this file from PublicLayout before `tokens-public.css` / `public-base.css`.
+ * AdminLayout also imports it so authoring chrome matches Plus Jakarta Sans.
+ * Blog routes keep their own typography and must not import this file.
+ *
+ * Source: Google Fonts CDN with `display=swap` for fast first paint.
+ */
+
+@import url("https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Plus+Jakarta+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap");

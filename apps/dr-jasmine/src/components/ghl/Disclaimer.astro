@@ -1,0 +1,15 @@
+---
+/**
+ * @fileoverview Legal / medical disclaimer footer (`section-IPYkI1fQ26g`).
+ */
+import GhlFragment from "./GhlFragment.astro";
+import fragment from "./fragments/disclaimer.html?raw";
+
+interface Props {
+  registerUrl?: string;
+}
+
+const { registerUrl } = Astro.props;
+---
+
+<GhlFragment fragment={fragment} registerUrl={registerUrl} />

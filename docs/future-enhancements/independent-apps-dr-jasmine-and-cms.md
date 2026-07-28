@@ -1,6 +1,6 @@
 # Future: Independent apps for Dr Jasmine and CMS
 
-**Status:** Deferred until the CAE preview (`apps/cae` + gateway `/cae`) is accepted by superior.
+**Status:** **Dr Jasmine Workstream A is superseded** by [dr-jasmine-landing-and-admin.md](../implementation-plan/dr-jasmine-landing-and-admin.md) (`apps/dr-jasmine` is live). **CMS Workstream B remains deferred.**
 
 **Related:** CAE lives under `apps/cae`. The legacy `website/` shell has been removed — scaffold new brands directly under `apps/`.
 
@@ -8,58 +8,57 @@
 
 Mirror the CAE independent-app model for the remaining brands/platforms:
 
-| App | Package | Astro `base` | Dev port (via gateway) |
-|-----|---------|--------------|-------------------------|
-| Dr Jasmine | `@seo/dr-jasmine` | `/dr-jasmine/` | 4323 |
-| CMS | `@seo/cms` | `/cms/` | 4324 |
+| App | Package | Astro `base` | Dev port (via gateway) | Status |
+|-----|---------|--------------|-------------------------|--------|
+| Dr Jasmine | `@seo/dr-jasmine` | `/dr-jasmine/` | 4323 | **Done** — see landing + Admin plan |
+| CMS | `@seo/cms` | `/cms/` | 4324 | **Deferred** — not scaffolded |
 
-Gateway (already serving `/cae` → 4322) gains matching proxy routes. Browse `/dr-jasmine` and `/cms` on the same gateway host/port as CAE (default listen **4321**, or `PORT`).
+Gateway already proxies `/cae` → 4322 and `/dr-jasmine` → 4323. `/cms` still returns **not migrated yet** until Workstream B starts.
 
-## Why deferred
+## Why CMS is still deferred
 
-Product/leadership needs to accept the CAE website as a preview first. Do not scaffold these apps or spend design time on them until that gate passes.
+Product/leadership needs a clear green light for a shared authoring platform. Do **not** scaffold `apps/cms` or spend design time on Media Library UI until that gate passes. Brand Admins (CAE, Dr Jasmine) are **not** the CMS.
 
 ## Prerequisites
 
 - [x] Workspace uses `apps/*` + `packages/*` (legacy `website/` removed)
-- [ ] CAE preview accepted (`apps/cae` native landing + gateway `/cae`)
-- [ ] `apps/gateway` exists and is the path front door
+- [x] `apps/gateway` exists and is the path front door
+- [x] Dr Jasmine independent app shipped (landing + Admin + blog)
+- [ ] Explicit approval to start shared CMS (`apps/cms`)
 
-## Workstream A — `apps/dr-jasmine`
+## Workstream A — `apps/dr-jasmine` (superseded)
 
-1. Scaffold Astro app `@seo/dr-jasmine` with `base: "/dr-jasmine/"`, `server.port: 4323` (same pattern as `apps/cae`).
-2. Minimal `src/pages/index.astro` placeholder until marketing build.
-3. `apps/dr-jasmine/.env.example` (+ `.env.local` as needed). Per-app env only — no new root secrets.
-4. Add gateway proxy: `/dr-jasmine` → `http://127.0.0.1:4323`.
-5. Root `pnpm dev` starts this app alongside CAE + gateway.
-6. Wiki: `sites/dr-jasmine.md`, overview, log.
+**Do not follow this stub checklist.** Implementation and acceptance live in [dr-jasmine-landing-and-admin.md](../implementation-plan/dr-jasmine-landing-and-admin.md) (T1–T12). Wiki: [sites/dr-jasmine.md](../../seo-wiki-vault/wiki/sites/dr-jasmine.md).
 
-**Out of scope for the first stub PR:** full marketing redesign.
+Historical stub intent (kept for context only):
 
-## Workstream B — `apps/cms`
+1. Scaffold Astro app `@seo/dr-jasmine` with `base: "/dr-jasmine/"`, `server.port: 4323`.
+2. Gateway proxy `/dr-jasmine` → `http://127.0.0.1:4323`.
+3. Root `pnpm dev` starts DJ alongside CAE + gateway.
+
+## Workstream B — `apps/cms` (still deferred)
 
 1. Scaffold Astro app `@seo/cms` with `base: "/cms/"`, `server.port: 4324`.
 2. Minimal authoring stubs (index, login, posts) — rebuild as needed; do not resurrect a shared shell.
 3. `apps/cms/.env.example` for Supabase/auth keys the CMS will use.
-4. Gateway proxy: `/cms` → `http://127.0.0.1:4324`.
+4. Gateway: remove `/cms` from deferred prefixes; proxy → `http://127.0.0.1:4324`.
 5. Wire root scripts; wiki: `sites/cms.md`, overview, log.
 
 **Out of scope for the migrate PR:** Auth/CRUD, Media Library (see [cms-media-library.md](./cms-media-library.md)).
 
-## Suggested multitask split (when unblocked)
+## Suggested multitask split (when CMS unblocked)
 
 | Agent | Owns |
 |-------|------|
-| DJ scaffold | `apps/dr-jasmine/**` |
 | CMS scaffold | `apps/cms/**` |
-| Gateway + root scripts | `apps/gateway` routes + root `package.json` only for new filters |
-| Wiki merge | `seo-wiki-vault/**` after both apps build |
+| Gateway + root scripts | `apps/gateway` routes + root `package.json` filters for CMS |
+| Wiki merge | `seo-wiki-vault/**` after CMS builds |
 
-Do not start these agents until CAE preview acceptance is explicit.
+Do not start these agents until CMS approval is explicit.
 
-## Acceptance (later)
+## Acceptance (CMS later)
 
-- `pnpm --filter @seo/dr-jasmine build` and `pnpm --filter @seo/cms build` succeed.
-- Gateway serves `/dr-jasmine` and `/cms`.
-- Env files live under each app.
+- `pnpm --filter @seo/cms build` succeeds.
+- Gateway serves `/cms` (no longer “not migrated”).
+- Env files live under `apps/cms`.
 - Wiki matches the multi-app layout (no `website/` shell).

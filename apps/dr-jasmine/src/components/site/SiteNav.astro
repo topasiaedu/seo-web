@@ -1,0 +1,112 @@
+---
+/**
+ * @fileoverview Public site header navigation with mobile menu.
+ * IA: Home (logo), About → home Meet section, Blog, GHL workshop CTA.
+ */
+import { drJasmineSiteConfig } from "@/site-config";
+import { isPublicNavActive, joinPublicPath } from "@/scripts/site-nav";
+import RegisterCta from "./RegisterCta.astro";
+import "./site-nav.css";
+
+/** Single public nav link definition. */
+type NavItem = {
+  readonly href: string;
+  readonly label: string;
+  readonly exact: boolean;
+};
+
+const base = import.meta.env.BASE_URL;
+const pathname = Astro.url.pathname;
+const homeHref = joinPublicPath(base, "/");
+const meetHref = `${homeHref}#dj-home-meet`;
+const blogHref = joinPublicPath(base, "blog");
+
+const navItems: readonly NavItem[] = [
+  { href: meetHref, label: "About", exact: true },
+  { href: blogHref, label: "Blog", exact: false },
+];
+
+const brandName = drJasmineSiteConfig.name;
+const panelId = "dj-site-nav-panel";
+---
+
+<header class="dj-site-nav" data-site-nav data-menu-open="false">
+  <div class="dj-public-container dj-site-nav__inner">
+    <a
+      class="dj-site-nav__brand dj-public-motion-nav"
+      href={homeHref}
+      aria-current={isPublicNavActive(pathname, homeHref, true) ? "page" : undefined}
+    >
+      <span class="dj-site-nav__brand-mark" aria-hidden="true">DJ</span>
+      <span>{brandName}</span>
+    </a>
+
+    <nav class="dj-site-nav__desktop" aria-label="Primary">
+      {
+        navItems.map((item) => {
+          const active = isPublicNavActive(pathname, item.href, item.exact);
+          return (
+            <a
+              href={item.href}
+              class:list={[
+                "dj-site-nav__link dj-public-motion-nav",
+                active ? "dj-site-nav__link--active" : null,
+              ]}
+              aria-current={active ? "page" : undefined}
+            >
+              {item.label}
+            </a>
+          );
+        })
+      }
+      <RegisterCta class="dj-site-nav__cta" variant="primary" />
+    </nav>
+
+    <button
+      type="button"
+      class="dj-site-nav__toggle"
+      data-site-nav-toggle
+      aria-expanded="false"
+      aria-controls={panelId}
+      aria-label="Open menu"
+    >
+      <span class="dj-site-nav__toggle-icon" aria-hidden="true">
+        <span class="dj-site-nav__toggle-bar"></span>
+      </span>
+    </button>
+  </div>
+
+  <div
+    id={panelId}
+    class="dj-site-nav__panel"
+    data-site-nav-panel
+    hidden
+  >
+    <nav class="dj-public-container dj-site-nav__panel-inner" aria-label="Mobile primary">
+      {
+        navItems.map((item) => {
+          const active = isPublicNavActive(pathname, item.href, item.exact);
+          return (
+            <a
+              href={item.href}
+              class:list={[
+                "dj-site-nav__panel-link",
+                active ? "dj-site-nav__panel-link--active" : null,
+              ]}
+              aria-current={active ? "page" : undefined}
+            >
+              {item.label}
+            </a>
+          );
+        })
+      }
+      <div class="dj-site-nav__panel-cta">
+        <RegisterCta block variant="primary" />
+      </div>
+    </nav>
+  </div>
+</header>
+
+<script>
+  import "@/scripts/site-nav";
+</script>

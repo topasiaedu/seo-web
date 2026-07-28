@@ -32,8 +32,13 @@ export function resolveListenPort(): number {
 export const CAE_UPSTREAM = "http://127.0.0.1:4322";
 
 /**
+ * Upstream origin for the Dr Jasmine Astro app (`@seo/dr-jasmine` on port 4323).
+ */
+export const DR_JASMINE_UPSTREAM = "http://127.0.0.1:4323";
+
+/**
  * Path prefixes that are deferred (not migrated to independent apps yet).
  */
-export const DEFERRED_PATH_PREFIXES = ["/dr-jasmine", "/cms"] as const;
+export const DEFERRED_PATH_PREFIXES = ["/cms"] as const;
 
 export type DeferredPathPrefix = (typeof DEFERRED_PATH_PREFIXES)[number];

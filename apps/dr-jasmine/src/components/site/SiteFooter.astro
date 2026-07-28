@@ -1,0 +1,84 @@
+---
+/**
+ * @fileoverview Public site footer with brand blurb, nav mirrors, socials, and legal (T3).
+ */
+import { legal } from "@/data/site/legal";
+import { drJasmineSiteConfig } from "@/site-config";
+import { joinPublicPath } from "@/scripts/site-nav";
+import "./site-footer.css";
+
+const base = import.meta.env.BASE_URL;
+const brandName = drJasmineSiteConfig.name;
+const currentYear = new Date().getFullYear();
+
+const footerNavItems: ReadonlyArray<{ href: string; label: string }> = [
+  { href: joinPublicPath(base, "/"), label: "Home" },
+  { href: `${joinPublicPath(base, "/")}#dj-home-meet`, label: "About" },
+  { href: joinPublicPath(base, "blog"), label: "Blog" },
+];
+
+/** In-page FAQ band on the native home route. */
+const homeFaqHref = `${joinPublicPath(base, "/")}#dj-home-faq-heading`;
+
+const { instagram, linkedin } = drJasmineSiteConfig.social;
+---
+
+<footer class="dj-site-footer">
+  <div class="dj-public-container">
+    <div class="dj-site-footer__grid">
+      <div class="dj-site-footer__brand">
+        <h2 class="dj-site-footer__title">{brandName}</h2>
+        <p class="dj-site-footer__blurb">
+          Evidence-informed metabolic health education for adults with diabetes
+          and prediabetes. Find triggers, address root patterns, and build steadier
+          habits without strict diets or confusing rules.
+        </p>
+      </div>
+
+      <div>
+        <h3 class="dj-site-footer__section-title">Explore</h3>
+        <ul class="dj-site-footer__links">
+          {
+            footerNavItems.map((item) => (
+              <li>
+                <a class="dj-site-footer__link" href={item.href}>
+                  {item.label}
+                </a>
+              </li>
+            ))
+          }
+        </ul>
+      </div>
+
+      <div>
+        <h3 class="dj-site-footer__section-title">Connect</h3>
+        <div class="dj-site-footer__socials">
+          <a
+            class="dj-site-footer__social"
+            href={instagram}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            Instagram
+          </a>
+          <a
+            class="dj-site-footer__social"
+            href={linkedin}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            LinkedIn
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <div class="dj-site-footer__legal">
+      <p class="dj-site-footer__disclaimer">{legal.footerDisclaimer}</p>
+      <p class="dj-site-footer__meta">
+        © {currentYear} {brandName}.{" "}
+        <a href={homeFaqHref}>FAQ &amp; disclaimer</a>
+      </p>
+    </div>
+  </div>
+</footer>

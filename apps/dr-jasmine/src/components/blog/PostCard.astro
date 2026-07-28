@@ -1,0 +1,79 @@
+---
+/**
+ * Image-led grid tile for published Posts on `/dr-jasmine/blog`.
+ * Uniform discovery card (Jackson-style): category · title · excerpt · meta.
+ */
+import type { BlogPost } from "@seo/blog";
+import {
+  formatBlogDate,
+  formatReadingTime,
+  joinBlogPath,
+} from "./blog-format";
+
+interface Props {
+  post: BlogPost;
+}
+
+const { post } = Astro.props;
+const href = joinBlogPath(import.meta.env.BASE_URL, `blog/${post.slug}`);
+const dateLabel = formatBlogDate(post.publishedAt);
+const readingLabel = formatReadingTime(post.readingTimeMinutes);
+const categoryName =
+  post.category !== null && typeof post.category.name === "string"
+    ? post.category.name.trim()
+    : "";
+const heroImageUrl =
+  typeof post.heroImageUrl === "string" ? post.heroImageUrl.trim() : "";
+const hasThumb = heroImageUrl.length > 0;
+const excerpt =
+  typeof post.excerpt === "string" && post.excerpt.trim().length > 0
+    ? post.excerpt.trim()
+    : "";
+---
+
+<li class="blog-tile">
+  {
+    hasThumb ? (
+      <a class="blog-tile__media" href={href} tabindex={-1} aria-hidden="true">
+        <img src={heroImageUrl} alt="" loading="lazy" />
+      </a>
+    ) : (
+      <a
+        class="blog-tile__media blog-tile__media--empty"
+        href={href}
+        tabindex={-1}
+        aria-hidden="true"
+      />
+    )
+  }
+  <div class="blog-tile__body">
+    {
+      categoryName.length > 0 ? (
+        <p class="blog-tile__eyebrow">{categoryName}</p>
+      ) : null
+    }
+    <h2 class="blog-tile__title">
+      <a href={href}>{post.title}</a>
+    </h2>
+    {
+      excerpt.length > 0 ? (
+        <p class="blog-tile__excerpt">{excerpt}</p>
+      ) : null
+    }
+    {
+      dateLabel.length > 0 || readingLabel.length > 0 ? (
+        <p class="blog-tile__meta">
+          {dateLabel.length > 0 ? (
+            <time datetime={post.publishedAt ?? undefined}>{dateLabel}</time>
+          ) : null}
+          {readingLabel.length > 0 ? (
+            <span>
+              {dateLabel.length > 0 ? " · " : ""}
+              {readingLabel}
+            </span>
+          ) : null}
+        </p>
+      ) : null
+    }
+  </div>
+</li>

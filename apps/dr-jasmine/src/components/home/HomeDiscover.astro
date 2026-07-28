@@ -1,0 +1,42 @@
+---
+/**
+ * @fileoverview Home discover band from GHL `main-body.html` (exact bullets).
+ */
+import type { WorkshopCopy } from "@/data/site";
+import RegisterCta from "@/components/site/RegisterCta.astro";
+
+interface Props {
+  /** Workshop/home copy including discover heading and items. */
+  copy: WorkshopCopy;
+}
+
+const { copy } = Astro.props;
+const GHL_CTA_LABEL = "Secure My Seat";
+---
+
+<section
+  class="dj-home-section dj-home-discover"
+  aria-labelledby="dj-home-discover-heading"
+>
+  <div class="dj-public-container">
+    <h2 class="dj-home-heading" id="dj-home-discover-heading">
+      {copy.discoverHeading}
+    </h2>
+    <ol class="dj-home-discover__list">
+      {
+        copy.discoverItems.map((item, index) => (
+          <li class="dj-home-discover__item" id={item.id}>
+            <span class="dj-home-discover__index" aria-hidden="true">
+              {String(index + 1).padStart(2, "0")}
+            </span>
+            <h3 class="dj-home-discover__title">{item.title}</h3>
+            <p class="dj-home-discover__desc">{item.description}</p>
+          </li>
+        ))
+      }
+    </ol>
+    <div class="dj-home-discover__cta">
+      <RegisterCta label={GHL_CTA_LABEL} />
+    </div>
+  </div>
+</section>

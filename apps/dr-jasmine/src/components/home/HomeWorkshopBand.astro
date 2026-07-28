@@ -1,0 +1,33 @@
+---
+/**
+ * @fileoverview Closing CTA band from GHL `closing-cta.html`.
+ */
+import RegisterCta from "@/components/site/RegisterCta.astro";
+import type { WorkshopCopy } from "@/data/site";
+
+interface Props {
+  /** Includes `closingCta` from GHL. */
+  copy: WorkshopCopy;
+}
+
+const { copy } = Astro.props;
+const GHL_CTA_LABEL = "Secure My Seat";
+const closing = copy.closingCta;
+---
+
+<section
+  class="dj-home-section dj-home-section--teal dj-home-workshop"
+  aria-labelledby="dj-home-closing-heading"
+>
+  <div class="dj-public-container">
+    <h2 class="dj-home-heading" id="dj-home-closing-heading">{closing.heading}</h2>
+    {
+      closing.body.map((paragraph) => (
+        <p class="dj-home-lede">{paragraph}</p>
+      ))
+    }
+    <div class="dj-home-workshop__actions">
+      <RegisterCta label={GHL_CTA_LABEL} />
+    </div>
+  </div>
+</section>
