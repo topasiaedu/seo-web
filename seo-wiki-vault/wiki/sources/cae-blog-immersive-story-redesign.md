@@ -18,8 +18,8 @@
 - TOC: sticky minimal **rail** (dots + labels) on desktop; `<details>` on mobile.
 - Related posts: full-bleed horizontal **strip** below the article (not boxed cards in the main column).
 - FAQ / author: hairline separators instead of heavy bordered cards.
-- Brand chrome unchanged (`MediaNav` / `MediaFooter`); markdown → HTML + `@seo/blog` pipeline unchanged.
-- Blog **index** not redesigned in this pass (`LeadPost` still unused vs Jul 24 plan).
+- Brand chrome: originally MediaNav/Footer; **superseded** by native `BlogLayout` (SiteHeader/SiteFooter) in [cae-native-zwds-public-redesign](cae-native-zwds-public-redesign.md).
+- Blog **index** magazine tiles retained; `LeadPost` still unused vs Jul 24 plan.
 
 ## Key code paths
 
@@ -27,9 +27,10 @@
 |------|------|
 | `apps/cae/src/pages/blog/[slug].astro` | Immersive article markup (`blog-page--immersive`) |
 | `apps/cae/src/components/blog/blog-page.css` | Immersive + index styles |
-| `apps/cae/src/components/blog/TableOfContents.astro` | TOC rail |
+| `apps/cae/src/components/blog/TableOfContents.astro` | TOC rail + scroll spy (`aria-current`) |
 | `apps/cae/src/components/blog/RelatedPosts.astro` | Continue-reading strip |
 | `apps/cae/src/components/blog/KeyTakeaway.astro` | Callout (hero-scoped CSS) |
+| `apps/cae/src/components/blog/BlogLayout.astro` | Native chrome (post–Jul 28) |
 
 ## Affects
 
@@ -37,17 +38,18 @@
 - [overview.md](../overview.md) — public blog surface note
 - [glossary.md](../glossary.md) — Immersive Story; Key takeaway placement
 - [sources/cae-homepage-blog-bento.md](cae-homepage-blog-bento.md) — “does not change” line (slug UI did change)
+- [cae-native-zwds-public-redesign](cae-native-zwds-public-redesign.md) — chrome + polish follow-on
 
-## Open questions / deferred (from raw)
+## Open questions / deferred (from raw; updated)
 
-1. Wire or drop unused index `LeadPost` vs Jul 24 magazine plan
-2. TOC active-section scroll spy (styles ready; no JS this pass)
-3. Further hero/width polish from live preview
-4. Ingest older Jul 24 blog redesign / reading-paper raws (reading-paper article surface is superseded)
+1. Wire or drop unused index `LeadPost` vs Jul 24 magazine plan — **still open**
+2. TOC active-section scroll spy — **done** (Jul 28 native redesign)
+3. Further hero/width polish — largely addressed in Jul 28 polish
+4. Ingest older Jul 24 blog redesign / reading-paper raws — deferred
 
 ## Does not change
 
 - Homepage Insights soft bento
+- `@seo/blog` markdown / public query contract
 - Admin authoring / scheduling / bulk import
-- Media & Press GHL lift
-- Supabase schema / `@seo/blog` public query contract
+- Supabase schema

@@ -1,10 +1,7 @@
 ---
 /**
- * @fileoverview Pillars + Ancient Wisdom — native port of GHL `section-m2EB8Ft6xN2`.
- *
- * Structure:
- *   light overlapping bar (−80px) with Consultations / Academy / Speaking
- *   → Ancient Wisdom headline + lavender subhead → collage image
+ * Pillars + Ancient Wisdom — CSS star-field shell (no photo bg).
+ * Cream light-bar with gold number badges; chart-arc decoration.
  */
 import { homePillars } from "@/data/home/pillars";
 import {
@@ -54,22 +51,28 @@ const collageSrc = resolveImageSrc(
   homePillars.wisdom.collageImageKey,
   "pillarsCollage",
 );
-const sectionBgSrc = assetSrc(getHomeImage("pillarsBg"));
 ---
 
 <section
   class="cae-pillars"
   aria-labelledby="cae-pillars-wisdom-heading"
-  style={`--pillars-bg-image: url("${sectionBgSrc}");`}
 >
-  <div class="cae-pillars__bg" aria-hidden="true"></div>
+  <div class="cae-starfield" aria-hidden="true">
+    <div class="cae-starfield__glow"></div>
+    <div class="cae-starfield__dots"></div>
+    <span class="cae-starfield__twinkle cae-starfield__twinkle--a"></span>
+    <span class="cae-starfield__twinkle cae-starfield__twinkle--c"></span>
+  </div>
+  <div class="cae-chart-arc cae-chart-arc--pillars" aria-hidden="true"></div>
 
   <div class="cae-pillars__inner">
-    <!-- GHL: .row-wdyPZU4xMb — light bar overlapping offerings -->
     <ul class="cae-pillars__bar">
       {
-        homePillars.items.map((item) => (
+        homePillars.items.map((item, index) => (
           <li class="cae-pillars__item">
+            <span class="cae-pillars__badge" aria-hidden="true">
+              {String(index + 1).padStart(2, "0")}
+            </span>
             <h2 class="cae-pillars__title">{item.title}</h2>
             <p class="cae-pillars__body">{item.body}</p>
           </li>
@@ -78,6 +81,7 @@ const sectionBgSrc = assetSrc(getHomeImage("pillarsBg"));
     </ul>
 
     <div class="cae-pillars__wisdom">
+      <p class="cae-eyebrow">Ancient wisdom</p>
       <h2 class="cae-pillars__wisdom-headline" id="cae-pillars-wisdom-heading">
         {homePillars.wisdom.headline}
       </h2>

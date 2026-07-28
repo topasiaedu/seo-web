@@ -10,9 +10,11 @@ import { assertHomeHref } from "./nav.ts";
  */
 export const homeHero = {
   brand: "CAE GOH",
+  /** Visible slogan pill copy (CSS text — avoids PNG left-pad misalignment). */
+  sloganLabel: "POWER & BREAKTHROUGH FOR EVERYONE",
   sloganAlt: "Power and breakthrough for everyone",
   sloganTitle: "CAE brand slogan",
-  /** Logical image key resolved by {@link getHomeImage}. */
+  /** Logical image key retained for any legacy consumers. */
   sloganImageKey: "heroSlogan" satisfies HomeImageKey,
   tagline:
     "Discover Your Destiny with Zi Wei Dou Shu Consulting: Expert Astrological Insights to Guide Your Life's Path, Enhance Relationships, and Prosper in Business.",

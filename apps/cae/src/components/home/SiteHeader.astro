@@ -1,6 +1,7 @@
 ---
 /**
- * @fileoverview Sticky site header with brand logo and primary nav links.
+ * Sticky site header with brand logo, primary nav, and public light/dark toggle.
+ * Transparent over the hero; solid elevated shell after scroll.
  */
 import { homeNav } from "@/data/home/nav";
 import {
@@ -10,6 +11,7 @@ import {
   type HomeImageKey,
 } from "@/data/home/images";
 import "@/styles/home/header.css";
+import "@/styles/public-theme-toggle.css";
 
 /**
  * Returns a usable `src` string from an Astro/Vite image import.
@@ -101,6 +103,16 @@ const navLinks = homeNav.links.map((link) => ({
             </li>
           ))
         }
+        <li class="site-header__theme-item">
+          <button
+            type="button"
+            class="cae-theme-toggle"
+            data-cae-theme-toggle
+            aria-label="Switch to light mode"
+          >
+            Light
+          </button>
+        </li>
       </ul>
     </nav>
   </div>
@@ -121,6 +133,28 @@ const navLinks = homeNav.links.map((link) => ({
 </style>
 
 <script>
+  import {
+    applyPublicTheme,
+    publicThemeToggleLabel,
+    publicThemeToggleText,
+    readStoredPublicTheme,
+    togglePublicTheme,
+  } from "@/lib/public-theme";
+
+  /**
+   * Syncs every public theme toggle button with the active theme.
+   */
+  function syncThemeToggles(): void {
+    const theme = readStoredPublicTheme();
+    const buttons = document.querySelectorAll<HTMLButtonElement>(
+      "[data-cae-theme-toggle]",
+    );
+    for (const button of buttons) {
+      button.setAttribute("aria-label", publicThemeToggleLabel(theme));
+      button.textContent = publicThemeToggleText(theme);
+    }
+  }
+
   /**
    * Toggles the mobile nav open state on the sticky header.
    */
@@ -131,11 +165,44 @@ const navLinks = homeNav.links.map((link) => ({
       return;
     }
 
+    /**
+     * Applies solid header chrome after the page has scrolled past the hero.
+     */
+    function syncScrollState(): void {
+      if (!(header instanceof HTMLElement)) {
+        return;
+      }
+      const scrolled = window.scrollY > 24;
+      header.classList.toggle("is-scrolled", scrolled);
+    }
+
     toggle.addEventListener("click", () => {
       const isOpen = header.classList.toggle("is-open");
       toggle.setAttribute("aria-expanded", isOpen ? "true" : "false");
     });
+
+    window.addEventListener("scroll", syncScrollState, { passive: true });
+    syncScrollState();
+  }
+
+  /**
+   * Wires public light/dark theme toggles in the native header.
+   */
+  function initThemeToggle(): void {
+    applyPublicTheme(readStoredPublicTheme());
+    syncThemeToggles();
+
+    const buttons = document.querySelectorAll<HTMLButtonElement>(
+      "[data-cae-theme-toggle]",
+    );
+    for (const button of buttons) {
+      button.addEventListener("click", () => {
+        togglePublicTheme();
+        syncThemeToggles();
+      });
+    }
   }
 
   initSiteHeader();
+  initThemeToggle();
 </script>

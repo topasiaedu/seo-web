@@ -1,40 +1,26 @@
 /**
- * Pillars + Ancient Wisdom — native port of GHL `section-m2EB8Ft6xN2`.
- *
- * Spec:
- * - Section: bg #140625 + absolute decorative photo; inner max-width 1170px
- * - Bar (.row-wdyPZU4xMb): margin-top -80px, bg #F9F1FF, border 1px #4C247A,
- *   box-shadow 0 20px 100px #04031c52, padding 15px 10px, three equal cols
- * - Titles: Archivo Black #140625, 36px / 32px, letter-spacing -1px, center
- * - Bodies: Hanken #9461A3, 18px / 16px, center, margin-top 10px
- * - Wisdom headline: Archivo Black white 56px / 26px
- * - Wisdom subhead: #9461A3 uppercase letter-spacing 2px, 18px / 12px
+ * Pillars + Ancient Wisdom — CSS star-field shell + cream light bar.
+ * No photographic background; gold number badges on pillar items.
  */
 
 .cae-pillars {
   position: relative;
   isolation: isolate;
+  /* Keep y visible so the light bar + badges are never clipped */
   overflow: visible;
   margin: 0;
-  padding: 0 0 40px;
-  color: #ffffff;
-  background-color: #140625;
+  padding: clamp(2.5rem, 5vw, 3.5rem) 0 clamp(2.5rem, 6vw, 4rem);
+  color: var(--cae-text-bright);
+  background-color: var(--cae-bg);
   font-family: var(--cae-font-sans);
 }
 
-.cae-pillars__bg {
-  position: absolute;
-  top: 0;
-  left: 0;
-  z-index: -1;
-  width: 100%;
-  height: 100%;
-  background-image: var(--pillars-bg-image);
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
-  opacity: 1;
-  pointer-events: none;
+.cae-pillars .cae-starfield,
+.cae-pillars .cae-chart-arc {
+  z-index: 0;
+  /* Decorative layers can clip; content bar must not */
+  overflow: hidden;
+  border-radius: 0;
 }
 
 .cae-pillars__inner {
@@ -42,19 +28,11 @@
   z-index: 1;
   box-sizing: border-box;
   width: 100%;
-  max-width: 1170px;
+  max-width: var(--cae-max-width);
   margin: 0 auto;
-  padding: 0 15px;
+  padding: 0 var(--cae-gutter);
 }
 
-/*
- * GHL: .row-wdyPZU4xMb
- * margin: -80px auto 0;
- * box-shadow: 0 20px 100px 0 #04031c52;
- * padding: 15px 10px;
- * background: #F9F1FF;
- * border: 1px solid #4C247A;
- */
 .cae-pillars__bar {
   display: flex;
   flex-direction: column;
@@ -63,109 +41,123 @@
   z-index: 2;
   box-sizing: border-box;
   width: 100%;
-  margin: -80px auto 0;
-  padding: 15px 10px;
-  background-color: #f9f1ff;
-  border: 1px solid #4c247a;
-  border-radius: 0;
-  box-shadow: 0 20px 100px 0 #04031c52;
+  margin: 0 auto;
+  padding: 1.25rem 0.75rem;
+  background-color: var(--cae-pillars-bar-bg);
+  border: 1px solid var(--cae-pillars-bar-border);
+  border-radius: 0.75rem;
+  box-shadow: var(--cae-pillars-bar-shadow);
 }
 
 @media (min-width: 768px) {
   .cae-pillars__bar {
     flex-direction: row;
     align-items: stretch;
+    padding: 1.5rem 1rem;
   }
 }
 
-@media (max-width: 640px) {
-  .cae-pillars__bar {
-    margin-top: -40px;
-  }
-}
-
-/* GHL pillar cols: padding 10px 5px; flex equal */
 .cae-pillars__item {
   display: flex;
   flex: 1 1 0%;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-start;
   box-sizing: border-box;
   margin: 0;
-  padding: 10px 5px;
+  padding: 1rem 0.75rem;
   text-align: center;
   background: transparent;
 }
 
-/* GHL titles: Archivo Black #140625, 36px, letter-spacing -1px, line-height 1em */
+@media (min-width: 768px) {
+  .cae-pillars__item:not(:last-child) {
+    border-right: 1px solid color-mix(in srgb, var(--cae-purple) 35%, transparent);
+  }
+}
+
+.cae-pillars__badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  margin-bottom: 0.75rem;
+  border-radius: 50%;
+  border: 1.5px solid var(--cae-gold);
+  color: var(--cae-gold-dark);
+  font-family: var(--cae-font-sans);
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  background: color-mix(in srgb, var(--cae-gold) 12%, transparent);
+}
+
 .cae-pillars__title {
   margin: 0;
   padding: 0;
-  color: #140625;
+  color: var(--cae-navy);
   font-family: var(--cae-font-display), var(--cae-font-sans);
-  font-size: 36px;
+  font-size: clamp(1.5rem, 3vw, 2rem);
   font-weight: 400;
   letter-spacing: -1px;
-  line-height: 1em;
+  line-height: 1.1;
   text-align: center;
-  text-transform: none;
-  text-shadow: none;
 }
 
-/* GHL bodies: #9461A3, 18px, center, margin-top 10px */
 .cae-pillars__body {
-  margin: 10px 0 0;
+  margin: 0.65rem 0 0;
   padding: 0;
-  color: #9461a3;
+  color: var(--cae-purple);
   font-family: var(--cae-font-sans);
-  font-size: 18px;
+  font-size: clamp(0.95rem, 1.8vw, 1.05rem);
   font-weight: 400;
-  letter-spacing: 0;
-  line-height: 1.5em;
+  line-height: 1.5;
   text-align: center;
-  text-shadow: none;
 }
 
 .cae-pillars__wisdom {
-  margin-top: 20px;
+  position: relative;
+  margin-top: clamp(2rem, 5vw, 3rem);
   text-align: center;
 }
 
-/* GHL: .cheading-sc-qf3JxPT1 — white Archivo 56px / 26px */
+.cae-pillars__wisdom .cae-eyebrow {
+  margin-bottom: 0.5rem;
+}
+
 .cae-pillars__wisdom-headline {
   margin: 0;
-  padding: 10px 0 0;
-  color: #ffffff;
+  padding: 0.35rem 0 0;
+  color: var(--cae-text-bright);
   font-family: var(--cae-font-display), var(--cae-font-sans);
-  font-size: 56px;
+  font-size: clamp(1.75rem, 4.5vw, 3.25rem);
   font-weight: 400;
   letter-spacing: -1px;
-  line-height: 1.2em;
+  line-height: 1.15;
   text-align: center;
-  text-shadow: none;
 }
 
-/* GHL: .csub-heading-1cWMKRg2wJT — #9461A3, uppercase, tracking 2px, 18px / 12px */
 .cae-pillars__wisdom-subhead {
-  margin: 0;
+  margin: 0.75rem auto 0;
+  max-width: 40rem;
   padding: 0;
-  color: #9461a3;
+  color: var(--cae-lavender);
   font-family: var(--cae-font-sans);
-  font-size: 18px;
+  font-size: clamp(0.8rem, 1.6vw, 1rem);
   font-weight: 400;
-  letter-spacing: 2px;
-  line-height: 2em;
+  font-style: italic;
+  letter-spacing: 0.12em;
+  line-height: 1.7;
   text-align: center;
   text-transform: uppercase;
-  text-shadow: none;
 }
 
 .cae-pillars__collage {
   width: 100%;
   max-width: 100%;
-  margin: 20px auto 0;
-  padding: 10px;
+  margin: 1.5rem auto 0;
+  padding: 0.5rem;
 }
 
 .cae-pillars__collage-img {
@@ -173,23 +165,6 @@
   width: 100%;
   height: auto;
   margin: 0 auto;
-  border-radius: 0;
-}
-
-@media screen and (max-width: 480px) {
-  .cae-pillars__title {
-    font-size: 32px;
-  }
-
-  .cae-pillars__body {
-    font-size: 16px;
-  }
-
-  .cae-pillars__wisdom-headline {
-    font-size: 26px;
-  }
-
-  .cae-pillars__wisdom-subhead {
-    font-size: 12px;
-  }
+  border-radius: 0.5rem;
+  border: 1px solid color-mix(in srgb, var(--cae-gold) 40%, transparent);
 }

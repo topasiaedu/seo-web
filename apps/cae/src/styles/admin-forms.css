@@ -169,7 +169,7 @@
 .admin-btn--primary,
 a.admin-btn--primary {
   background: var(--admin-btn-primary-bg);
-  color: #ffffff;
+  color: var(--admin-btn-primary-text);
   border-color: var(--admin-btn-primary-border);
 }
 
@@ -178,20 +178,8 @@ a.admin-btn--primary {
 a.admin-btn--primary:hover,
 a.admin-btn--primary:focus-visible {
   background: var(--admin-btn-primary-hover-bg);
-  color: #ffffff;
+  color: var(--admin-btn-primary-text);
   border-color: var(--admin-btn-primary-border);
-}
-
-html[data-theme="dark"] .admin-btn--primary,
-html[data-theme="dark"] a.admin-btn--primary {
-  color: var(--admin-btn-primary-text);
-}
-
-html[data-theme="dark"] .admin-btn--primary:hover:not(:disabled),
-html[data-theme="dark"] .admin-btn--primary:focus-visible:not(:disabled),
-html[data-theme="dark"] a.admin-btn--primary:hover,
-html[data-theme="dark"] a.admin-btn--primary:focus-visible {
-  color: var(--admin-btn-primary-text);
 }
 
 .admin-btn--danger {

@@ -1,17 +1,17 @@
 ---
 /**
- * Site footer with copyright / terms line from homepage CTA content.
+ * Site footer with copyright line from homepage CTA content.
+ * Always-deep night shell in both themes.
  */
 import { homeCta } from "@/data/home/cta";
 import "@/styles/home/footer.css";
 
-const { copyright, termsHref } = homeCta.footer;
+const { copyright } = homeCta.footer;
 ---
 
 <footer class="cae-footer">
+  <div class="cae-footer__stars" aria-hidden="true"></div>
   <div class="cae-footer__inner">
-    <p class="cae-footer__copy">
-      <a class="cae-footer__link" href={termsHref}>{copyright}</a>
-    </p>
+    <p class="cae-footer__copy">{copyright}</p>
   </div>
 </footer>

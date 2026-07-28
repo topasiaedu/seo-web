@@ -98,7 +98,7 @@
   width: 50px;
   height: 50px;
   border-radius: 50%;
-  background: #140625;
+  background: var(--cae-bg-deep);
   color: #ffffff;
   display: flex;
   align-items: center;
@@ -123,7 +123,7 @@
 
 .hl_page-preview--content .stars {
   margin-top: 4px;
-  color: #f4b400;
+  color: var(--cae-gold);
   font-size: 0.95rem;
 }
 

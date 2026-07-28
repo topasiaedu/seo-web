@@ -1,19 +1,12 @@
 ---
 /**
- * @fileoverview Hero section mirrored from GHL `section-GdS5u8Huz` structure.
- *
- * GHL layout (preview-cleaned.html):
- *   section → absolute .bg image → .inner (max 1170px)
- *     → row (two equal flex columns)
- *       → left: slogan img, h1, paragraph, LEARN MORE button
- *       → right: empty desktop-only spacer (portrait lives in the BG image)
+ * Hero — full-bleed portrait background with left copy overlay.
+ * Slogan is a CSS pill (aligned with brand text); primary CTA owns its gradient.
  */
 import { homeHero } from "@/data/home/hero";
 import {
   getHomeImage,
-  isHomeImageKey,
   type HomeImageAsset,
-  type HomeImageKey,
 } from "@/data/home/images";
 import "@/styles/home/hero.css";
 
@@ -39,20 +32,6 @@ function assetSrc(asset: HomeImageAsset): string {
 }
 
 /**
- * Resolves a content `imageKey` to a concrete image URL.
- *
- * @param imageKey - Logical slot from content modules
- * @param fallback - Known {@link HomeImageKey} when the content key is missing
- * @returns Resolved image URL
- */
-function resolveImageSrc(imageKey: string, fallback: HomeImageKey): string {
-  if (isHomeImageKey(imageKey)) {
-    return assetSrc(getHomeImage(imageKey));
-  }
-  return assetSrc(getHomeImage(fallback));
-}
-
-/**
  * Prefixes root-relative paths with Astro `base` (`/cae/`).
  *
  * @param href - Absolute URL, hash, or root-relative path
@@ -73,43 +52,34 @@ function resolveHref(href: string): string {
   return `${normalizedBase}${path}`;
 }
 
-const sloganSrc = resolveImageSrc(homeHero.sloganImageKey, "heroSlogan");
 const backgroundSrc = assetSrc(getHomeImage("heroBg"));
 const ctaHref = resolveHref(homeHero.ctaHref);
 ---
 
-<section class="hero" aria-labelledby="hero-brand">
-  <!-- GHL: .bg.bgCover100.bg-section-GdS5u8Huz (absolute full-bleed photo, no overlay) -->
-  <div
-    class="hero__bg"
-    style={`--hero-bg-image: url("${backgroundSrc}");`}
-    aria-hidden="true"
-  >
-  </div>
+<section
+  class="hero"
+  aria-labelledby="hero-brand"
+  style={`--hero-bg-image: url("${backgroundSrc}");`}
+>
+  <div class="hero__bg" aria-hidden="true"></div>
+  <div class="hero__scrim" aria-hidden="true"></div>
 
-  <!-- GHL: #section-GdS5u8Huz > .inner { max-width: 1170px } -->
   <div class="hero__inner">
-    <!-- GHL: .row-FHN0Hj7LQrI.row-align-center — two equal .c-column { flex: 1 } -->
-    <div class="hero__row">
-      <!-- GHL: #col-Kc6QK_aJU9S — slogan, heading, paragraph, button -->
-      <div class="hero__copy">
-        <img
-          class="hero__slogan"
-          src={sloganSrc}
-          alt={homeHero.sloganAlt}
-          title={homeHero.sloganTitle}
-          width="280"
-          height="40"
-          loading="eager"
-          decoding="async"
-        />
-        <h1 class="hero__brand" id="hero-brand">{homeHero.brand}</h1>
-        <p class="hero__tagline">{homeHero.tagline}</p>
-        <a class="hero__cta" href={ctaHref}>{homeHero.ctaLabel}</a>
+    <div class="hero__copy">
+      <p class="cae-eyebrow hero__eyebrow">Zi Wei Dou Shu · Purple Star</p>
+      <p class="hero__slogan" title={homeHero.sloganTitle}>
+        {homeHero.sloganLabel}
+      </p>
+      <h1 class="hero__brand" id="hero-brand">{homeHero.brand}</h1>
+      <p class="hero__tagline">{homeHero.tagline}</p>
+      <div class="hero__actions">
+        <a class="hero__cta hero__cta--primary" href={ctaHref}>
+          {homeHero.ctaLabel}
+        </a>
+        <a class="hero__cta hero__cta--ghost" href={resolveHref("/blog/")}>
+          Read the blog
+        </a>
       </div>
-
-      <!-- GHL: #col-aZaS1nJ5v6.desktop-only — empty spacer so copy stays left of portrait -->
-      <div class="hero__spacer" aria-hidden="true"></div>
     </div>
   </div>
 </section>

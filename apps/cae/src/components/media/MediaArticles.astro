@@ -1,0 +1,133 @@
+---
+/**
+ * Media & Press article grid — native ZWDS styling matching the homepage.
+ * Uses homepage press logos when available so marks display at full width.
+ */
+import { homeMedia } from "@/data/home/media";
+import {
+  getHomeImage,
+  type HomeImageAsset,
+  type HomeImageKey,
+} from "@/data/home/images";
+import "@/styles/media/media-articles.css";
+
+/**
+ * Eager URL map for every file under `src/assets/media/`.
+ */
+const mediaAssetModules = import.meta.glob("../../assets/media/*", {
+  eager: true,
+  query: "?url",
+  import: "default",
+}) as Record<string, string>;
+
+/**
+ * Returns a usable `src` string from an Astro/Vite image import.
+ *
+ * @param asset - Static import from {@link getHomeImage}
+ * @returns URL string for an `<img src>`
+ */
+function assetSrc(asset: HomeImageAsset): string {
+  if (typeof asset === "string") {
+    return asset;
+  }
+  if (
+    typeof asset === "object" &&
+    asset !== null &&
+    "src" in asset &&
+    typeof asset.src === "string"
+  ) {
+    return asset.src;
+  }
+  throw new Error("MediaArticles: unsupported home image asset shape.");
+}
+
+/**
+ * Resolves a media asset filename to a URL string.
+ *
+ * @param filename - File under `src/assets/media/`
+ * @returns Public URL for the asset
+ */
+function mediaAssetUrl(filename: string): string {
+  for (const [modPath, url] of Object.entries(mediaAssetModules)) {
+    const name = modPath.split("/").pop();
+    if (name === filename && typeof url === "string" && url.length > 0) {
+      return url;
+    }
+  }
+  throw new Error(`MediaArticles: missing asset "${filename}".`);
+}
+
+/**
+ * Picks the best logo URL for a media article card.
+ *
+ * @param logoImageKey - Optional homepage press slot
+ * @param imageFile - Fallback filename under `assets/media/`
+ * @returns Public image URL
+ */
+function resolveArticleImage(
+  logoImageKey: HomeImageKey | undefined,
+  imageFile: string,
+): string {
+  if (typeof logoImageKey === "string") {
+    return assetSrc(getHomeImage(logoImageKey));
+  }
+  return mediaAssetUrl(imageFile);
+}
+
+const articles = homeMedia.articles.map((article) => ({
+  ...article,
+  imageSrc: resolveArticleImage(article.logoImageKey, article.imageFile),
+}));
+---
+
+<section class="media-articles" aria-labelledby="media-articles-heading">
+  <div class="cae-starfield" aria-hidden="true">
+    <div class="cae-starfield__glow"></div>
+    <div class="cae-starfield__dots"></div>
+    <span class="cae-starfield__twinkle cae-starfield__twinkle--a"></span>
+    <span class="cae-starfield__twinkle cae-starfield__twinkle--c"></span>
+  </div>
+
+  <div class="media-articles__inner">
+    <header class="media-articles__header">
+      <p class="cae-eyebrow">{homeMedia.eyebrow}</p>
+      <h1 class="media-articles__title" id="media-articles-heading">
+        {homeMedia.heading}
+      </h1>
+      <p class="media-articles__lede">{homeMedia.lede}</p>
+    </header>
+
+    <ul class="media-articles__grid">
+      {
+        articles.map((article) => (
+          <li class="media-articles__card">
+            <a
+              class="media-articles__link"
+              href={article.href}
+              target="_blank"
+              rel="noreferrer noopener"
+            >
+              <span class="media-articles__media">
+                <img
+                  class="media-articles__image"
+                  src={article.imageSrc}
+                  alt={article.imageAlt}
+                  loading="lazy"
+                  decoding="async"
+                />
+              </span>
+              <span class="media-articles__body">
+                <span class="media-articles__outlet">{article.outlet}</span>
+                <h2 class="media-articles__card-title">{article.title}</h2>
+                <span class="media-articles__meta">
+                  <time>{article.dateLabel}</time>
+                  <span class="media-articles__cta">{homeMedia.ctaLabel}</span>
+                </span>
+              </span>
+            </a>
+          </li>
+        ))
+      }
+    </ul>
+  </div>
+</section>

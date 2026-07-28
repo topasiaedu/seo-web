@@ -1,4 +1,15 @@
-/* Clone host tweaks: preserve GHL button look on converted anchors */
+/**
+ * @fileoverview Clone host tweaks + T5/T6 nm-zwds brand alignment for GHL
+ * home/media (and blog chrome). Loads after ghl-page.css / media-page.css.
+ *
+ * Strategy (hybrid A→B): remap shared GHL --color-* vars to --cae-*; override
+ * stable section/CTA/footer hooks. Accept residual hex in capture CSS
+ * (documented in plan Appendix B).
+ */
+
+/* -------------------------------------------------------------------------
+ * Anchor button chrome (pre-existing)
+ * ------------------------------------------------------------------------- */
 a.buttonElevate,
 a[class*="cbutton-"],
 a.btn-vp {
@@ -60,4 +71,239 @@ body {
 .hl_page-preview--content .text-output h6 {
   margin-block-start: 0;
   margin-block-end: 0;
+}
+
+/* =========================================================================
+ * T5 — GHL palette remap (wins over capture :root blocks via load order)
+ * ========================================================================= */
+
+:root {
+  /* Dark shell — nm-zwds surface-dark family */
+  --color-lzay1h44: var(--cae-bg);
+  --color-lyik0lh6: var(--cae-bg-deep);
+  --color-lx2prsc2: var(--cae-bg-deep);
+  --color-lx4k7zn2: var(--cae-bg-deep);
+  --color-lgf1duy4: var(--cae-bg-deep);
+
+  /* Brand purple scale (was #9461A3 / #CAB7DA / #4C247A) */
+  --color-lzaytma1: var(--cae-purple);
+  --color-lzayulcw: var(--cae-lavender-soft);
+  --color-lzb15zlk: var(--cae-purple-deep);
+
+  /* Light bands + filled CTA fill source (was #F9F1FF) — CTAs re-skinned in T6 */
+  --color-lzb16ip5: var(--cae-press-bg);
+
+  /* Muted body / footer copy (was #8893A8) */
+  --color-lx2q00eu: var(--cae-text-muted);
+
+  /* Media page muted captions (was #8D8D8D) */
+  --color-mcx1lu3u: var(--cae-text-muted);
+}
+
+/**
+ * Soft section shells that still read as near-black in photos: nudge elevated
+ * nav/logo bars toward header token without fighting hero photography.
+ */
+.hl_page-preview--content .section-us5zIkycRg,
+.hl_page-preview--content .section-CfDAEFyJd7,
+.hl_page-preview--content .section-TX7QG09A69 {
+  background-color: var(--cae-bg-header) !important;
+}
+
+.hl_page-preview--content .section-R2YzY26o5TE {
+  background-color: var(--cae-bg-deep) !important;
+}
+
+/**
+ * Press + pillars light bands inherit cream via --color-lzb16ip5.
+ * Force navy titles / purple body so cream bands stay readable.
+ */
+.hl_page-preview--content .section-JP6zPvfGtS {
+  background-color: var(--cae-press-bg) !important;
+  color: var(--cae-press-text);
+}
+
+.hl_page-preview--content .csub-heading-dhLDFC7tvV,
+.hl_page-preview--content .csub-heading-dhLDFC7tvV h1,
+.hl_page-preview--content .csub-heading-dhLDFC7tvV h2 {
+  color: var(--cae-navy) !important;
+}
+
+.hl_page-preview--content .section-JP6zPvfGtS .divider-element {
+  border-color: var(--cae-press-rule) !important;
+  background-color: var(--cae-press-rule) !important;
+}
+
+/* Pillars overlapping cream bar */
+.hl_page-preview--content .row-wdyPZU4xMb {
+  background-color: var(--cae-pillars-bar-bg) !important;
+  border-color: var(--cae-pillars-bar-border) !important;
+  box-shadow: var(--cae-pillars-bar-shadow);
+}
+
+.hl_page-preview--content .row-wdyPZU4xMb .cheading-ZVuvyo7zRs,
+.hl_page-preview--content .row-wdyPZU4xMb .cheading-ZVuvyo7zRs h1,
+.hl_page-preview--content .row-wdyPZU4xMb .cheading-7QuCnumKWu,
+.hl_page-preview--content .row-wdyPZU4xMb .cheading-7QuCnumKWu h1,
+.hl_page-preview--content .row-wdyPZU4xMb .cheading-gf3ANH0-DxY,
+.hl_page-preview--content .row-wdyPZU4xMb .cheading-gf3ANH0-DxY h1 {
+  color: var(--cae-navy) !important;
+}
+
+.hl_page-preview--content .row-wdyPZU4xMb .cparagraph-5CQ2gjTDNwV,
+.hl_page-preview--content .row-wdyPZU4xMb .cparagraph-5CQ2gjTDNwV p,
+.hl_page-preview--content .row-wdyPZU4xMb .cparagraph-WAT_QimTAN,
+.hl_page-preview--content .row-wdyPZU4xMb .cparagraph-WAT_QimTAN p,
+.hl_page-preview--content .row-wdyPZU4xMb .cparagraph-XS7VIQHKe7,
+.hl_page-preview--content .row-wdyPZU4xMb .cparagraph-XS7VIQHKe7 p {
+  color: var(--cae-purple) !important;
+}
+
+/**
+ * Custom-header menu accents (capture uses #4C247A !important — beat in place).
+ */
+.custom-header .menu-item a:hover,
+.custom-header .menu-item.current-menu-parent > a {
+  color: var(--cae-lavender-bright) !important;
+}
+
+.custom-header .menu-submenu a:hover,
+.custom-header .submenu a:hover {
+  background-color: var(--cae-purple-deep) !important;
+  color: var(--cae-cream) !important;
+}
+
+/**
+ * Nav link / hamburger color tracks public theme (capture hardcodes light text).
+ */
+.custom-header .menu-item-title,
+.custom-header .mega-menu-link,
+.custom-header .nav-menu-mobile,
+.custom-header .x-icon {
+  color: var(--cae-text) !important;
+}
+
+html[data-theme="light"] .custom-header .menu-item a:hover,
+html[data-theme="light"] .custom-header .menu-item.current-menu-parent > a {
+  color: var(--cae-purple-deep) !important;
+}
+
+html[data-theme="light"] .custom-header .nav-menu-mobile span,
+html[data-theme="light"] .custom-header .nav-menu-mobile span::before,
+html[data-theme="light"] .custom-header .nav-menu-mobile span::after {
+  background-color: var(--cae-navy);
+}
+
+/**
+ * Carousel widget accents (also patched in carousel-widget.css; belt + suspenders).
+ */
+.hl_page-preview--content .avatar {
+  background: var(--cae-bg-deep);
+}
+
+.hl_page-preview--content .stars {
+  color: var(--cae-gold);
+}
+
+/* =========================================================================
+ * T6 — Brand gradient on CTAs / footer / selective text
+ * ========================================================================= */
+
+/**
+ * Thin brand signature under the logo bar (first screenful, non-text).
+ */
+.hl_page-preview--content .section-us5zIkycRg::after {
+  content: "";
+  display: block;
+  width: 100%;
+  height: 3px;
+  background-image: var(--cae-brand-gradient);
+  background-color: var(--cae-brand-gradient-stop-3);
+}
+
+/**
+ * Primary filled Connect CTAs — 5-stop brand gradient + cream label.
+ * (Capture used cream fill + near-black text via --color-lzb16ip5.)
+ */
+.hl_page-preview--content .cbutton-ObRrB7XyTh,
+.hl_page-preview--content .cbutton-rDXluIiBCY {
+  background-image: var(--cae-brand-gradient) !important;
+  background-color: var(--cae-brand-gradient-stop-3) !important;
+  background-size: 100% 100%;
+  color: var(--cae-cream) !important;
+  border-color: transparent !important;
+  transition:
+    filter 0.2s ease,
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.hl_page-preview--content .cbutton-ObRrB7XyTh:hover,
+.hl_page-preview--content .cbutton-ObRrB7XyTh:focus-visible,
+.hl_page-preview--content .cbutton-rDXluIiBCY:hover,
+.hl_page-preview--content .cbutton-rDXluIiBCY:focus-visible {
+  filter: brightness(1.08);
+  transform: translateY(-2px);
+  outline: 2px solid var(--cae-gold);
+  outline-offset: 3px;
+  box-shadow: 0 8px 24px rgba(26, 15, 46, 0.45);
+}
+
+/**
+ * Hero ghost CTA — keep outline; gold-dark fill on hover/focus (dark interactive).
+ */
+.hl_page-preview--content .cbutton-h2gy3SX8Kg0 {
+  transition:
+    background-color 0.2s ease,
+    color 0.2s ease,
+    border-color 0.2s ease,
+    transform 0.2s ease;
+}
+
+.hl_page-preview--content .cbutton-h2gy3SX8Kg0:hover,
+.hl_page-preview--content .cbutton-h2gy3SX8Kg0:focus-visible {
+  background-color: var(--cae-gold-dark) !important;
+  background-image: none !important;
+  color: var(--cae-bg-deep) !important;
+  border-color: var(--cae-gold-dark) !important;
+  transform: translateY(-2px);
+  outline: 2px solid var(--cae-cream);
+  outline-offset: 3px;
+}
+
+/**
+ * One selective gradient-text moment (Connect band) — not on hero photography.
+ * Cream fallback when background-clip text is unsupported.
+ */
+.hl_page-preview--content .cheading-V8j2MxbJzayn,
+.hl_page-preview--content .cheading-V8j2MxbJzayn h1 {
+  color: var(--cae-cream) !important;
+}
+
+@supports ((background-clip: text) or (-webkit-background-clip: text)) {
+  .hl_page-preview--content .cheading-V8j2MxbJzayn,
+  .hl_page-preview--content .cheading-V8j2MxbJzayn h1 {
+    background-image: var(--cae-brand-gradient);
+    background-clip: text;
+    -webkit-background-clip: text;
+    color: transparent !important;
+    -webkit-text-fill-color: transparent;
+  }
+}
+
+/**
+ * Footer top accent band (nm-zwds bg-footer-light spirit, dark site).
+ */
+.hl_page-preview--content .section-R2YzY26o5TE::before {
+  content: "";
+  display: block;
+  width: 100%;
+  height: 4px;
+  background-image: var(--cae-brand-gradient);
+  background-color: var(--cae-brand-gradient-stop-3);
+}
+
+.hl_page-preview--content .cparagraph-_bd8YZXhZkK6,
+.hl_page-preview--content .cparagraph-_bd8YZXhZkK6 p {
+  color: var(--cae-text-muted) !important;
 }

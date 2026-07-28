@@ -1,0 +1,129 @@
+---
+/**
+ * Light/dark toggle for the public GHL topbar.
+ * Mounts into desktop + mobile nav lists inside `.mega-menu-container`.
+ */
+import "@/styles/public-theme-toggle.css";
+---
+
+<button
+  type="button"
+  class="cae-theme-toggle"
+  data-cae-theme-toggle
+  data-cae-theme-toggle-source
+  aria-label="Switch to light mode"
+  hidden
+>
+  Light
+</button>
+
+<script>
+  import {
+    applyPublicTheme,
+    publicThemeToggleLabel,
+    publicThemeToggleText,
+    readStoredPublicTheme,
+    togglePublicTheme,
+  } from "@/lib/public-theme";
+
+  /**
+   * Syncs toggle label/text with the active public theme.
+   *
+   * @param button - Theme toggle button.
+   */
+  function syncThemeToggle(button: HTMLButtonElement): void {
+    const theme = readStoredPublicTheme();
+    button.setAttribute("aria-label", publicThemeToggleLabel(theme));
+    button.textContent = publicThemeToggleText(theme);
+  }
+
+  /**
+   * Syncs every mounted public theme toggle on the page.
+   */
+  function syncAllThemeToggles(): void {
+    const buttons = document.querySelectorAll<HTMLButtonElement>(
+      "[data-cae-theme-toggle-mounted]",
+    );
+    for (const button of buttons) {
+      syncThemeToggle(button);
+    }
+  }
+
+  /**
+   * Creates a nav list item wrapping a mounted theme toggle button.
+   *
+   * @param source - Hidden source button to clone.
+   * @param slot - Mount slot id (`desktop` | `mobile`).
+   * @returns List item ready to insert into a GHL nav `<ul>`.
+   */
+  function createToggleListItem(
+    source: HTMLButtonElement,
+    slot: "desktop" | "mobile",
+  ): HTMLLIElement {
+    const button = source.cloneNode(true);
+    if (!(button instanceof HTMLButtonElement)) {
+      throw new Error("PublicThemeToggle: failed to clone toggle button.");
+    }
+    button.removeAttribute("data-cae-theme-toggle-source");
+    button.removeAttribute("hidden");
+    button.setAttribute("data-cae-theme-toggle-mounted", slot);
+    syncThemeToggle(button);
+    button.addEventListener("click", () => {
+      togglePublicTheme();
+      syncAllThemeToggles();
+    });
+
+    const item = document.createElement("li");
+    item.className = "nav-spacing-x menu-item cae-theme-toggle-item";
+    item.setAttribute("data-cae-theme-toggle-item", slot);
+    item.appendChild(button);
+    return item;
+  }
+
+  /**
+   * Mounts theme toggles into GHL desktop and mobile nav lists (once per page).
+   */
+  function mountPublicThemeToggle(): void {
+    const source = document.querySelector(
+      "[data-cae-theme-toggle-source]",
+    );
+    if (!(source instanceof HTMLButtonElement)) {
+      return;
+    }
+
+    const header = document.querySelector(
+      ".mega-menu-container.custom-header",
+    );
+    if (!(header instanceof HTMLElement)) {
+      return;
+    }
+
+    applyPublicTheme(readStoredPublicTheme());
+
+    const desktopMenu = header.querySelector(".nav-menu-desktop");
+    if (
+      desktopMenu instanceof HTMLElement &&
+      desktopMenu.querySelector('[data-cae-theme-toggle-item="desktop"]') ===
+        null
+    ) {
+      desktopMenu.appendChild(createToggleListItem(source, "desktop"));
+    }
+
+    const mobileMenu = header.querySelector(".cart-search-mobile");
+    if (
+      mobileMenu instanceof HTMLElement &&
+      mobileMenu.querySelector('[data-cae-theme-toggle-item="mobile"]') ===
+        null
+    ) {
+      mobileMenu.insertBefore(
+        createToggleListItem(source, "mobile"),
+        mobileMenu.firstChild,
+      );
+    }
+
+    syncAllThemeToggles();
+  }
+
+  mountPublicThemeToggle();
+  document.addEventListener("astro:page-load", mountPublicThemeToggle);
+</script>

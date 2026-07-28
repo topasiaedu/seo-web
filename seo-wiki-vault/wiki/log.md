@@ -2,6 +2,28 @@
 
 Append-only timeline. Each entry starts with `## [YYYY-MM-DD] <verb> | <title>` for easy grepping.
 
+## [2026-07-28] lint | post–native-ZWDS-redesign vault health
+
+- Broken wiki links: **0** (spot-checked new source paths)
+- Index orphans fixed: added missing Immersive Story + Jul 28 brand/native sources
+- Code spot-check: `HomePage.astro` → native `home/*`; media + `BlogLayout` use SiteHeader/SiteFooter
+- Uningested inbox (deferred): older Jul 24 blog notes + git-init + series drafts — see lint report
+- Full report: `outputs/lint-2026-07-28-native-zwds-redesign.md`
+
+## [2026-07-28] ingest | cae-native-zwds-public-redesign
+
+- Raw: `raw/inbox/2026-07-28-cae-native-zwds-public-redesign.md`
+- New source: `wiki/sources/cae-native-zwds-public-redesign.md`
+- Native home/media/blog chrome cutover; Immersive Story polish (TOC spy, FAQ chevron, byline socials)
+- Updated: `sites/cae`, `overview`, `architecture/overview`, glossary, index; noted GHL live chrome superseded
+
+## [2026-07-28] ingest | cae-nm-zwds-brand-theme-and-public-theme-toggle
+
+- Raw: `raw/inbox/2026-07-28-cae-nm-zwds-brand-theme-and-public-theme-toggle.md`
+- New source: `wiki/sources/cae-nm-zwds-brand-theme-and-public-theme-toggle.md`
+- nm-zwds tokens/gradient, public Light/Dark toggle, logo home URL fix
+- Updated: `sites/cae`, glossary, index
+
 ## [2026-07-27] ingest | cae-admin-bulk-import
 
 - Raw: `raw/inbox/2026-07-27-cae-admin-bulk-import.md`

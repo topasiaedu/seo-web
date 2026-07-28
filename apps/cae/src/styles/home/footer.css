@@ -1,19 +1,43 @@
 /**
- * Site footer styles for the CAE homepage.
+ * Site footer — always deep night shell in both light and dark modes.
+ * Subtle star dots; no interactive links.
  */
 
 .cae-footer {
-  --cae-footer-bg: var(--cae-bg-deep);
-  --cae-footer-text: var(--cae-text-muted);
-  --cae-footer-link: var(--cae-text);
+  --cae-footer-bg: #1a0f2e;
+  --cae-footer-text: #c4c4c4;
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
   background: var(--cae-footer-bg);
   color: var(--cae-footer-text);
-  padding: 1.75rem clamp(1.25rem, 4vw, 2.5rem);
-  border-top: 1px solid rgba(148, 97, 163, 0.25);
+  padding: 2rem clamp(1.25rem, 4vw, 2.5rem);
+  border-top: 1px solid rgba(107, 91, 149, 0.35);
   font-family: var(--cae-font-sans);
 }
 
+/* Force deep footer even when light theme remaps --cae-bg-deep to cream. */
+html[data-theme="light"] .cae-footer {
+  --cae-footer-bg: #1a0f2e;
+  --cae-footer-text: #c4c4c4;
+}
+
+.cae-footer__stars {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background-image:
+    radial-gradient(1px 1px at 15% 40%, #d4b896 50%, transparent 51%),
+    radial-gradient(1.5px 1.5px at 42% 70%, #b8aed0 50%, transparent 51%),
+    radial-gradient(1px 1px at 78% 35%, #d4b896 50%, transparent 51%),
+    radial-gradient(1px 1px at 88% 75%, #b8aed0 50%, transparent 51%);
+  opacity: 0.4;
+}
+
 .cae-footer__inner {
+  position: relative;
+  z-index: 1;
   max-width: var(--cae-max-width);
   margin: 0 auto;
   text-align: center;
@@ -24,16 +48,5 @@
   font-family: var(--cae-font-sans);
   font-size: 0.875rem;
   line-height: 1.5;
-}
-
-.cae-footer__link {
-  color: var(--cae-footer-link);
-  text-decoration: underline;
-  text-underline-offset: 0.15em;
-}
-
-.cae-footer__link:hover,
-.cae-footer__link:focus-visible {
-  color: #9461a3;
-  outline: none;
+  color: var(--cae-footer-text);
 }

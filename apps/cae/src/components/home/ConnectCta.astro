@@ -1,7 +1,6 @@
 ---
 /**
- * @fileoverview Connect / social links plus live-event and booking CTA panels.
- * Preserves funnel URLs from the live site (Predictable Destiny, socials, book call).
+ * Connect section — headline plus Instagram / Facebook links only.
  */
 import { homeCta } from "@/data/home/cta";
 import {
@@ -55,16 +54,15 @@ const socialLinks = homeCta.social.map((link) => {
     iconSrc: resolveImageSrc(link.iconImageKey, fallback),
   };
 });
-
-const { liveEvent, closing } = homeCta;
-const panelBgSrc = assetSrc(getHomeImage("connectPanelBg"));
 ---
 
 <section class="cae-connect" aria-labelledby="cae-connect-heading">
   <div class="cae-connect__inner">
-    <!-- Connect headline + Instagram / Facebook (full-width centered band). -->
     <div class="cae-connect__social-block">
-      <h2 class="cae-connect__headline" id="cae-connect-heading">
+      <h2
+        class="cae-connect__headline cae-text-brand-gradient"
+        id="cae-connect-heading"
+      >
         {homeCta.connectHeadline}
       </h2>
       <ul class="cae-connect__social-list">
@@ -94,46 +92,5 @@ const panelBgSrc = assetSrc(getHomeImage("connectPanelBg"));
         }
       </ul>
     </div>
-
-    <!-- Stacked purple panels: free event, then book-a-call (URLs from cta.ts). -->
-    <article
-      class="cae-connect__panel"
-      style={`--connect-panel-bg-image: url("${panelBgSrc}");`}
-      aria-labelledby="cae-connect-event-heading"
-    >
-      <p class="cae-connect__eyebrow">{liveEvent.eyebrow}</p>
-      <h3 class="cae-connect__panel-headline" id="cae-connect-event-heading">
-        {liveEvent.headline}
-      </h3>
-      <p class="cae-connect__lead">{liveEvent.lead}</p>
-      <a
-        class="cae-connect__button"
-        href={liveEvent.ctaHref}
-        target="_blank"
-        rel="noreferrer noopener"
-      >
-        {liveEvent.ctaLabel}
-      </a>
-    </article>
-
-    <article
-      class="cae-connect__panel"
-      style={`--connect-panel-bg-image: url("${panelBgSrc}");`}
-      aria-labelledby="cae-connect-book-heading"
-    >
-      <p class="cae-connect__eyebrow">{closing.eyebrow}</p>
-      <h3 class="cae-connect__panel-headline" id="cae-connect-book-heading">
-        {closing.headline}
-      </h3>
-      <p class="cae-connect__services">{closing.services}</p>
-      <a
-        class="cae-connect__button"
-        href={closing.ctaHref}
-        target="_blank"
-        rel="noopener noreferrer"
-      >
-        {closing.ctaLabel}
-      </a>
-    </article>
   </div>
 </section>

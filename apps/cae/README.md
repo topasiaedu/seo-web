@@ -37,3 +37,7 @@ Copy `.env.example` to `.env.local` and fill Supabase keys. Brand secrets live *
 - `src/site-config.ts` — brand identity (`caeSiteConfig`)
 
 This app is the **source of truth** for CAE. The legacy `website/` shell (including `website/cae/`) has been removed. Vault scrapes stay in `seo-wiki-vault/raw/research/cae-ghl-capture*`.
+
+## Brand theme
+
+Public site is **dark-first**, aligned to nm-zwds. Tokens live in `src/styles/tokens.css` + `src/styles/brand-gradient.css`; Admin in `src/styles/admin-theme.css`; GHL home/media via `src/styles/ghl/host-patch.css` / `bg-overrides.css`. See [`CONTEXT.md`](./CONTEXT.md#brand-theme), the [nm-zwds color reference](../../docs/references/nm-zwds-design-theme-color-scheme.md), and the [alignment plan](../../docs/implementation-plan/cae-nm-zwds-brand-theme-alignment.md). Do not reintroduce `#9461A3` / `#100022` as new sources of truth — use tokens.

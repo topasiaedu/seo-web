@@ -1,46 +1,32 @@
 /**
- * Featured On — native port of GHL section-JP6zPvfGtS + custom-code-tUL6q1clw3.
- *
- * Spec (`ghl-page.css` + custom-code HTML):
- * - Section bg #F9F1FF, padding 10px 0, inner max-width 100%
- * - Heading: Archivo Black, black, uppercase, center, weight 200,
- *   42px desktop / 26px mobile, line-height 1.3em
- * - Divider: 1px #9461A3, width 10% desktop / 30% mobile, centered
- * - Scroller: overflow hidden, padding 20px 0, transparent bg
- * - Track: flex, gap 4rem, 70s linear infinite scroll-right (-50% → 0)
- * - Logos: height 50px / 40px mobile, max-width 160px / 120px
+ * Featured On — cream light band with gold/purple ruled dividers.
+ * Layout: heading → gold divider → infinite logo scroller.
  */
 
 .press {
   margin: 0;
-  padding: 10px 0;
-  color: #000000;
-  background-color: #f9f1ff;
+  padding: 1.25rem 0 0.75rem;
+  color: var(--cae-press-text);
+  background-color: var(--cae-press-bg);
   font-family: var(--cae-font-sans);
   box-shadow: none;
 }
 
-/* GHL: #section-JP6zPvfGtS > .inner { max-width: 100% } */
 .press__inner {
   box-sizing: border-box;
   width: 100%;
   max-width: 100%;
   margin: 0 auto;
-  padding: 10px 5px;
+  padding: 0.65rem 0.35rem;
   text-align: center;
 }
 
-/*
- * GHL: .csub-heading-dhLDFC7tvV
- * font-family headline (Archivo Black), color black, uppercase, center,
- * line-height 1.3em; .sub-heading weight 200; 42px / 26px
- */
 .press__heading {
   margin: 0;
   padding: 0;
-  color: #000000;
+  color: var(--cae-press-text);
   font-family: var(--cae-font-display), var(--cae-font-sans);
-  font-size: 42px;
+  font-size: clamp(1.5rem, 3.5vw, 2.5rem);
   font-weight: 200;
   letter-spacing: 0;
   line-height: 1.3em;
@@ -51,33 +37,28 @@
   opacity: 1;
 }
 
-/*
- * GHL dividers under the heading:
- *   desktop .divider-j8Y4mivPCu .divider-element { width: 10% }
- *   mobile  .divider-pmyksj1At5 .divider-element { width: 30% }
- *   border-top: 1px solid #9461A3
- */
 .press__divider {
-  margin: 0 0 10px;
-  padding: 10px 0;
+  margin: 0.35rem 0 0.65rem;
+  padding: 0.65rem 0;
 }
 
 .press__divider-line {
   width: 10%;
   margin: 0 auto;
   border: 0;
-  border-top: 1px solid #9461a3;
+  height: 1px;
+  background: var(--cae-press-rule);
 }
 
-/* GHL custom-code: .scroller */
 .press__scroller {
   width: 100%;
   overflow: hidden;
-  padding: 20px 0;
+  padding: 1.25rem 0;
   background-color: transparent;
+  border-top: 1px solid color-mix(in srgb, var(--cae-gold) 35%, transparent);
+  border-bottom: 1px solid color-mix(in srgb, var(--cae-gold) 35%, transparent);
 }
 
-/* GHL custom-code: .scroller__inner */
 .press__track {
   display: flex;
   gap: 4rem;
@@ -89,7 +70,6 @@
   animation-play-state: paused;
 }
 
-/* GHL custom-code: .scroller img */
 .press__logo {
   display: inline-block;
   flex-shrink: 0;
@@ -111,7 +91,7 @@
 
 @media screen and (max-width: 480px) {
   .press__heading {
-    font-size: 26px;
+    font-size: 1.5rem;
     font-weight: 200;
   }
 

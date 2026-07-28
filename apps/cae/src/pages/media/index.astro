@@ -1,12 +1,12 @@
 ---
 /**
- * CAE Media & Press route — `/cae/media/` (GHL lift from caegoh.com/media).
- * Prerendered so marketing stays static while the app runs in server mode.
+ * CAE Media & Press route — `/cae/media/`.
+ * Native ZWDS chrome matching the homepage (SiteHeader + article grid + footer).
  */
 import MediaLayout from "../../layouts/MediaLayout.astro";
-import MediaNav from "../../components/ghl/media/MediaNav.astro";
-import MediaArticles from "../../components/ghl/media/MediaArticles.astro";
-import MediaFooter from "../../components/ghl/media/MediaFooter.astro";
+import SiteHeader from "../../components/home/SiteHeader.astro";
+import MediaArticles from "../../components/media/MediaArticles.astro";
+import SiteFooter from "../../components/home/SiteFooter.astro";
 import { mediaMeta, requireMetaString } from "../../data/home/meta.ts";
 
 export const prerender = true;
@@ -19,7 +19,9 @@ const description = requireMetaString(
 ---
 
 <MediaLayout title={title} description={description}>
-  <MediaNav />
-  <MediaArticles />
-  <MediaFooter />
+  <main class="cae-home">
+    <SiteHeader />
+    <MediaArticles />
+    <SiteFooter />
+  </main>
 </MediaLayout>

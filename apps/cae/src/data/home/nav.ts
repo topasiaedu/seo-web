@@ -49,7 +49,7 @@ export const homeNav = {
   links: [
     {
       label: "SUCCESS STORIES",
-      href: assertHomeHref("#success-stories"),
+      href: assertHomeHref("/#success-stories"),
     },
     {
       label: "BLOG",
