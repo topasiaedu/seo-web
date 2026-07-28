@@ -7,7 +7,7 @@
 | Ingested | 2026-07-27 |
 | Kind | Session notes (implementation) |
 | Related site | [CAE](../sites/cae.md) |
-| Related prior | Public blog redesign notes in `raw/inbox/2026-07-24-cae-public-blog-redesign.md` (not yet a separate wiki source) |
+| Related prior | Public blog redesign notes in `raw/inbox/2026-07-24-cae-public-blog-redesign.md` (not yet a separate wiki source); slug UI later → [cae-blog-immersive-story-redesign](cae-blog-immersive-story-redesign.md) |
 
 ## Takeaways
 
@@ -53,6 +53,6 @@ LogoBar → Nav → Hero → Press → Blog (HomeInsights) → Pillars → Platf
 
 ## Does not change
 
-- Public `/cae/blog` + `/cae/blog/[slug]` magazine redesign
+- Public `/cae/blog` index magazine surface (slug detail later became Immersive Story — see [cae-blog-immersive-story-redesign](cae-blog-immersive-story-redesign.md))
 - Admin authoring model
 - Media & Press GHL lift

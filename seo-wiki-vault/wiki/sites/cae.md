@@ -25,7 +25,7 @@ Domain language: [`apps/cae/CONTEXT.md`](../../../apps/cae/CONTEXT.md) — **Adm
 | `/cae/` (via gateway) | Homepage — `HomePage` + `HomeLayout` + `ghl/*` + **Insights Blog bento** (`HomeInsights`); **SSR** |
 | `/cae/media/` | Media & Press — `MediaLayout` + `components/ghl/media/*` (prerendered) |
 | `/cae/blog` | Live post list — SSR via `@seo/blog` `listPublishedPosts` (`status = published` and `published_at <= now()`) |
-| `/cae/blog/[slug]` | Live post detail — SSR; drafts, archived, and not-yet-due (scheduled) never public |
+| `/cae/blog/[slug]` | Live post detail — **Immersive Story** UI (dark continuous scroll); drafts, archived, and not-yet-due (scheduled) never public |
 
 ### Admin (authenticated; no public signup)
 
@@ -56,7 +56,7 @@ Use gateway preview (`pnpm dev` → `http://127.0.0.1:4321`) or CAE alone (`:432
 5. **Publish now** — edit the Post → set status **Published** → save. Goes live immediately (`published_at` stamped now). Slug locks after first publish/schedule.
 6. **Schedule** — set status **Scheduled**, pick future **Publish at**, save. Admin list shows Scheduled; public stays hidden until due (lazy time-gate; no cron).
 7. **Bulk import** (optional) — `/cae/admin/posts/import`: Copy template → paste filled multi-post Markdown → attach covers per post → Import. Scheduled rows should land under the Scheduled filter.
-8. **Public** — open `/cae/blog` (list) then `/cae/blog/[slug]` (detail): key takeaway, FAQ, sources, Author byline, same-category related, TOC from H2. Meta/OG use Title, Summary, and hero image.
+8. **Public** — open `/cae/blog` (list) then `/cae/blog/[slug]` (detail): hero with key takeaway + date/read time, FAQ, sources, Author byline, same-category related strip, TOC rail from H2. Meta/OG use Title, Summary, and hero image.
 
 Also check: **archive** hides from public but stays in Admin; **delete** (confirm) removes permanently. Confirm newest **live** Posts appear in the homepage Insights bento after Press.
 
@@ -85,7 +85,7 @@ Treat `apps/cae/` as the CAE site root. Marketing funnels keep **original GHL se
 | `src/layouts/AdminLayout.astro` | Admin chrome (auth shell) |
 | `src/components/seo/SeoHead.astro` | Description, robots, canonical, OG, Twitter, favicon, JSON-LD |
 | `src/components/ghl/seoHtmlPass.ts` | Remapper SEO pass (alts, loading, single-h1) |
-| `src/components/blog/*` | Public blog UI (cards, TOC, FAQ, sources, Author byline, same-category related) |
+| `src/components/blog/*` | Public blog UI — index magazine tiles; slug **Immersive Story** (hero takeaway, TOC rail, breakout images, related strip) |
 | `src/components/admin/*` | Admin React islands (login, TipTap, PostForm, BulkImportForm, tags typeahead, widgets) |
 | `src/lib/bulk-import.ts` · `bulk-import-template.ts` | Multi-post Markdown parse + copyable writer/LLM template |
 | `src/lib/site-url.ts` · `src/data/home/{meta,jsonld}.ts` | Origin helpers + meta / structured data |
@@ -95,9 +95,9 @@ Treat `apps/cae/` as the CAE site root. Marketing funnels keep **original GHL se
 | `src/components/home/*` · `src/styles/home/*` | Mostly **parked** native BEM; **`HomeInsights` is wired** |
 | `public/robots.txt` · `@astrojs/sitemap` | Crawl files (`site` in `astro.config.mjs`) |
 
-Session sources: [cae-ghl-section-lift-and-media-page](../sources/cae-ghl-section-lift-and-media-page.md) · [cae-seo-improvements](../sources/cae-seo-improvements.md) · [cae-homepage-blog-bento](../sources/cae-homepage-blog-bento.md) · [cae-blog-scheduled-publishing](../sources/cae-blog-scheduled-publishing.md) · [cae-admin-postform-simplifications](../sources/cae-admin-postform-simplifications.md) · [cae-admin-bulk-import](../sources/cae-admin-bulk-import.md)
+Session sources: [cae-ghl-section-lift-and-media-page](../sources/cae-ghl-section-lift-and-media-page.md) · [cae-seo-improvements](../sources/cae-seo-improvements.md) · [cae-homepage-blog-bento](../sources/cae-homepage-blog-bento.md) · [cae-blog-scheduled-publishing](../sources/cae-blog-scheduled-publishing.md) · [cae-admin-postform-simplifications](../sources/cae-admin-postform-simplifications.md) · [cae-admin-bulk-import](../sources/cae-admin-bulk-import.md) · [cae-blog-immersive-story-redesign](../sources/cae-blog-immersive-story-redesign.md)
 
-Task split: [`docs/cae-admin-blog-agent-tasks.md`](../../../docs/cae-admin-blog-agent-tasks.md) (T1–T12).
+Task split: [`docs/implementation-plan/cae-admin-blog-agent-tasks.md`](../../../docs/implementation-plan/cae-admin-blog-agent-tasks.md) (T1–T12).
 
 ### Capture archives (immutable, not Vite-imported)
 
@@ -139,3 +139,4 @@ Task split: [`docs/cae-admin-blog-agent-tasks.md`](../../../docs/cae-admin-blog-
 - Scheduled publishing: **implemented** — [cae-blog-scheduled-publishing](../sources/cae-blog-scheduled-publishing.md) · [scheduled-publishing.md](../../../docs/future-enhancements/scheduled-publishing.md) · plan [cae-blog-scheduling.md](../../../docs/implementation-plan/cae-blog-scheduling.md)
 - Admin PostForm simplifications (previews, Summary, tag typeahead, auto related, Published vs Scheduled select): [cae-admin-postform-simplifications](../sources/cae-admin-postform-simplifications.md)
 - Deferred blog extras: [featured posts](../../../docs/future-enhancements/featured-posts.md) (homepage currently uses newest-4 only, not a Featured flag)
+- Public post UI (**Immersive Story**): [cae-blog-immersive-story-redesign](../sources/cae-blog-immersive-story-redesign.md) — index `LeadPost` / further polish still open
