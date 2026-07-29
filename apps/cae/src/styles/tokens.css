@@ -1,67 +1,202 @@
 /**
- * CAE brand design tokens — purple / lavender marketing palette.
- * Values mirrored from the GHL capture (`ghl-page.css` brand colors).
- * Section styles consume these so header → footer reads as one surface.
+ * CAE brand design tokens — nm-zwds (“Purple Star Astrology”) palette.
+ *
+ * Source of truth:
+ *   docs/references/nm-zwds-design-theme-color-scheme.md
+ *
+ * Public marketing stays dark-first (purple night shell). Cream / navy are for
+ * light bands only (press, pillars, cards). Typography v1: Hanken + Archivo
+ * (no Inter swap). Hex only — do not copy nm-zwds app source into this repo.
+ *
+ * Open decision default B: shell → #2D1B4E / #1A0F2E family.
  */
 
 :root {
-  /* Surfaces (GHL: --color-lzay1h44 / lyik0lh6) */
-  --cae-bg: #100022;
-  --cae-bg-deep: #0a0114;
-  --cae-bg-elevated: #140625;
-  --cae-bg-header: #140625;
-  --cae-surface: #1a0a30;
-  --cae-surface-soft: #1a0633;
-  --cae-surface-panel: rgba(76, 36, 122, 0.28);
+  /* -------------------------------------------------------------------------
+   * Surfaces (nm-zwds surface-dark / darkSecondary / darkElevated)
+   * ------------------------------------------------------------------------- */
+  --cae-bg: #2d1b4e;
+  --cae-bg-deep: #1a0f2e;
+  --cae-bg-elevated: #3d2860;
+  --cae-bg-header: #3d2860;
+  --cae-surface: #3d2860;
+  --cae-surface-soft: #1a0f2e;
+  /* Brand purple (#6B5B95) at ~28% — soft panel fill on dark shell */
+  --cae-surface-panel: rgba(107, 91, 149, 0.28);
 
-  /* Text */
-  --cae-text: #f9f1ff;
-  --cae-text-bright: #f5eef8;
-  --cae-text-soft: #f7f1fb;
-  --cae-text-muted: #cab7da;
-  --cae-text-muted-alt: #d2c0df;
-  --cae-text-muted-hero: #d4c2e0;
-  /* GHL --color-lx2q00eu — testimonial / secondary body */
-  --cae-text-muted-gray: #8893a8;
+  /* -------------------------------------------------------------------------
+   * Text (dark mode: cream primary; muted dark / subtle)
+   * ------------------------------------------------------------------------- */
+  --cae-text: #f6f0e8;
+  --cae-text-bright: #ffffff;
+  --cae-text-soft: #f0e8dc;
+  --cae-text-muted: #c4c4c4;
+  --cae-text-muted-alt: #b8aed0;
+  --cae-text-muted-hero: #b8aed0;
+  --cae-text-muted-gray: #c4c4c4;
 
-  /* Accents (GHL: lzaytma1, lzb15zlk, lzayulcw) */
-  --cae-lavender: #b98bc8;
-  --cae-lavender-soft: #c9a8d8;
-  --cae-lavender-bright: #d4aee0;
-  --cae-accent: #9461a3;
-  --cae-purple: #4c247a;
-  --cae-purple-deep: #140625;
-  --cae-cta-soft: #cab7da;
-  --cae-cta-light: #f9f1ff;
+  /* -------------------------------------------------------------------------
+   * Accents — brand purple scale + gold star
+   *   purple: #6B5B95 · deep: #4A3F6B · light: #9B8FB5
+   * ------------------------------------------------------------------------- */
+  --cae-lavender: #9b8fb5;
+  --cae-lavender-soft: #b5a8c9;
+  --cae-lavender-bright: #d1c9df;
+  --cae-accent: #6b5b95;
+  --cae-purple: #6b5b95;
+  --cae-purple-deep: #4a3f6b;
+  --cae-cta-soft: #9b8fb5;
+  --cae-cta-light: #f6f0e8;
   --cae-cta-border: #ffffff;
-  --cae-star: #f4b400;
+  --cae-star: #d4b896;
 
-  /* Borders / rules */
-  --cae-border: rgba(148, 97, 163, 0.45);
-  --cae-border-strong: #4c247a;
-  --cae-border-soft: rgba(185, 139, 200, 0.45);
-  --cae-border-header: rgba(201, 168, 216, 0.22);
-  --cae-border-offerings: #4c247a;
+  /* -------------------------------------------------------------------------
+   * Named brand roles (explicit aliases for later waves / Admin parity)
+   * ------------------------------------------------------------------------- */
+  --cae-cream: #f6f0e8;
+  --cae-navy: #1a1e3f;
+  --cae-gold: #d4b896;
+  --cae-gold-dark: #d4af7b;
+  --cae-coral: #c84c5c;
+  --cae-coral-dark: #d97c6e;
 
-  /* Press band (GHL --color-lzb16ip5) */
-  --cae-press-bg: #f9f1ff;
-  --cae-press-text: #000000;
-  --cae-press-rule: #9461a3;
+  /* -------------------------------------------------------------------------
+   * Brand gradient — 5 stops (indigo → purple → magenta → red → orange)
+   * Utilities: see brand-gradient.css (.cae-bg-brand-gradient, etc.)
+   * ------------------------------------------------------------------------- */
+  --cae-brand-gradient-stop-1: #080657;
+  --cae-brand-gradient-stop-2: #3d0f68;
+  --cae-brand-gradient-stop-3: #8b1167;
+  --cae-brand-gradient-stop-4: #d91744;
+  --cae-brand-gradient-stop-5: #fe8e01;
+  --cae-brand-gradient: linear-gradient(
+    90deg,
+    var(--cae-brand-gradient-stop-1) 0%,
+    var(--cae-brand-gradient-stop-2) 25%,
+    var(--cae-brand-gradient-stop-3) 50%,
+    var(--cae-brand-gradient-stop-4) 75%,
+    var(--cae-brand-gradient-stop-5) 100%
+  );
 
-  /* Pillars bar (light strip overlapping offerings) */
-  --cae-pillars-bar-bg: #f9f1ff;
-  --cae-pillars-bar-border: #4c247a;
-  --cae-pillars-bar-shadow: 0 20px 100px rgba(4, 3, 28, 0.32);
+  /* -------------------------------------------------------------------------
+   * Borders / rules
+   * ------------------------------------------------------------------------- */
+  --cae-border: rgba(107, 91, 149, 0.45);
+  --cae-border-strong: #4a3f6b;
+  --cae-border-soft: rgba(155, 143, 181, 0.45);
+  --cae-border-header: rgba(255, 255, 255, 0.1);
+  --cae-border-offerings: #4a3f6b;
+
+  /* -------------------------------------------------------------------------
+   * Press band — light cream strip on dark marketing pages
+   * ------------------------------------------------------------------------- */
+  --cae-press-bg: #f6f0e8;
+  --cae-press-text: #1a1e3f;
+  --cae-press-rule: #6b5b95;
+
+  /* -------------------------------------------------------------------------
+   * Pillars bar (light strip overlapping offerings)
+   * ------------------------------------------------------------------------- */
+  --cae-pillars-bar-bg: #f6f0e8;
+  --cae-pillars-bar-border: #4a3f6b;
+  --cae-pillars-bar-shadow: 0 20px 100px rgba(26, 15, 46, 0.4);
 
   /* Shared button recipe (GHL .cbutton-*) */
   --cae-btn-padding: 20px 40px;
   --cae-btn-tracking: 2px;
 
-  /* Typography */
+  /* Typography — v1 keeps Hanken / Archivo (no Inter) */
   --cae-font-sans: "Hanken Grotesk", "Segoe UI", sans-serif;
   --cae-font-display: "Archivo Black", "Impact", sans-serif;
 
   /* Layout */
   --cae-max-width: 72rem;
   --cae-gutter: 1.25rem;
+}
+
+/**
+ * Explicit dark mirror of `:root` so `data-theme="dark"` always wins after a
+ * prior light session (toggle + FOUC boot script).
+ */
+html[data-theme="dark"] {
+  color-scheme: dark;
+  --cae-bg: #2d1b4e;
+  --cae-bg-deep: #1a0f2e;
+  --cae-bg-elevated: #3d2860;
+  --cae-bg-header: #3d2860;
+  --cae-surface: #3d2860;
+  --cae-surface-soft: #1a0f2e;
+  --cae-surface-panel: rgba(107, 91, 149, 0.28);
+  --cae-text: #f6f0e8;
+  --cae-text-bright: #ffffff;
+  --cae-text-soft: #f0e8dc;
+  --cae-text-muted: #c4c4c4;
+  --cae-text-muted-alt: #b8aed0;
+  --cae-text-muted-hero: #b8aed0;
+  --cae-text-muted-gray: #c4c4c4;
+  --cae-lavender: #9b8fb5;
+  --cae-lavender-soft: #b5a8c9;
+  --cae-lavender-bright: #d1c9df;
+  --cae-accent: #6b5b95;
+  --cae-purple: #6b5b95;
+  --cae-purple-deep: #4a3f6b;
+  --cae-cta-soft: #9b8fb5;
+  --cae-cta-light: #f6f0e8;
+  --cae-cta-border: #ffffff;
+  --cae-star: #d4b896;
+  --cae-border: rgba(107, 91, 149, 0.45);
+  --cae-border-strong: #4a3f6b;
+  --cae-border-soft: rgba(155, 143, 181, 0.45);
+  --cae-border-header: rgba(255, 255, 255, 0.1);
+  --cae-border-offerings: #4a3f6b;
+  --cae-press-bg: #f6f0e8;
+  --cae-press-text: #1a1e3f;
+  --cae-press-rule: #6b5b95;
+  --cae-pillars-bar-bg: #f6f0e8;
+  --cae-pillars-bar-border: #4a3f6b;
+  --cae-pillars-bar-shadow: 0 20px 100px rgba(26, 15, 46, 0.4);
+}
+
+/**
+ * nm-zwds light roles — cream shell, navy text, brand-purple interactive.
+ * GHL sections that still hardcode dark hex may lag until native home.
+ */
+html[data-theme="light"] {
+  color-scheme: light;
+  --cae-bg: #f6f0e8;
+  --cae-bg-deep: #f5e8d4;
+  --cae-bg-elevated: #ffffff;
+  --cae-bg-header: #ffffff;
+  --cae-surface: #ffffff;
+  --cae-surface-soft: #f5e8d4;
+  --cae-surface-panel: rgba(107, 91, 149, 0.12);
+  --cae-text: #1a1e3f;
+  --cae-text-bright: #1a1e3f;
+  --cae-text-soft: #1a1e3f;
+  --cae-text-muted: #5c5c5c;
+  --cae-text-muted-alt: #7a6b96;
+  --cae-text-muted-hero: #5c5c5c;
+  --cae-text-muted-gray: #5c5c5c;
+  --cae-lavender: #6b5b95;
+  --cae-lavender-soft: #5a4d7d;
+  --cae-lavender-bright: #4a3f6b;
+  --cae-accent: #6b5b95;
+  --cae-purple: #6b5b95;
+  --cae-purple-deep: #4a3f6b;
+  --cae-cta-soft: #6b5b95;
+  --cae-cta-light: #ffffff;
+  --cae-cta-border: #4a3f6b;
+  --cae-star: #d4af7b;
+  --cae-border: rgba(107, 91, 149, 0.32);
+  --cae-border-strong: #4a3f6b;
+  --cae-border-soft: rgba(107, 91, 149, 0.28);
+  --cae-border-header: rgba(107, 91, 149, 0.28);
+  --cae-border-offerings: #6b5b95;
+  /* Light bands become elevated white on cream page */
+  --cae-press-bg: #ffffff;
+  --cae-press-text: #1a1e3f;
+  --cae-press-rule: #6b5b95;
+  --cae-pillars-bar-bg: #ffffff;
+  --cae-pillars-bar-border: #6b5b95;
+  --cae-pillars-bar-shadow: 0 12px 40px rgba(26, 30, 63, 0.12);
 }

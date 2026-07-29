@@ -94,9 +94,19 @@ export function remapGhlHtml(
   // Strip empty target="" attributes that sanitize left behind.
   out = out.replace(/\s+target(?:=["']{2})?(?=\s|>)/g, "");
 
-  // Internal Media & Press / Blog routes (base-aware).
+  // Internal Home / Media / Blog routes (base-aware).
+  // Capture HTML still has the old GHL funnel URL on logo + Connect CTAs.
   const base = import.meta.env.BASE_URL;
   const normalizedBase = base.endsWith("/") ? base : `${base}/`;
+  out = out.replace(/__GHL_INTERNAL_HOME__/g, normalizedBase);
+  out = out.replace(
+    /https:\/\/caegoh\.com\/home-page-4444\/?/g,
+    normalizedBase,
+  );
+  out = out.replace(
+    /aria-label="https:\/\/caegoh\.com\/home-page-4444\/?"/g,
+    'aria-label="CAE home"',
+  );
   out = out.replace(
     /__GHL_INTERNAL_MEDIA__/g,
     `${normalizedBase}media/`,

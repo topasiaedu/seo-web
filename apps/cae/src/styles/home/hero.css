@@ -1,241 +1,271 @@
 /**
- * Hero — native rewrite of GHL `section-GdS5u8Huz` CSS (not the HTML dump).
- *
- * Spec sources (`_ghl-extract/ghl-page.css` + preview-cleaned.html):
- * - Section: padding 80px 0, bg #140625
- * - BG layer: absolute inset, bgCover100 (100% auto), opacity 1, no purple overlay
- * - Inner: max-width 1170px
- * - Row: two equal flex columns; right column empty (desktop spacer)
- * - Slogan img: height 40px
- * - H1: Archivo Black 72px / 40px mobile, uppercase, line-height 1em, no shadow
- * - Paragraph: 20px / 16px mobile, white, text-shadow 2px 2px 20px #38134838
- * - Button: .button-flat-line → transparent!important + white border (ghost pill),
- *   padding 20px 40px, radius 150px, letter-spacing 2px, 18px / 14px mobile
+ * Hero — full-bleed photographic background with left copy overlay.
+ * Theme-aware scrim keeps text readable in light and dark without
+ * turning the whole section into a flat cream/night shell.
  */
 
 .hero {
-  --hero-section-bg: #140625;
+  --hero-section-bg: var(--cae-bg-deep);
   --hero-text: #ffffff;
-  --hero-shadow: 2px 2px 20px #38134838;
+  --hero-muted: #f0e8dc;
   --hero-font-sans: var(--cae-font-sans);
   --hero-font-display: var(--cae-font-display);
+  --hero-gutter: clamp(1.25rem, 4vw, 2.5rem);
 
   position: relative;
   isolation: isolate;
   overflow: hidden;
   margin: 0;
-  padding: 80px 0;
+  min-height: clamp(32rem, 78vh, 46rem);
+  padding: clamp(4.5rem, 10vw, 7rem) 0 clamp(4rem, 9vw, 6rem);
   color: var(--hero-text);
   background-color: var(--hero-section-bg);
-  border: 1px solid var(--hero-section-bg);
   font-family: var(--hero-font-sans);
 }
 
-/* GHL: .bg.bgCover100 absolute top/left/width/height 100%, border-radius 19px top */
+/* Full-bleed photo — portrait sits on the right like the live GHL hero */
 .hero__bg {
   position: absolute;
-  top: 0;
-  left: 0;
-  z-index: -1;
-  width: 100%;
-  height: 100%;
-  border-radius: 19px 19px 0 0;
+  inset: 0;
+  z-index: 0;
   background-image: var(--hero-bg-image);
-  background-size: 100% auto;
-  background-position: top center;
+  background-size: cover;
+  background-position: 70% top;
   background-repeat: no-repeat;
-  opacity: 1;
   pointer-events: none;
 }
 
-/* GHL: #section-GdS5u8Huz > .inner { max-width: 1170px } */
+/*
+ * Left-weighted scrim so copy stays readable; right side keeps the portrait.
+ * Slightly stronger in light mode so cream-page chrome doesn't fight the photo.
+ */
+.hero__scrim {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background: linear-gradient(
+    90deg,
+    rgba(26, 15, 46, 0.88) 0%,
+    rgba(26, 15, 46, 0.72) 34%,
+    rgba(26, 15, 46, 0.28) 58%,
+    rgba(26, 15, 46, 0.08) 100%
+  );
+}
+
+html[data-theme="light"] .hero__scrim {
+  background: linear-gradient(
+    90deg,
+    rgba(26, 15, 46, 0.9) 0%,
+    rgba(26, 15, 46, 0.78) 36%,
+    rgba(26, 15, 46, 0.35) 60%,
+    rgba(26, 15, 46, 0.12) 100%
+  );
+}
+
 .hero__inner {
   position: relative;
   z-index: 1;
   box-sizing: border-box;
   width: 100%;
-  max-width: 1170px;
+  max-width: var(--cae-max-width);
   margin: 0 auto;
-  padding: 0 15px;
-}
-
-/*
- * GHL: .row-FHN0Hj7LQrI — width 100%, padding 20px 0 40px, margin-bottom 40px
- * Columns: .c-column { flex: 1 } → equal left copy / right spacer
- */
-.hero__row {
+  padding: 0 var(--hero-gutter);
   display: flex;
-  flex-direction: row;
-  align-items: flex-start;
-  width: 100%;
-  margin: 0 0 40px;
-  padding: 20px 0 40px;
+  align-items: center;
+  min-height: inherit;
 }
 
-.hero__copy,
-.hero__spacer {
-  flex: 1 1 0%;
-  min-width: 0;
-}
-
-/* GHL: #col-Kc6QK_aJU9S > .inner — column, padding 10px 10px 10px 0 */
 .hero__copy {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  justify-content: flex-start;
-  padding: 10px 10px 10px 0;
+  justify-content: center;
+  max-width: 36rem;
+  padding: 0;
 }
 
-/* GHL: .image-sg1CVEfhgy img { height: 40px }, margin-top 10px */
-.hero__slogan {
-  display: block;
-  width: auto;
-  height: 40px;
-  max-width: 100%;
-  margin: 10px 0 0;
-  object-fit: contain;
-  object-position: left center;
+.hero__eyebrow {
+  margin-bottom: 0.75rem;
+  /* Gold stays readable on the dark photo scrim in both themes */
+  color: var(--cae-gold);
 }
 
 /*
- * GHL: .cheading-PfkfMnyjbg / .heading-PfkfMnyjbg
- * desktop 72px, mobile 40px, Archivo Black, uppercase, line-height 1em,
- * text-shadow none on heading (transparent)
+ * CSS slogan pill — left edge matches brand/tagline (PNG had baked-in pad).
  */
+.hero__slogan {
+  display: inline-flex;
+  align-items: center;
+  margin: 0;
+  padding: 0.55rem 1.15rem;
+  border-radius: 999px;
+  border: 1px solid color-mix(in srgb, var(--cae-lavender) 45%, transparent);
+  background: color-mix(in srgb, var(--cae-navy) 72%, rgba(0, 0, 0, 0.35));
+  color: #ffffff;
+  font-family: var(--hero-font-sans);
+  font-size: clamp(0.7rem, 1.4vw, 0.8rem);
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  line-height: 1.2;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
 .hero__brand {
-  margin: 20px 0 0;
+  margin: 1rem 0 0;
   color: var(--hero-text);
   font-family: var(--hero-font-display);
-  font-size: 72px;
+  font-size: clamp(2.75rem, 8vw, 4.5rem);
   font-weight: 400;
   letter-spacing: 0;
   line-height: 1em;
   text-align: left;
   text-transform: uppercase;
-  text-shadow: none;
+  text-shadow: 0 2px 24px rgba(26, 15, 46, 0.45);
 }
 
-/*
- * GHL: .cparagraph-2EC8MAdJ9zD / .paragraph-2EC8MAdJ9zD
- * desktop 20px, mobile 16px, white, line-height 1.5em,
- * text-shadow 2px 2px 20px #38134838; margin-top 20px
- */
 .hero__tagline {
-  margin: 20px 0 0;
-  max-width: 100%;
-  color: var(--hero-text);
+  margin: 1.25rem 0 0;
+  max-width: 34rem;
+  color: var(--hero-muted);
   font-family: var(--hero-font-sans);
-  font-size: 20px;
+  font-size: clamp(1rem, 2.2vw, 1.25rem);
   font-weight: 400;
   letter-spacing: 0;
-  line-height: 1.5em;
+  line-height: 1.55;
   text-align: left;
-  text-shadow: var(--hero-shadow);
+  text-shadow: 0 1px 16px rgba(26, 15, 46, 0.5);
 }
 
-/*
- * GHL button classes on the same element:
- *   .cbutton-h2gy3SX8Kg0 — padding 20px 40px, white border, letter-spacing 2px,
- *                          uppercase, weight 700, 18px desktop / 14px mobile
- *   .button-flat-line — background transparent !important; border-width 2px
- *   .radius150 — border-radius 150px
- * Live result is a ghost pill (flat-line wins over the lavender fill).
- */
+.hero__actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.85rem 1rem;
+  margin-top: 1.75rem;
+}
+
 .hero__cta {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   width: auto;
-  margin: 20px 0 0;
-  padding: 20px 40px;
-  border: 2px solid #ffffff;
+  padding: var(--cae-btn-padding);
   border-radius: 150px;
-  color: #ffffff;
-  background-color: transparent;
   font-family: var(--hero-font-sans);
-  font-size: 18px;
+  font-size: 0.95rem;
   font-weight: 700;
-  letter-spacing: 2px;
+  letter-spacing: var(--cae-btn-tracking);
   line-height: 1;
-  text-align: left;
+  text-align: center;
   text-decoration: none;
   text-transform: uppercase;
-  text-shadow: none;
-  box-shadow: 0 0 0 0 transparent;
-  transition: transform 0.2s ease, background-color 0.2s ease, color 0.2s ease;
+  transition:
+    transform 0.2s ease,
+    background-color 0.2s ease,
+    color 0.2s ease,
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
 }
 
-.hero__cta:hover,
-.hero__cta:focus-visible {
-  color: #140625;
-  background-color: #ffffff;
+/*
+ * Own the gradient on the button (no transparent border) so rounded edges
+ * do not anti-alias a stray orange sliver from the 5-stop brand sweep.
+ */
+.hero__cta--primary {
+  border: none;
+  color: var(--cae-cream);
+  background-color: var(--cae-brand-gradient-stop-2);
+  background-image: linear-gradient(
+    105deg,
+    var(--cae-brand-gradient-stop-1) 0%,
+    var(--cae-brand-gradient-stop-2) 28%,
+    var(--cae-brand-gradient-stop-3) 55%,
+    var(--cae-brand-gradient-stop-4) 78%,
+    var(--cae-brand-gradient-stop-5) 100%
+  );
+  background-repeat: no-repeat;
+  background-size: 100% 100%;
+  box-shadow: 0 12px 28px -14px rgba(8, 6, 87, 0.65);
+}
+
+.hero__cta--primary:hover,
+.hero__cta--primary:focus-visible {
+  color: var(--cae-navy);
+  background-image: none;
+  background-color: var(--cae-gold-dark);
+  outline: none;
+  transform: translateY(-2px);
+  box-shadow: 0 14px 30px -12px rgba(212, 175, 123, 0.45);
+}
+
+.hero__cta--ghost {
+  border: 2px solid #ffffff;
+  color: #ffffff;
+  background-color: transparent;
+}
+
+.hero__cta--ghost:hover,
+.hero__cta--ghost:focus-visible {
+  color: var(--cae-navy);
+  background-color: var(--cae-cream);
+  border-color: var(--cae-cream);
   outline: none;
   transform: translateY(-2px);
 }
 
-/* GHL: right column is .desktop-only empty spacer */
-.hero__spacer {
-  display: none;
-}
-
-@media (min-width: 768px) {
-  .hero__spacer {
-    display: block;
-  }
-}
-
-@media screen and (max-width: 480px) {
+@media screen and (max-width: 768px) {
   .hero {
-    padding: 80px 0 0;
+    min-height: clamp(28rem, 85vh, 40rem);
+    padding: 4rem 0 3.5rem;
   }
 
   .hero__bg {
-    border-radius: 0;
-    /* Fill the narrower frame so the portrait still reads on mobile. */
-    background-size: cover;
-    background-position: 70% top;
+    background-position: 72% top;
   }
 
-  .hero__row {
-    flex-direction: column;
-    margin-bottom: 0;
-    padding: 20px 0 40px;
+  .hero__scrim {
+    background: linear-gradient(
+      180deg,
+      rgba(26, 15, 46, 0.55) 0%,
+      rgba(26, 15, 46, 0.78) 42%,
+      rgba(26, 15, 46, 0.92) 100%
+    );
+  }
+
+  .hero__inner {
+    align-items: flex-end;
   }
 
   .hero__copy {
-    padding: 10px;
     align-items: center;
+    max-width: none;
+    text-align: center;
+    width: 100%;
+  }
+
+  .hero__eyebrow,
+  .hero__brand,
+  .hero__tagline {
+    text-align: center;
   }
 
   .hero__slogan {
     margin-left: auto;
     margin-right: auto;
+    white-space: normal;
+    text-align: center;
+    max-width: 22rem;
   }
 
-  .hero__brand {
-    font-size: 40px;
-    text-align: center;
-  }
-
-  .hero__tagline {
-    font-size: 16px;
-    text-align: center;
+  .hero__actions {
+    justify-content: center;
+    width: 100%;
   }
 
   .hero__cta {
-    font-size: 14px;
-    margin-left: auto;
-    margin-right: auto;
-  }
-}
-
-@media screen and (min-width: 481px) and (max-width: 1024px) {
-  .hero__brand {
-    font-size: 56px;
-  }
-
-  .hero__tagline {
-    font-size: 18px;
+    font-size: 0.8rem;
+    padding: 1rem 1.5rem;
   }
 }

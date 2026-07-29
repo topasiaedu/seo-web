@@ -1,13 +1,12 @@
 ---
 /**
- * Document chrome for the CAE marketing homepage — GHL CSS lift.
- * Native BEM home/*.css is intentionally not loaded on this route.
+ * Document chrome for the CAE marketing homepage — native home CSS path.
+ * Loads global tokens + brand gradient; section sheets import from components.
  */
-import "@/styles/ghl/ghl-runtime.css";
-import "@/styles/ghl/ghl-page.css";
-import "@/styles/ghl/host-patch.css";
-import "@/styles/ghl/bg-overrides.css";
+import "@/styles/global.css";
+import "@/styles/home/decorative.css";
 import SeoHead from "@/components/seo/SeoHead.astro";
+import PublicThemeBoot from "@/components/site/PublicThemeBoot.astro";
 import { homeMeta, requireMetaString } from "@/data/home/meta";
 import { buildHomeJsonLd } from "@/data/home/jsonld";
 import { toAbsoluteUrl } from "@/lib/site-url";
@@ -41,10 +40,11 @@ const jsonLd = buildHomeJsonLd(Astro.url.pathname, ogImageUrl);
 ---
 
 <!doctype html>
-<html lang="en">
+<html lang="en" data-theme="dark">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <PublicThemeBoot />
     <SeoHead
       title={pageTitle}
       description={metaDescription}
@@ -63,11 +63,6 @@ const jsonLd = buildHomeJsonLd(Astro.url.pathname, ogImageUrl);
     <title>{pageTitle}</title>
   </head>
   <body>
-    <div
-      id="preview-container"
-      class="preview-container hl_page-preview--content"
-    >
-      <slot />
-    </div>
+    <slot />
   </body>
 </html>

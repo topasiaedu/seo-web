@@ -18,7 +18,7 @@ Read this first, then open the wiki vault:
 
 
 
-- **Primary site:** CAE (`apps/cae` / `@seo/cae`) — homepage (GHL lift + Insights Blog soft bento; home SSR) + `/media/`; Admin + public `/blog`; preview via gateway `/cae`
+- **Primary site:** CAE (`apps/cae` / `@seo/cae`) — native ZWDS homepage (Insights Blog soft bento; home SSR) + native `/media/`; Admin + public `/blog`; preview via gateway `/cae`
 
 - **Second brand:** Dr Jasmine (`apps/dr-jasmine` / `@seo/dr-jasmine`) — Option A Clinical Trust native site (`/`, `/blog`; Meet + FAQ on home) + Admin; gateway `/dr-jasmine`
 

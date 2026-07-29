@@ -1,22 +1,19 @@
 ---
 /**
- * CAE homepage body — GHL capture sections with Blog (HomeInsights) in place
- * of the former Offerings ("LIFE STARTS AT YOUR FULL POTENTIAL") band.
- * Native `components/home/*` remain in the tree but are mostly unwired;
- * HomeInsights is the exception (live published Posts after Press).
+ * CAE homepage body — native ZWDS-themed sections (Purple Star Astrology).
+ * Replaces the GHL capture stack with `components/home/*` so light/dark tokens
+ * and decorative language apply consistently without photo-bg overrides.
  */
 import type { BlogPost } from "@seo/blog";
-import LogoBar from "./ghl/LogoBar.astro";
-import Nav from "./ghl/Nav.astro";
-import Hero from "./ghl/Hero.astro";
-import Press from "./ghl/Press.astro";
+import SiteHeader from "./home/SiteHeader.astro";
+import Hero from "./home/Hero.astro";
+import PressMarquee from "./home/PressMarquee.astro";
 import HomeInsights from "./home/HomeInsights.astro";
-import Pillars from "./ghl/Pillars.astro";
-import Platform from "./ghl/Platform.astro";
-import SocialProof from "./ghl/SocialProof.astro";
-import TestimonialCarousel from "./ghl/TestimonialCarousel.astro";
-import Connect from "./ghl/Connect.astro";
-import Footer from "./ghl/Footer.astro";
+import Pillars from "./home/Pillars.astro";
+import Platform from "./home/Platform.astro";
+import Testimonials from "./home/Testimonials.astro";
+import ConnectCta from "./home/ConnectCta.astro";
+import SiteFooter from "./home/SiteFooter.astro";
 
 interface Props {
   /** Newest published Posts for the Blog band (empty hides the section). */
@@ -26,14 +23,14 @@ interface Props {
 const { recentPosts = [] } = Astro.props;
 ---
 
-<LogoBar />
-<Nav />
-<Hero />
-<Press />
-<HomeInsights posts={recentPosts} />
-<Pillars />
-<Platform />
-<SocialProof />
-<TestimonialCarousel />
-<Connect />
-<Footer />
+<main class="cae-home">
+  <SiteHeader />
+  <Hero />
+  <PressMarquee />
+  <HomeInsights posts={recentPosts} />
+  <Pillars />
+  <Platform />
+  <Testimonials />
+  <ConnectCta />
+  <SiteFooter />
+</main>

@@ -19,7 +19,7 @@ Read this first when answering queries, then open linked pages.
 
 ## Sites
 
-- [CAE](sites/cae.md) — `apps/cae` GHL lift (home + `/media/`) + homepage Insights Blog bento + Admin (`/cae/admin`, Published/Scheduled intent, simplified PostForm, Bulk import) + public `/cae/blog` (slug Immersive Story)
+- [CAE](sites/cae.md) — `apps/cae` native ZWDS (home + `/media/`) + Insights Blog bento + Admin (`/cae/admin`, Published/Scheduled, PostForm, Bulk import) + public `/cae/blog` (slug Immersive Story)
 - [Dr Jasmine](sites/dr-jasmine.md) — `apps/dr-jasmine` single-home (GHL LDP copy + Health Insights teaser) + light `/blog` + Admin (`/dr-jasmine/admin`); CMS still deferred
 - [CMS](sites/cms.md) — deferred shared platform; **not** brand Admin
 
@@ -54,6 +54,8 @@ Read this first when answering queries, then open linked pages.
 - [CAE Admin PostForm simplifications](sources/cae-admin-postform-simplifications.md) — from `raw/inbox/` (2026-07-27); previews, Summary, tags typeahead, auto related, Published vs Scheduled select
 - [CAE Admin bulk Post import](sources/cae-admin-bulk-import.md) — from `raw/inbox/` (2026-07-27); multi-post Markdown + per-post heroes + schedule-aware frontmatter
 - [CAE blog Immersive Story redesign](sources/cae-blog-immersive-story-redesign.md) — from `raw/inbox/` (2026-07-27); dark feature slug UI (replaces light paper)
+- [CAE ← nm-zwds brand theme + public theme toggle](sources/cae-nm-zwds-brand-theme-and-public-theme-toggle.md) — from `raw/inbox/` (2026-07-28); tokens, gradient, Light/Dark
+- [CAE native ZWDS public redesign cutover](sources/cae-native-zwds-public-redesign.md) — from `raw/inbox/` (2026-07-28); native home/media/blog chrome; supersedes live GHL chrome
 - [Dr Jasmine GHL capture (register/join)](sources/dr-jasmine-ghl-capture.md) — from `raw/research/dr-jasmine-ghl-capture/`; runtime lift in `apps/dr-jasmine`
 - [Dr Jasmine Option A true website + brand tokens](sources/dr-jasmine-option-a-true-website.md) — from `raw/inbox/` (2026-07-27); Clinical Trust palette sheet (multi-page IA later collapsed)
 - [Dr Jasmine home IA collapse + polish](sources/dr-jasmine-home-ia-and-polish.md) — from `raw/inbox/` (2026-07-28); single home; removed about/workshop/programs/faq pages

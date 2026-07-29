@@ -1,16 +1,15 @@
 ---
 /**
- * Document chrome for public blog routes — GHL MediaNav/Footer (home family)
- * plus native `.blog-page` content. Keeps SeoHead / OG / JSON-LD control.
+ * Document chrome for public blog routes — native home stack
+ * (SiteHeader / SiteFooter) plus magazine `.blog-page` content.
  */
-import "@/styles/ghl/ghl-runtime.css";
-import "@/styles/ghl/media-page.css";
-import "@/styles/ghl/host-patch.css";
-import "@/styles/tokens.css";
+import "@/styles/global.css";
+import "@/styles/home/decorative.css";
 import "./blog-page.css";
-import MediaNav from "@/components/ghl/media/MediaNav.astro";
-import MediaFooter from "@/components/ghl/media/MediaFooter.astro";
+import SiteHeader from "@/components/home/SiteHeader.astro";
+import SiteFooter from "@/components/home/SiteFooter.astro";
 import SeoHead from "@/components/seo/SeoHead.astro";
+import PublicThemeBoot from "@/components/site/PublicThemeBoot.astro";
 import { requireMetaString } from "@/data/home/meta";
 import type { JsonLdNode } from "@/data/home/jsonld";
 import { toAbsoluteUrl } from "@/lib/site-url";
@@ -77,10 +76,11 @@ const resolvedOgImage =
 ---
 
 <!doctype html>
-<html lang="en">
+<html lang="en" data-theme="dark">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <PublicThemeBoot />
     <SeoHead
       title={pageTitle}
       description={requireMetaString(metaDescription, metaDescription)}
@@ -98,13 +98,10 @@ const resolvedOgImage =
     <title>{pageTitle}</title>
   </head>
   <body>
-    <div
-      id="preview-container"
-      class="preview-container hl_page-preview--content"
-    >
-      <MediaNav />
+    <div class="cae-home">
+      <SiteHeader />
       <slot />
-      <MediaFooter />
+      <SiteFooter />
     </div>
   </body>
 </html>

@@ -1,0 +1,58 @@
+/**
+ * Public topbar light/dark toggle — mounted into GHL nav lists.
+ */
+
+.cae-theme-toggle-item {
+  display: flex;
+  align-items: center;
+  list-style: none;
+}
+
+.cae-theme-toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  min-height: 2.25rem;
+  padding: 0.35rem 0.75rem;
+  border: 1px solid var(--cae-border-header);
+  border-radius: 0.35rem;
+  background-color: transparent;
+  color: var(--cae-text);
+  font-family: var(--cae-font-sans);
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition:
+    color 0.15s ease,
+    border-color 0.15s ease,
+    background-color 0.15s ease;
+}
+
+.cae-theme-toggle:hover,
+.cae-theme-toggle:focus-visible {
+  color: var(--cae-text-bright);
+  border-color: var(--cae-lavender-bright);
+  background-color: var(--cae-surface-panel);
+  outline: none;
+}
+
+.cae-theme-toggle:focus-visible {
+  box-shadow: 0 0 0 2px var(--cae-purple);
+}
+
+html[data-theme="light"] .cae-theme-toggle:hover,
+html[data-theme="light"] .cae-theme-toggle:focus-visible {
+  border-color: var(--cae-purple);
+  color: var(--cae-navy);
+}
+
+@media (max-width: 767px) {
+  .cae-theme-toggle {
+    min-height: 2rem;
+    padding: 0.3rem 0.55rem;
+    font-size: 0.7rem;
+  }
+}

@@ -1,13 +1,13 @@
 /**
- * Platform mastery section styles for the CAE homepage.
- * Layout mirrors caegoh.com: centered intro, left app mockup, right Daily/Weekly/Monthly.
+ * Platform mastery — elevated shell; phone mockup without frame;
+ * gold SVG icon badges for Daily / Weekly / Monthly.
  */
 
 .cae-platform {
   --cae-platform-bg: var(--cae-bg-elevated);
   --cae-platform-text: var(--cae-text);
   --cae-platform-muted: var(--cae-text-muted);
-  --cae-platform-line: #4c247a;
+  --cae-platform-line: var(--cae-border);
   background: var(--cae-platform-bg);
   color: var(--cae-platform-text);
   padding: clamp(3rem, 7vw, 5rem) clamp(1.25rem, 4vw, 2.5rem) clamp(3.5rem, 8vw, 5.5rem);
@@ -39,6 +39,10 @@
   }
 }
 
+.cae-platform__intro .cae-eyebrow {
+  margin-bottom: 0.65rem;
+}
+
 .cae-platform__headline {
   margin: 0 auto 0.75rem;
   max-width: 42rem;
@@ -48,7 +52,7 @@
   line-height: 1.2;
   letter-spacing: 0;
   text-transform: uppercase;
-  color: #ffffff;
+  color: var(--cae-text-bright);
 }
 
 .cae-platform__lead {
@@ -56,31 +60,28 @@
   max-width: 40rem;
   font-family: var(--cae-font-sans);
   font-size: clamp(1rem, 2vw, 1.125rem);
+  font-style: italic;
   line-height: 1.5;
   color: var(--cae-platform-muted);
 }
 
-/*
- * GHL shows the phone mockup as a plain asset (bezel is in the PNG).
- * Keep a soft drop shadow only — no second CSS device frame.
- */
 .cae-platform__visual {
   display: flex;
   justify-content: center;
   align-items: center;
 }
 
-.cae-platform__app-frame {
-  display: block;
-  max-width: 100%;
-}
-
+/* Phone PNG includes its own bezel — no extra frame/background */
 .cae-platform__app {
   display: block;
   width: min(100%, 25rem);
   height: auto;
   object-fit: contain;
-  filter: drop-shadow(0 28px 48px rgba(10, 1, 20, 0.55));
+  filter: drop-shadow(0 24px 40px rgba(26, 15, 46, 0.4));
+}
+
+html[data-theme="light"] .cae-platform__app {
+  filter: drop-shadow(0 18px 32px rgba(26, 30, 63, 0.16));
 }
 
 .cae-platform__rhythm {
@@ -91,10 +92,6 @@
   gap: 0;
 }
 
-/*
- * GHL stacks a ~60px icon above each cadence title, with a hairline
- * divider between Daily / Weekly / Monthly rows.
- */
 .cae-platform__rhythm-item {
   display: flex;
   flex-direction: column;
@@ -116,25 +113,37 @@
 .cae-platform__icon-badge {
   display: inline-flex;
   align-items: center;
-  justify-content: flex-start;
-  margin-bottom: 0.15rem;
+  justify-content: center;
+  width: 3.25rem;
+  height: 3.25rem;
+  margin-bottom: 0.35rem;
+  border-radius: 50%;
+  border: 1.5px solid var(--cae-gold);
+  background: color-mix(in srgb, var(--cae-gold) 12%, transparent);
+  color: var(--cae-gold-dark);
+}
+
+html[data-theme="light"] .cae-platform__icon-badge {
+  color: var(--cae-purple);
+  border-color: var(--cae-purple);
+  background: color-mix(in srgb, var(--cae-purple) 10%, transparent);
 }
 
 .cae-platform__icon {
-  width: 3.75rem;
-  height: 3.75rem;
-  object-fit: contain;
+  display: block;
+  width: 1.5rem;
+  height: 1.5rem;
 }
 
 .cae-platform__rhythm-title {
   margin: 0;
-  padding: 0.35rem 0 0;
+  padding: 0.15rem 0 0;
   font-family: var(--cae-font-display), var(--cae-font-sans);
   font-size: clamp(1.05rem, 2vw, 1.35rem);
   font-weight: 400;
   letter-spacing: 0.02em;
   text-transform: uppercase;
-  color: #ffffff;
+  color: var(--cae-text-bright);
 }
 
 .cae-platform__rhythm-body {

@@ -65,3 +65,19 @@ Not in v1. Future pin / homepage surfacing for Posts — see `docs/future-enhanc
 **CMS**:
 A future shared authoring platform across brands. Not in scope for CAE Admin.
 _Avoid_: Using "CMS" to mean CAE Admin
+
+## Brand theme
+
+CAE’s color system mirrors **nm-zwds** (“Purple Star Astrology”) so the website and the client app feel like one brand.
+
+| | |
+|--|--|
+| **Source of truth** | [`docs/references/nm-zwds-design-theme-color-scheme.md`](../../docs/references/nm-zwds-design-theme-color-scheme.md) |
+| **Public marketing** | **Dark-first** (night sky). Cream / warm surfaces are for light bands and cards only — not a full cream homepage. |
+| **Public theme toggle** | Topbar Light/Dark control (`PublicThemeToggle` in GHL Nav / MediaNav); persists `cae-public-theme` (separate from Admin `cae-admin-theme`). Tokens flip via `html[data-theme]` in `tokens.css`. |
+| **Public tokens** | `src/styles/tokens.css` (`--cae-*`, light + dark) + `src/styles/brand-gradient.css` (5-stop gradient utilities) |
+| **Admin** | `src/styles/admin-theme.css` (`--admin-*` light cream / dark gold, aligned to the same roles) |
+| **GHL home/media** | Override path: `src/styles/ghl/host-patch.css` + `bg-overrides.css` (do not treat capture hex as the brand source of truth) |
+| **Plan / QA** | [`docs/implementation-plan/cae-nm-zwds-brand-theme-alignment.md`](../../docs/implementation-plan/cae-nm-zwds-brand-theme-alignment.md) (Appendix B checklist) |
+
+**Future agents:** do **not** reintroduce `#9461A3` / `#100022` (or other legacy GHL lavender / near-black) as new sources of truth. Change brand hex in `tokens.css` (and Admin in `admin-theme.css`); GHL residuals in capture CSS are expected until a native home rewrite — patch via host-patch / bg-overrides, don’t copy capture hex into native sheets.

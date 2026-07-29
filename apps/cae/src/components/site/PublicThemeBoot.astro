@@ -1,0 +1,19 @@
+---
+/**
+ * Inline FOUC guard for public pages — applies stored `cae-public-theme`
+ * before paint. Default remains dark (marketing dark-first).
+ */
+---
+
+<script is:inline>
+  (function () {
+    try {
+      var key = "cae-public-theme";
+      var stored = localStorage.getItem(key);
+      var theme = stored === "dark" || stored === "light" ? stored : "dark";
+      document.documentElement.setAttribute("data-theme", theme);
+    } catch (e) {
+      document.documentElement.setAttribute("data-theme", "dark");
+    }
+  })();
+</script>

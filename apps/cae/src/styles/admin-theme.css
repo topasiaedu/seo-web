@@ -1,135 +1,158 @@
 /**
- * CAE Admin-only theme tokens (light default + contrast-fixed dark).
+ * CAE Admin-only theme tokens (light default + dark via `data-theme`).
+ *
+ * Source of truth:
+ *   docs/references/nm-zwds-design-theme-color-scheme.md
+ *
+ * Light: cream shell, white elevated, navy text, brand-purple interactive.
+ * Dark: purple-night shell, cream text, gold-dark interactive.
  * Light defaults also live on `:root` in admin-shell.css so Admin never
  * inherits marketing purple before `data-theme` is applied.
+ * Typography: Hanken via `--cae-font-sans` (no Inter).
  */
 
 html[data-theme="light"] {
-  --admin-bg: #f6f3f9;
+  /* Surfaces — cream shell / white elevated (nm-zwds light) */
+  --admin-bg: #f6f0e8;
   --admin-bg-elevated: #ffffff;
   --admin-bg-header: #ffffff;
-  --admin-surface: #faf8fc;
-  --admin-surface-soft: #f0ebf5;
-  --admin-text: #1a1224;
-  --admin-text-bright: #12091c;
-  --admin-text-muted: #5c4d6e;
-  --admin-border: #d4c6e0;
-  --admin-border-strong: #9b7aad;
-  --admin-focus: #7a4d9a;
-  --admin-link: #6b3d8c;
-  --admin-link-hover: #4c247a;
-  --admin-accent: #7a4d9a;
-  --admin-accent-soft: rgba(122, 77, 154, 0.12);
+  --admin-surface: #ffffff;
+  --admin-surface-soft: #f5e8d4;
+  --admin-text: #1a1e3f;
+  --admin-text-bright: #1a1e3f;
+  --admin-text-muted: #5c5c5c;
+  /* Brand purple ~32% opacity feel */
+  --admin-border: rgba(107, 91, 149, 0.32);
+  --admin-border-strong: #4a3f6b;
+  --admin-focus: #6b5b95;
+  --admin-link: #6b5b95;
+  --admin-link-hover: #4a3f6b;
+  --admin-accent: #6b5b95;
+  --admin-accent-soft: rgba(107, 91, 149, 0.12);
 
-  --admin-btn-primary-bg: #4c247a;
-  --admin-btn-primary-text: #ffffff;
-  --admin-btn-primary-border: #4c247a;
-  --admin-btn-primary-hover-bg: #3a1b5e;
+  /* Primary: cream on brand purple → deep on hover */
+  --admin-btn-primary-bg: #6b5b95;
+  --admin-btn-primary-text: #f6f0e8;
+  --admin-btn-primary-border: #6b5b95;
+  --admin-btn-primary-hover-bg: #4a3f6b;
 
   --admin-btn-secondary-bg: transparent;
-  --admin-btn-secondary-text: #3d2f4f;
-  --admin-btn-secondary-border: #c4b0d4;
-  --admin-btn-secondary-hover-border: #7a4d9a;
-  --admin-btn-secondary-hover-text: #4c247a;
+  --admin-btn-secondary-text: #1a1e3f;
+  --admin-btn-secondary-border: rgba(107, 91, 149, 0.32);
+  --admin-btn-secondary-hover-border: #6b5b95;
+  --admin-btn-secondary-hover-text: #4a3f6b;
 
+  /* Danger → coral */
   --admin-btn-danger-bg: transparent;
-  --admin-btn-danger-text: #a11f35;
-  --admin-btn-danger-border: #e8a0ab;
-  --admin-btn-danger-hover-text: #7a1528;
-  --admin-btn-danger-hover-border: #c94a5e;
+  --admin-btn-danger-text: #c84c5c;
+  --admin-btn-danger-border: rgba(200, 76, 92, 0.45);
+  --admin-btn-danger-hover-text: #a33d4b;
+  --admin-btn-danger-hover-border: #c84c5c;
 
-  --admin-danger-bg: #fdecef;
-  --admin-danger-border: #e8a0ab;
-  --admin-danger-text: #7a1528;
+  --admin-danger-bg: rgba(200, 76, 92, 0.1);
+  --admin-danger-border: rgba(200, 76, 92, 0.4);
+  --admin-danger-text: #c84c5c;
 
-  --admin-success-bg: #e8f7ef;
-  --admin-success-border: #8dcfb0;
-  --admin-success-text: #1d6b46;
+  /* Success — warm parchment tint */
+  --admin-success-bg: #f5e8d4;
+  --admin-success-border: rgba(107, 91, 149, 0.32);
+  --admin-success-text: #1a1e3f;
 
-  --admin-status-draft-bg: rgba(122, 77, 154, 0.14);
-  --admin-status-draft-text: #5c3480;
-  --admin-status-published-bg: rgba(29, 107, 70, 0.14);
-  --admin-status-published-text: #1d6b46;
-  --admin-status-archived-bg: rgba(90, 98, 112, 0.14);
-  --admin-status-archived-text: #4a5360;
+  --admin-status-draft-bg: rgba(107, 91, 149, 0.14);
+  --admin-status-draft-text: #4a3f6b;
+  --admin-status-published-bg: rgba(107, 91, 149, 0.1);
+  --admin-status-published-text: #1a1e3f;
+  --admin-status-scheduled-bg: rgba(212, 175, 123, 0.28);
+  --admin-status-scheduled-text: #4a3f6b;
+  --admin-status-archived-bg: rgba(92, 92, 92, 0.12);
+  --admin-status-archived-text: #5c5c5c;
 
+  /* TipTap / editor chrome */
   --admin-editor-bg: #ffffff;
-  --admin-editor-chrome: #f4f1f7;
-  --admin-editor-border: #d4c6e0;
-  --admin-editor-text: #1a1224;
-  --admin-editor-muted: #6a5a7a;
-  --admin-editor-active: #4c247a;
-  --admin-editor-active-text: #ffffff;
-  --admin-editor-code-bg: #f0ebf5;
-  --admin-editor-link: #4c247a;
-  --admin-editor-placeholder: #9a8aa8;
-  --admin-editor-hover: #ebe4f2;
+  --admin-editor-chrome: #f6f0e8;
+  --admin-editor-border: rgba(107, 91, 149, 0.32);
+  --admin-editor-text: #1a1e3f;
+  --admin-editor-muted: #5c5c5c;
+  --admin-editor-active: #6b5b95;
+  --admin-editor-active-text: #f6f0e8;
+  --admin-editor-code-bg: #f5e8d4;
+  --admin-editor-link: #6b5b95;
+  --admin-editor-placeholder: #7a6b96;
+  --admin-editor-hover: rgba(107, 91, 149, 0.1);
 
-  --admin-shadow: 0 1px 2px rgba(18, 9, 28, 0.06);
+  --admin-shadow: 0 1px 2px rgba(26, 30, 63, 0.06);
   --admin-radius: 0.4rem;
   --admin-font: var(--cae-font-sans, "Hanken Grotesk", "Segoe UI", sans-serif);
 }
 
 html[data-theme="dark"] {
-  --admin-bg: #0a0114;
-  --admin-bg-elevated: #160828;
-  --admin-bg-header: #12061f;
-  --admin-surface: #1c0c32;
-  --admin-surface-soft: #24103c;
-  --admin-text: #f3eafc;
-  --admin-text-bright: #faf5ff;
-  --admin-text-muted: #d7c4e8;
-  --admin-border: rgba(210, 170, 230, 0.55);
-  --admin-border-strong: #c9a8d8;
-  --admin-focus: #d4aee0;
-  --admin-link: #e0c4f0;
-  --admin-link-hover: #f5eef8;
-  --admin-accent: #c9a8d8;
-  --admin-accent-soft: rgba(185, 139, 200, 0.22);
+  /* Surfaces — purple night / elevated / secondary (nm-zwds dark) */
+  --admin-bg: #2d1b4e;
+  --admin-bg-elevated: #3d2860;
+  --admin-bg-header: #3d2860;
+  --admin-surface: #3d2860;
+  --admin-surface-soft: #1a0f2e;
+  --admin-text: #f6f0e8;
+  --admin-text-bright: #f6f0e8;
+  --admin-text-muted: #c4c4c4;
+  /* White ~10% / gold strong */
+  --admin-border: rgba(255, 255, 255, 0.1);
+  --admin-border-strong: #d4b896;
+  --admin-focus: #d4af7b;
+  --admin-link: #d4af7b;
+  --admin-link-hover: #d4b896;
+  --admin-accent: #d4af7b;
+  --admin-accent-soft: rgba(212, 175, 123, 0.18);
 
-  --admin-btn-primary-bg: #f9f1ff;
-  --admin-btn-primary-text: #140625;
-  --admin-btn-primary-border: #ffffff;
-  --admin-btn-primary-hover-bg: #ffffff;
+  /* Primary: dark secondary on gold-dark → gold on hover */
+  --admin-btn-primary-bg: #d4af7b;
+  --admin-btn-primary-text: #1a0f2e;
+  --admin-btn-primary-border: #d4af7b;
+  --admin-btn-primary-hover-bg: #d4b896;
 
   --admin-btn-secondary-bg: transparent;
-  --admin-btn-secondary-text: #e8d8f5;
-  --admin-btn-secondary-border: rgba(210, 170, 230, 0.65);
-  --admin-btn-secondary-hover-border: #e0c4f0;
-  --admin-btn-secondary-hover-text: #faf5ff;
+  --admin-btn-secondary-text: #f6f0e8;
+  --admin-btn-secondary-border: rgba(255, 255, 255, 0.15);
+  --admin-btn-secondary-hover-border: #d4b896;
+  --admin-btn-secondary-hover-text: #d4b896;
 
+  /* Danger → coral dark */
   --admin-btn-danger-bg: transparent;
-  --admin-btn-danger-text: #ffd6dc;
-  --admin-btn-danger-border: rgba(255, 140, 160, 0.65);
-  --admin-btn-danger-hover-text: #ffe4e8;
-  --admin-btn-danger-hover-border: rgba(255, 160, 180, 0.9);
+  --admin-btn-danger-text: #d97c6e;
+  --admin-btn-danger-border: rgba(217, 124, 110, 0.55);
+  --admin-btn-danger-hover-text: #e8a090;
+  --admin-btn-danger-hover-border: #d97c6e;
 
-  --admin-danger-bg: rgba(120, 20, 40, 0.4);
-  --admin-danger-border: rgba(220, 80, 100, 0.65);
-  --admin-danger-text: #ffd6dc;
+  --admin-danger-bg: rgba(217, 124, 110, 0.18);
+  --admin-danger-border: rgba(217, 124, 110, 0.55);
+  --admin-danger-text: #d97c6e;
 
-  --admin-success-bg: rgba(40, 120, 90, 0.4);
-  --admin-success-border: rgba(114, 190, 155, 0.7);
-  --admin-success-text: #d7ffe9;
+  /* Success — warm tint on night shell */
+  --admin-success-bg: rgba(245, 232, 212, 0.14);
+  --admin-success-border: rgba(212, 184, 150, 0.45);
+  --admin-success-text: #f5e8d4;
 
-  --admin-status-draft-bg: rgba(185, 139, 200, 0.28);
-  --admin-status-draft-text: #e8d4f5;
-  --admin-status-published-bg: rgba(76, 180, 120, 0.28);
-  --admin-status-published-text: #b8f0d0;
-  --admin-status-archived-bg: rgba(160, 170, 190, 0.28);
-  --admin-status-archived-text: #d0d6e0;
+  --admin-status-draft-bg: rgba(212, 175, 123, 0.22);
+  --admin-status-draft-text: #d4b896;
+  --admin-status-published-bg: rgba(245, 232, 212, 0.16);
+  --admin-status-published-text: #f5e8d4;
+  --admin-status-scheduled-bg: rgba(212, 175, 123, 0.28);
+  --admin-status-scheduled-text: #d4af7b;
+  --admin-status-archived-bg: rgba(196, 196, 196, 0.16);
+  --admin-status-archived-text: #c4c4c4;
 
-  --admin-editor-bg: #1c0c32;
-  --admin-editor-chrome: #160828;
-  --admin-editor-border: rgba(210, 170, 230, 0.55);
-  --admin-editor-text: #f3eafc;
-  --admin-editor-muted: #d0bcd8;
-  --admin-editor-active: #f9f1ff;
-  --admin-editor-active-text: #140625;
-  --admin-editor-code-bg: #24103c;
-  --admin-editor-link: #e0c4f0;
-  --admin-editor-placeholder: #9a82b0;
-  --admin-editor-hover: #2a1440;
+  /* TipTap / editor chrome */
+  --admin-editor-bg: #3d2860;
+  --admin-editor-chrome: #1a0f2e;
+  --admin-editor-border: rgba(255, 255, 255, 0.1);
+  --admin-editor-text: #f6f0e8;
+  --admin-editor-muted: #c4c4c4;
+  --admin-editor-active: #d4af7b;
+  --admin-editor-active-text: #1a0f2e;
+  --admin-editor-code-bg: #1a0f2e;
+  --admin-editor-link: #d4af7b;
+  --admin-editor-placeholder: #b8aed0;
+  --admin-editor-hover: rgba(212, 175, 123, 0.14);
 
   --admin-shadow: 0 1px 3px rgba(0, 0, 0, 0.35);
   --admin-radius: 0.4rem;

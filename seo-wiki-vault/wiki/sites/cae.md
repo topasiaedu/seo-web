@@ -12,9 +12,9 @@
 | Domains (config) | `cae.localhost`, `www.cae.localhost`, `caegoh.com`, `www.caegoh.com` |
 | Seed domains | `cae.localhost` only (www / production hosts not in `seed.sql` yet) |
 | SEO origin | `PUBLIC_SITE_ORIGIN` (default `https://caegoh.com`) + `base: "/cae/"` |
-| Status | **Homepage** (GHL lift + Insights Blog bento) + **Media & Press** + **Admin Blog** + public `/cae/blog` |
+| Status | **Homepage** (native ZWDS) + **Media & Press** (native) + **Admin Blog** + public `/cae/blog` (Immersive Story + native chrome) |
 
-Domain language: [`apps/cae/CONTEXT.md`](../../../apps/cae/CONTEXT.md) — **Admin ≠ CMS**.
+Domain language: [`apps/cae/CONTEXT.md`](../../../apps/cae/CONTEXT.md) — **Admin ≠ CMS**. Brand theme (nm-zwds tokens): [`CONTEXT.md` Brand theme](../../../apps/cae/CONTEXT.md#brand-theme) · [alignment plan](../../../docs/implementation-plan/cae-nm-zwds-brand-theme-alignment.md).
 
 ## Pages
 
@@ -22,10 +22,10 @@ Domain language: [`apps/cae/CONTEXT.md`](../../../apps/cae/CONTEXT.md) — **Adm
 
 | Route | Status |
 |-------|--------|
-| `/cae/` (via gateway) | Homepage — `HomePage` + `HomeLayout` + `ghl/*` + **Insights Blog bento** (`HomeInsights`); **SSR** |
-| `/cae/media/` | Media & Press — `MediaLayout` + `components/ghl/media/*` (prerendered) |
-| `/cae/blog` | Live post list — SSR via `@seo/blog` `listPublishedPosts` (`status = published` and `published_at <= now()`) |
-| `/cae/blog/[slug]` | Live post detail — SSR; drafts, archived, and not-yet-due (scheduled) never public |
+| `/cae/` (via gateway) | Homepage — native `HomePage` + `HomeLayout` + `components/home/*` + Insights Blog bento; **SSR** |
+| `/cae/media/` | Media & Press — native `SiteHeader` / `MediaArticles` / `SiteFooter` (prerendered) |
+| `/cae/blog` | Live post list — SSR; magazine index under `BlogLayout` (native chrome) |
+| `/cae/blog/[slug]` | Live post detail — **Immersive Story** + native chrome; drafts / archived / not-yet-due never public |
 
 ### Admin (authenticated; no public signup)
 
@@ -56,48 +56,49 @@ Use gateway preview (`pnpm dev` → `http://127.0.0.1:4321`) or CAE alone (`:432
 5. **Publish now** — edit the Post → set status **Published** → save. Goes live immediately (`published_at` stamped now). Slug locks after first publish/schedule.
 6. **Schedule** — set status **Scheduled**, pick future **Publish at**, save. Admin list shows Scheduled; public stays hidden until due (lazy time-gate; no cron).
 7. **Bulk import** (optional) — `/cae/admin/posts/import`: Copy template → paste filled multi-post Markdown → attach covers per post → Import. Scheduled rows should land under the Scheduled filter.
-8. **Public** — open `/cae/blog` (list) then `/cae/blog/[slug]` (detail): key takeaway, FAQ, sources, Author byline, same-category related, TOC from H2. Meta/OG use Title, Summary, and hero image.
+8. **Public** — open `/cae/blog` (list) then `/cae/blog/[slug]` (detail): hero with key takeaway + date/read time, FAQ (accordion chevron), sources, Author byline + Instagram/Facebook, same-category related strip, TOC rail with active-section highlight. Meta/OG use Title, Summary, and hero image.
 
 Also check: **archive** hides from public but stays in Admin; **delete** (confirm) removes permanently. Confirm newest **live** Posts appear in the homepage Insights bento after Press.
 
-## Marketing pages (GHL section lift)
+## Marketing pages (native ZWDS)
 
-Treat `apps/cae/` as the CAE site root. Marketing funnels keep **original GHL section IDs/classes** and sanitized capture CSS under `.hl_page-preview--content`.
+Treat `apps/cae/` as the CAE site root. Public marketing uses **native** BEM sections under `components/home/*` + shared `SiteHeader` / `SiteFooter`. nm-zwds tokens + decorative language (`decorative.css`).
 
-**Homepage composition (locked):** LogoBar → Nav → Hero → Press → **Blog (`HomeInsights` soft bento)** → Pillars → Platform → SocialProof → TestimonialCarousel → Connect → Footer.
+**Homepage composition (locked):** SiteHeader → Hero → PressMarquee → **Blog (`HomeInsights` soft bento)** → Pillars → Platform → Testimonials → ConnectCta → SiteFooter.
 
-- Blog band replaces former Offerings (“LIFE STARTS AT YOUR FULL POTENTIAL” / `section-gZkeGFtHWF`). Offerings fragments remain on disk but are **unwired**.
-- Newest **4** live Posts via `@seo/blog` `listPublishedPostsPage` (time-gated); feature cell = newest; empty set hides the section.
-- Anchor `id="insights"`; hero LEARN MORE → `#insights` (GHL hash remapped in `remapHtml.ts`).
-- Source: [cae-homepage-blog-bento](../sources/cae-homepage-blog-bento.md).
+- Blog band (Insights) remains after Press; newest **4** live Posts via `@seo/blog` (time-gated); empty set hides the section.
+- Anchor `id="insights"`; hero secondary CTA → blog.
+- Hero: full-bleed photo + readability scrim only (no starfield/arc/constellation overlays).
+- Footer: always-deep night; copyright plain text (no link).
+- **GHL section lift** remains in vault + unwired `components/ghl/*` as archive — not the live home/media/blog chrome path.
+- Sources: [cae-native-zwds-public-redesign](../sources/cae-native-zwds-public-redesign.md) · [cae-nm-zwds-brand-theme-and-public-theme-toggle](../sources/cae-nm-zwds-brand-theme-and-public-theme-toggle.md) · [cae-homepage-blog-bento](../sources/cae-homepage-blog-bento.md).
 
 | Path | Role |
 |------|------|
 | `src/pages/index.astro` | Homepage route (**SSR**; fetches recent Posts) |
-| `src/pages/media/index.astro` | Media & Press route |
-| `src/components/HomePage.astro` | Homepage composition (`ghl/*` + `HomeInsights`) |
-| `src/components/home/HomeInsights.astro` · `home-insights.css` | Soft bento Blog band (wired exception under `home/`) |
-| `src/components/ghl/*` | Homepage section components + fragments |
-| `src/components/ghl/media/*` | Media page sections + fragments |
-| `src/layouts/HomeLayout.astro` | Homepage chrome + `styles/ghl/ghl-page.css` + SEO head |
-| `src/layouts/MediaLayout.astro` | Media chrome + `styles/ghl/media-page.css` + SEO head |
-| `src/layouts/BaseLayout.astro` | Blog / other pages (shared SEO head basics) |
+| `src/pages/media/index.astro` | Media & Press route (prerendered) |
+| `src/components/HomePage.astro` | Native homepage composition |
+| `src/components/home/*` · `src/styles/home/*` | Marketing sections + chrome |
+| `src/components/home/HomeInsights.astro` · `home-insights.css` | Soft bento Blog band |
+| `src/components/media/MediaArticles.astro` | Media article grid |
+| `src/layouts/HomeLayout.astro` | Homepage chrome + `global.css` + `decorative.css` + SEO |
+| `src/layouts/MediaLayout.astro` | Media document chrome + SEO |
+| `src/components/blog/BlogLayout.astro` | Public blog chrome (SiteHeader/SiteFooter) |
+| `src/layouts/BaseLayout.astro` | Shared basics where still used |
 | `src/layouts/AdminLayout.astro` | Admin chrome (auth shell) |
 | `src/components/seo/SeoHead.astro` | Description, robots, canonical, OG, Twitter, favicon, JSON-LD |
-| `src/components/ghl/seoHtmlPass.ts` | Remapper SEO pass (alts, loading, single-h1) |
-| `src/components/blog/*` | Public blog UI (cards, TOC, FAQ, sources, Author byline, same-category related) |
-| `src/components/admin/*` | Admin React islands (login, TipTap, PostForm, BulkImportForm, tags typeahead, widgets) |
-| `src/lib/bulk-import.ts` · `bulk-import-template.ts` | Multi-post Markdown parse + copyable writer/LLM template |
-| `src/lib/site-url.ts` · `src/data/home/{meta,jsonld}.ts` | Origin helpers + meta / structured data |
-| `src/styles/ghl/*` | Runtime sanitized capture CSS + host patches |
+| `src/components/blog/*` | Public blog UI — magazine index; slug Immersive Story + gold polish |
+| `src/components/admin/*` | Admin React islands |
+| `src/lib/bulk-import.ts` · `bulk-import-template.ts` | Multi-post Markdown parse + template |
+| `src/lib/site-url.ts` · `src/lib/public-theme.ts` · `src/data/home/*` | Origin, theme, meta / images / media data |
+| `src/styles/tokens.css` · `brand-gradient.css` | nm-zwds public tokens |
+| `src/components/ghl/*` · `src/styles/ghl/*` | **Unwired** GHL lift archive (do not treat as live primary) |
 | `src/assets/` · `src/assets/media/` | Local images |
-| `src/data/home/*` | Typed helpers (image map / meta / alts for remapper) |
-| `src/components/home/*` · `src/styles/home/*` | Mostly **parked** native BEM; **`HomeInsights` is wired** |
-| `public/robots.txt` · `@astrojs/sitemap` | Crawl files (`site` in `astro.config.mjs`) |
+| `public/robots.txt` · `@astrojs/sitemap` | Crawl files |
 
-Session sources: [cae-ghl-section-lift-and-media-page](../sources/cae-ghl-section-lift-and-media-page.md) · [cae-seo-improvements](../sources/cae-seo-improvements.md) · [cae-homepage-blog-bento](../sources/cae-homepage-blog-bento.md) · [cae-blog-scheduled-publishing](../sources/cae-blog-scheduled-publishing.md) · [cae-admin-postform-simplifications](../sources/cae-admin-postform-simplifications.md) · [cae-admin-bulk-import](../sources/cae-admin-bulk-import.md)
+Session sources: [cae-native-zwds-public-redesign](../sources/cae-native-zwds-public-redesign.md) · [cae-nm-zwds-brand-theme-and-public-theme-toggle](../sources/cae-nm-zwds-brand-theme-and-public-theme-toggle.md) · [cae-ghl-section-lift-and-media-page](../sources/cae-ghl-section-lift-and-media-page.md) (historical lift) · [cae-seo-improvements](../sources/cae-seo-improvements.md) · [cae-homepage-blog-bento](../sources/cae-homepage-blog-bento.md) · [cae-blog-scheduled-publishing](../sources/cae-blog-scheduled-publishing.md) · [cae-admin-postform-simplifications](../sources/cae-admin-postform-simplifications.md) · [cae-admin-bulk-import](../sources/cae-admin-bulk-import.md) · [cae-blog-immersive-story-redesign](../sources/cae-blog-immersive-story-redesign.md)
 
-Task split: [`docs/cae-admin-blog-agent-tasks.md`](../../../docs/cae-admin-blog-agent-tasks.md) (T1–T12).
+Task split: [`docs/implementation-plan/cae-admin-blog-agent-tasks.md`](../../../docs/implementation-plan/cae-admin-blog-agent-tasks.md) (T1–T12).
 
 ### Capture archives (immutable, not Vite-imported)
 
@@ -111,31 +112,32 @@ Task split: [`docs/cae-admin-blog-agent-tasks.md`](../../../docs/cae-admin-blog-
 ## Images (current)
 
 - Marketing pages use local assets under `apps/cae/src/assets/` (+ `assets/media/` for press cards).
-- **Interim alts / loading / heading outline** applied in `seoHtmlPass.ts` after GHL remappers (typed copy from `data/home/*`). See [cae-seo-improvements](../sources/cae-seo-improvements.md).
+- Native media logos use `object-fit: contain` on cream panels.
 - **Blog Admin uploads** go to Supabase Storage bucket `media` under `cae/blog/covers|body|authors/` (see [supabase](../architecture/supabase.md)). URL paste still allowed.
 - Long-term Media Library UI still deferred (`docs/future-enhancements/cms-media-library.md`).
+- Historical GHL remapper SEO pass (`seoHtmlPass.ts`) applies only if GHL remappers are still invoked.
 
 ## SEO (current)
 
 | Concern | Approach |
 |---------|----------|
-| Document head | `SeoHead.astro` on home / media / base layouts |
+| Document head | `SeoHead.astro` on home / media / blog layouts |
 | Canonical / OG URLs | `PUBLIC_SITE_ORIGIN` + Astro `base` |
 | Crawl | `robots.txt` + `@astrojs/sitemap` |
 | Structured data | Home: Organization + Person + WebSite; Media: CollectionPage |
 | Blog posts | Meta/OG from Title + Summary + hero (Admin no longer has separate SEO/OG fields) |
-| Single h1 | Hero / media-articles primary sections; other fragments demote h1→h2 |
-| UI rule | Remapper attribute/tag patches only — no layout CSS restyle |
+| Theme | Public Light/Dark via `PublicThemeBoot` / `PublicThemeToggle` |
 
 ## Next
 
-- Superior review of homepage Insights bento + `/cae/media/` vs live GHL (visual + SEO smoke)
-- Decide fate of unwired Offerings GHL fragments after acceptance
-- Delete remaining parked `components/home/*` BEM (keep `HomeInsights`) after acceptance
+- Formal Appendix B visual smoke (375/1280, light+dark) for native public surfaces
+- Decide fate of unwired GHL homepage/media components after acceptance
+- Wire or drop unused blog index `LeadPost`
 - Align seed domains with site config / production hosts
 - Apex cutover (`base: "/"`) when replacing caegoh.com path prefix
 - Migrate funnel popups/forms to in-repo destinations when needed
 - Richer media-article alts via CMS Media Library when it ships
-- Scheduled publishing: **implemented** — [cae-blog-scheduled-publishing](../sources/cae-blog-scheduled-publishing.md) · [scheduled-publishing.md](../../../docs/future-enhancements/scheduled-publishing.md) · plan [cae-blog-scheduling.md](../../../docs/implementation-plan/cae-blog-scheduling.md)
-- Admin PostForm simplifications (previews, Summary, tag typeahead, auto related, Published vs Scheduled select): [cae-admin-postform-simplifications](../sources/cae-admin-postform-simplifications.md)
-- Deferred blog extras: [featured posts](../../../docs/future-enhancements/featured-posts.md) (homepage currently uses newest-4 only, not a Featured flag)
+- Scheduled publishing: **implemented** — [cae-blog-scheduled-publishing](../sources/cae-blog-scheduled-publishing.md)
+- Admin PostForm / Bulk import: [cae-admin-postform-simplifications](../sources/cae-admin-postform-simplifications.md) · [cae-admin-bulk-import](../sources/cae-admin-bulk-import.md)
+- Deferred blog extras: [featured posts](../../../docs/future-enhancements/featured-posts.md)
+- Public post UI (**Immersive Story** + native polish): [cae-blog-immersive-story-redesign](../sources/cae-blog-immersive-story-redesign.md) · [cae-native-zwds-public-redesign](../sources/cae-native-zwds-public-redesign.md)

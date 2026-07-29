@@ -2,11 +2,11 @@
 
 Living synthesis of the monorepo. Agents update this on ingest and code-sync.
 
-Last updated: 2026-07-27 (ingest Option A + brand token sheet)
+Last updated: 2026-07-29 (merge CAE native ZWDS + Dr Jasmine onto main)
 
 ## Current focus
 
-- Primary site: **CAE** (`apps/cae` / `@seo/cae`) — **homepage** (GHL lift + Insights Blog soft bento after Press; home **SSR**); **Media & Press**; **Admin Blog** at `/cae/admin` with **Published vs Scheduled** UI + lazy `published_at` gate; simplified PostForm; **Bulk import** (`/cae/admin/posts/import`) for multi-post Markdown; **public blog SSR** at `/cae/blog` (slug = **Immersive Story** dark feature layout); preview via **gateway** `/cae`
+- Primary site: **CAE** (`apps/cae` / `@seo/cae`) — **native ZWDS homepage** (Insights Blog soft bento after Press; home **SSR**); **native Media & Press**; **Admin Blog** at `/cae/admin` with **Published vs Scheduled** UI + lazy `published_at` gate; simplified PostForm; **Bulk import**; **public blog SSR** at `/cae/blog` (Immersive Story + shared native chrome); nm-zwds tokens + public Light/Dark toggle; preview via **gateway** `/cae`
 - Second brand: **Dr Jasmine** (`apps/dr-jasmine` / `@seo/dr-jasmine`) — **single-home** native site (`/` GHL LDP copy + Meet/FAQ + **Health Insights** latest-3 Post tiles; home **SSR**; **no** `/about` `/workshop` `/programs` `/faq` pages) + Admin + **light** public `/blog`; gateway `/dr-jasmine` → `:4323`; GHL capture archive/reference only
 - Path gateway: `apps/gateway` (`@seo/gateway`) on port **4321** (proxies `/cae` + `/dr-jasmine`; `/cms` still not migrated)
 - Legacy `website/` shell: **removed** — future brands/CMS scaffold under `apps/` only
@@ -21,7 +21,7 @@ Last updated: 2026-07-27 (ingest Option A + brand token sheet)
 | Context | Home | Notes |
 |---------|------|--------|
 | Gateway | `apps/gateway/` | Proxies `/cae` → 4322, `/dr-jasmine` → 4323; `/cms` “not migrated yet” |
-| Site:CAE | `apps/cae/` | Marketing GHL lift + homepage Insights Blog bento + Admin Blog + public `/blog`; vault scrapes in `raw/research/cae-ghl-capture*` |
+| Site:CAE | `apps/cae/` | Native ZWDS marketing (home + media) + Insights Blog bento + Admin Blog + public `/blog`; vault GHL scrapes in `raw/research/cae-ghl-capture*` |
 | Site:DrJasmine | `apps/dr-jasmine/` | Single-home marketing (GHL LDP copy + Health Insights teaser) + Admin Blog + light public `/blog`; GHL capture archive in `raw/research/dr-jasmine-ghl-capture/` |
 | Shared platform | `packages/`, `supabase/` | `@seo/db` clients + `@seo/blog` CRUD; authors/categories/posts + Storage `media` |
 | CMS | (not scaffolded) | Deferred → `apps/cms` (not the same as brand Admin) |
@@ -34,9 +34,9 @@ CMS (only) still deferred: [independent-apps-dr-jasmine-and-cms.md](../../docs/f
 ## Architecture (short)
 
 - **One Astro app per brand** + path gateway ([ADR 0003](decisions/0003-astro-single-app-per-site-folders.md))
-- CAE marketing: sanitized GHL section lift in-app; homepage Insights soft bento replaces Offerings ([cae](sites/cae.md), [homepage blog bento](sources/cae-homepage-blog-bento.md))
+- CAE marketing: **native** `components/home/*` + shared chrome; Insights soft bento after Press ([cae](sites/cae.md), [native redesign](sources/cae-native-zwds-public-redesign.md), [homepage blog bento](sources/cae-homepage-blog-bento.md))
 - Dr Jasmine marketing: single home (GHL copy + Health Insights Post tiles); all CTAs → live `registerUrl`; light ivory blog ([dr-jasmine](sites/dr-jasmine.md), [home IA](sources/dr-jasmine-home-ia-and-polish.md), [homepage blog band](sources/dr-jasmine-homepage-blog-band.md), [blog readability](sources/dr-jasmine-admin-theme-and-blog-readability.md))
-- Brand Admin + public blog (+ CAE home for recent Posts): server mode, Supabase Auth where needed, `@seo/blog` queries scoped by `site_id`; public posts are **live** only (`published_at <= now()`)
+- Brand Admin + public blog (+ CAE/DJ home for recent Posts): server mode, Supabase Auth where needed, `@seo/blog` queries scoped by `site_id`; public posts are **live** only (`published_at <= now()`)
 - Local front door is gateway ([routing](architecture/routing-vercel.md))
 - Shared Supabase ([schema](architecture/supabase.md))
 
@@ -111,8 +111,9 @@ Smoke: [CAE](sites/cae.md#smoke-checklist-admin--public-blog) · [Dr Jasmine](si
 - ISR, i18n, multi-role CMS auth
 - **CMS Media Library UI** + `media` table (bucket/paths already live for Admin uploads; design: `docs/future-enhancements/cms-media-library.md`)
 - **Featured Posts** pin / homepage surfacing (design: `docs/future-enhancements/featured-posts.md`) — CAE homepage shows newest 4 chronologically; DJ homepage shows newest 3 chronologically
-- Delete parked CAE native BEM under `components/home/*` after superior accepts GHL lift (**except** wired `HomeInsights`)
-- Decide fate of unwired Offerings GHL fragments
+- Decide fate of unwired CAE GHL lift under `components/ghl/*` after native cutover acceptance
+- Wire or drop unused blog index `LeadPost`
+- Formal Appendix B visual smoke (375/1280, light+dark) for native public surfaces
 - DJ residual human QA: Auth/CRUD/publish smoke; `supabase db reset` when Docker available (see [dr-jasmine](sites/dr-jasmine.md)). Public responsive baseline **passed** 2026-07-28 — no code changes ([responsive audit](sources/dr-jasmine-responsive-audit.md))
 - DJ brand tokens: Forest/Gold/Ivory live in public + Admin + light blog (see [home IA](sources/dr-jasmine-home-ia-and-polish.md), [blog readability](sources/dr-jasmine-admin-theme-and-blog-readability.md))
 
@@ -129,7 +130,7 @@ Smoke: [CAE](sites/cae.md#smoke-checklist-admin--public-blog) · [Dr Jasmine](si
 - [dr-jasmine-responsive-audit](../raw/inbox/2026-07-28-dr-jasmine-responsive-audit.md) → [sources/dr-jasmine-responsive-audit.md](sources/dr-jasmine-responsive-audit.md)
 - [dr-jasmine-homepage-blog-band](../raw/inbox/2026-07-28-dr-jasmine-homepage-blog-band.md) → [sources/dr-jasmine-homepage-blog-band.md](sources/dr-jasmine-homepage-blog-band.md)
 - [cae-ghl-1to1-native-parity](../raw/inbox/2026-07-23-cae-ghl-1to1-native-parity.md) → [sources/cae-ghl-1to1-native-parity.md](sources/cae-ghl-1to1-native-parity.md) (superseded)
-- [cae-ghl-section-lift-and-media-page](../raw/inbox/2026-07-23-cae-ghl-section-lift-and-media-page.md) → [sources/cae-ghl-section-lift-and-media-page.md](sources/cae-ghl-section-lift-and-media-page.md)
+- [cae-ghl-section-lift-and-media-page](../raw/inbox/2026-07-23-cae-ghl-section-lift-and-media-page.md) → [sources/cae-ghl-section-lift-and-media-page.md](sources/cae-ghl-section-lift-and-media-page.md) (live chrome superseded by native redesign)
 - [cae-seo-improvements](../raw/inbox/2026-07-23-cae-seo-improvements.md) → [sources/cae-seo-improvements.md](sources/cae-seo-improvements.md)
 - [cae-independent-app-and-native-landing](../raw/inbox/2026-07-23-cae-independent-app-and-native-landing.md) → [sources/cae-independent-app-and-native-landing.md](sources/cae-independent-app-and-native-landing.md)
 - [cms-media-library-and-cae-image-alt](../raw/inbox/2026-07-23-cms-media-library-and-cae-image-alt.md) → [sources/cms-media-library-and-cae-image-alt.md](sources/cms-media-library-and-cae-image-alt.md)
@@ -138,3 +139,5 @@ Smoke: [CAE](sites/cae.md#smoke-checklist-admin--public-blog) · [Dr Jasmine](si
 - [cae-admin-postform-simplifications](../raw/inbox/2026-07-27-cae-admin-postform-simplifications.md) → [sources/cae-admin-postform-simplifications.md](sources/cae-admin-postform-simplifications.md)
 - [cae-admin-bulk-import](../raw/inbox/2026-07-27-cae-admin-bulk-import.md) → [sources/cae-admin-bulk-import.md](sources/cae-admin-bulk-import.md)
 - [cae-blog-immersive-story-redesign](../raw/inbox/2026-07-27-cae-blog-immersive-story-redesign.md) → [sources/cae-blog-immersive-story-redesign.md](sources/cae-blog-immersive-story-redesign.md)
+- [cae-nm-zwds-brand-theme-and-public-theme-toggle](../raw/inbox/2026-07-28-cae-nm-zwds-brand-theme-and-public-theme-toggle.md) → [sources/cae-nm-zwds-brand-theme-and-public-theme-toggle.md](sources/cae-nm-zwds-brand-theme-and-public-theme-toggle.md)
+- [cae-native-zwds-public-redesign](../raw/inbox/2026-07-28-cae-native-zwds-public-redesign.md) → [sources/cae-native-zwds-public-redesign.md](sources/cae-native-zwds-public-redesign.md)

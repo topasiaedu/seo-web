@@ -165,8 +165,16 @@ if (post !== null) {
                     fetchpriority="high"
                   />
                 </div>
-              ) : null
+              ) : (
+                <div class="cae-starfield blog-post-hero__starfield" aria-hidden="true">
+                  <div class="cae-starfield__glow"></div>
+                  <div class="cae-starfield__dots"></div>
+                  <span class="cae-starfield__twinkle cae-starfield__twinkle--a"></span>
+                  <span class="cae-starfield__twinkle cae-starfield__twinkle--b"></span>
+                </div>
+              )
             }
+            <div class="blog-post-hero__scrim" aria-hidden="true"></div>
             <div class="blog-post-hero__inner">
               <div class="blog-post-hero__nav">
                 <a class="blog-post-hero__back" href={blogIndexHref}>
@@ -202,6 +210,7 @@ if (post !== null) {
                   ) : null
                 }
               </div>
+              <p class="cae-eyebrow blog-post-hero__eyebrow">Zi Wei Dou Shu</p>
               <h1 class="blog-post-hero__title">{post.title}</h1>
               {
                 keyTakeaway.length > 0 ? (

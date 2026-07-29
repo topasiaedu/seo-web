@@ -1,0 +1,31 @@
+/**
+ * CAE brand-gradient utilities (plain CSS).
+ *
+ * Tokens: --cae-brand-gradient (+ stop vars) in tokens.css.
+ * Source: docs/references/nm-zwds-design-theme-color-scheme.md
+ *
+ * Prefer filled CTAs, footer accents, and selective wordmark/heading clip-text.
+ * Do not paint over photographic heroes. Clip-text: use ≤1–2 targets per viewport.
+ */
+
+.cae-bg-brand-gradient {
+  background-color: var(--cae-brand-gradient-stop-2);
+  background-image: var(--cae-brand-gradient);
+  background-repeat: no-repeat;
+  background-size: 100% 100%;
+  /* Avoid transparent-border anti-alias showing the orange stop on pill edges */
+  border-color: transparent;
+  background-clip: border-box;
+}
+
+/**
+ * Gradient-filled text via background-clip.
+ * Use ≤1–2 text targets per viewport; avoid on already-colored hero banners.
+ */
+.cae-text-brand-gradient {
+  background-image: var(--cae-brand-gradient);
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+  -webkit-text-fill-color: transparent;
+}

@@ -1,6 +1,9 @@
 /**
  * @fileoverview Local section/row background images — overrides GHL CDN URLs
  * in ghl-page.css. Vite resolves these relative to this file.
+ *
+ * T5 also keeps photographic section shells; solid shell/accent remaps live in
+ * host-patch.css (GHL --color-* → --cae-*).
  */
 
 .bg-section-GdS5u8Huz {

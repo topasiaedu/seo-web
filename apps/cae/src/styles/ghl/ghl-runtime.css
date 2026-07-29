@@ -1,7 +1,11 @@
 /**
  * @fileoverview Host chrome for the GHL section lift — page bg + font vars.
- * Section look comes from ghl-page.css under `.hl_page-preview--content`.
+ * Section look comes from ghl-page.css / media-page.css under
+ * `.hl_page-preview--content`. Brand tokens remapped in host-patch.css.
  */
+
+@import "../tokens.css";
+@import "../brand-gradient.css";
 
 :root {
   --headlinefont: "Archivo Black", "Impact", sans-serif;
@@ -18,8 +22,8 @@ body {
 
 body {
   min-height: 100vh;
-  background-color: #030a18;
-  color: #f9f1ff;
+  background-color: var(--cae-bg-deep);
+  color: var(--cae-text);
   font-family: var(--contentfont);
   -webkit-font-smoothing: antialiased;
 }
@@ -28,7 +32,7 @@ body {
   display: block;
   width: 100%;
   overflow-x: clip;
-  background-color: #100022;
+  background-color: var(--cae-bg);
 }
 
 /* GHL empty spacer columns need a minimum height on desktop. */

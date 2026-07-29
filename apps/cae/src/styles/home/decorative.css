@@ -1,0 +1,213 @@
+/**
+ * ZWDS decorative language — gold rules, star fields, circle arcs, eyebrows.
+ * Shared across native homepage sections (Purple Star Astrology motif).
+ */
+
+/* -------------------------------------------------------------------------
+ * Gold section divider — 1px rule with a short gradient glow at center
+ * ------------------------------------------------------------------------- */
+.cae-section-rule {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  padding: 0;
+  margin: 0;
+  background: var(--cae-bg);
+  pointer-events: none;
+}
+
+.cae-section-rule__line {
+  display: block;
+  width: min(72%, 36rem);
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    var(--cae-purple) 20%,
+    var(--cae-gold) 50%,
+    var(--cae-purple) 80%,
+    transparent 100%
+  );
+  opacity: 0.85;
+}
+
+/* -------------------------------------------------------------------------
+ * Eyebrow label — uppercase gold, tracked
+ * ------------------------------------------------------------------------- */
+.cae-eyebrow {
+  margin: 0;
+  font-family: var(--cae-font-sans);
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  line-height: 2;
+  text-transform: uppercase;
+  color: var(--cae-gold);
+}
+
+html[data-theme="light"] .cae-eyebrow {
+  color: var(--cae-purple-deep);
+}
+
+/* -------------------------------------------------------------------------
+ * CSS star field — scattered radial dots (theme-aware via currentColor)
+ * ------------------------------------------------------------------------- */
+.cae-starfield {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.cae-starfield__glow {
+  position: absolute;
+  inset: -20% -10% auto -10%;
+  height: 70%;
+  background: radial-gradient(
+    ellipse 55% 50% at 50% 20%,
+    color-mix(in srgb, var(--cae-purple) 45%, transparent),
+    transparent 70%
+  );
+  opacity: 0.9;
+}
+
+html[data-theme="light"] .cae-starfield__glow {
+  background: radial-gradient(
+    ellipse 55% 50% at 50% 15%,
+    color-mix(in srgb, var(--cae-purple) 22%, transparent),
+    transparent 70%
+  );
+  opacity: 0.75;
+}
+
+.cae-starfield__dots {
+  position: absolute;
+  inset: 0;
+  background-image:
+    radial-gradient(1.5px 1.5px at 8% 12%, currentColor 50%, transparent 51%),
+    radial-gradient(1px 1px at 18% 42%, currentColor 50%, transparent 51%),
+    radial-gradient(1.5px 1.5px at 28% 18%, currentColor 50%, transparent 51%),
+    radial-gradient(1px 1px at 42% 8%, currentColor 50%, transparent 51%),
+    radial-gradient(2px 2px at 55% 28%, currentColor 50%, transparent 51%),
+    radial-gradient(1px 1px at 68% 14%, currentColor 50%, transparent 51%),
+    radial-gradient(1.5px 1.5px at 78% 38%, currentColor 50%, transparent 51%),
+    radial-gradient(1px 1px at 88% 22%, currentColor 50%, transparent 51%),
+    radial-gradient(1px 1px at 12% 68%, currentColor 50%, transparent 51%),
+    radial-gradient(1.5px 1.5px at 32% 78%, currentColor 50%, transparent 51%),
+    radial-gradient(1px 1px at 48% 62%, currentColor 50%, transparent 51%),
+    radial-gradient(2px 2px at 72% 72%, currentColor 50%, transparent 51%),
+    radial-gradient(1px 1px at 92% 58%, currentColor 50%, transparent 51%),
+    radial-gradient(1px 1px at 62% 88%, currentColor 50%, transparent 51%),
+    radial-gradient(1.5px 1.5px at 22% 92%, currentColor 50%, transparent 51%);
+  color: var(--cae-lavender-bright);
+  opacity: 0.55;
+}
+
+html[data-theme="light"] .cae-starfield__dots {
+  color: var(--cae-purple);
+  opacity: 0.28;
+}
+
+.cae-starfield__twinkle {
+  position: absolute;
+  width: 3px;
+  height: 3px;
+  border-radius: 50%;
+  background: var(--cae-gold);
+  box-shadow: 0 0 6px 1px color-mix(in srgb, var(--cae-gold) 60%, transparent);
+  animation: cae-star-twinkle 3.6s ease-in-out infinite;
+}
+
+.cae-starfield__twinkle--a {
+  top: 18%;
+  left: 22%;
+  animation-delay: 0s;
+}
+
+.cae-starfield__twinkle--b {
+  top: 36%;
+  left: 74%;
+  animation-delay: 1.2s;
+}
+
+.cae-starfield__twinkle--c {
+  top: 64%;
+  left: 48%;
+  animation-delay: 2.1s;
+}
+
+@keyframes cae-star-twinkle {
+  0%,
+  100% {
+    opacity: 0.35;
+    transform: scale(0.85);
+  }
+
+  50% {
+    opacity: 1;
+    transform: scale(1.15);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cae-starfield__twinkle {
+    animation: none;
+    opacity: 0.7;
+  }
+}
+
+/* -------------------------------------------------------------------------
+ * ZWDS chart arc — faint decorative ring (palace chart motif)
+ * ------------------------------------------------------------------------- */
+.cae-chart-arc {
+  position: absolute;
+  pointer-events: none;
+  border-radius: 50%;
+  border: 1px solid color-mix(in srgb, var(--cae-gold) 35%, transparent);
+  box-shadow:
+    inset 0 0 0 1px color-mix(in srgb, var(--cae-purple) 20%, transparent),
+    0 0 40px -10px color-mix(in srgb, var(--cae-purple) 40%, transparent);
+  opacity: 0.55;
+}
+
+.cae-chart-arc--hero {
+  top: -12%;
+  right: -8%;
+  width: min(52vw, 28rem);
+  height: min(52vw, 28rem);
+}
+
+.cae-chart-arc--pillars {
+  top: 8%;
+  right: -6%;
+  width: min(40vw, 20rem);
+  height: min(40vw, 20rem);
+  opacity: 0.4;
+}
+
+html[data-theme="light"] .cae-chart-arc {
+  opacity: 0.35;
+  border-color: color-mix(in srgb, var(--cae-purple) 40%, transparent);
+}
+
+/* -------------------------------------------------------------------------
+ * Constellation line accents (hero)
+ * ------------------------------------------------------------------------- */
+.cae-constellation {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  opacity: 0.35;
+}
+
+.cae-constellation svg {
+  width: 100%;
+  height: 100%;
+}
+
+html[data-theme="light"] .cae-constellation {
+  opacity: 0.2;
+}

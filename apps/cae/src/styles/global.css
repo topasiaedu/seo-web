@@ -4,6 +4,7 @@
  */
 
 @import "./tokens.css";
+@import "./brand-gradient.css";
 
 *,
 *::before,
@@ -33,8 +34,8 @@ a {
   color: inherit;
 }
 
-/* Non-home pages (blog scaffold) keep a readable content column. */
-main:not(.cae-home) {
+/* Narrow scaffold for plain pages only — home, media, and blog own their layout. */
+main:not(.cae-home):not(.blog-page) {
   max-width: 40rem;
   margin: 0 auto;
   padding: 2rem var(--cae-gutter);
@@ -44,7 +45,9 @@ main:not(.cae-home) {
 .cae-home {
   display: block;
   width: 100%;
+  /* overflow-x only — avoid clip/auto on y (that hid overlapping section chrome) */
   overflow-x: clip;
+  overflow-y: visible;
   background-color: var(--cae-bg);
   color: var(--cae-text);
 }

@@ -1,8 +1,9 @@
 ---
 /**
- * Author byline (name, bio, optional photo) with optional publish meta.
+ * Author byline (name, photo, social links) with optional publish meta.
  */
 import type { Author } from "@seo/blog";
+import { homeCta } from "@/data/home/cta";
 
 interface Props {
   author: Author;
@@ -30,6 +31,7 @@ const datetimeAttr =
   typeof publishedAt === "string" && publishedAt.trim().length > 0
     ? publishedAt.trim()
     : undefined;
+const socials = homeCta.social;
 ---
 
 <div class="blog-byline">
@@ -47,7 +49,28 @@ const datetimeAttr =
     ) : null
   }
   <div class="blog-byline__text">
-    <p class="blog-byline__name">{author.name}</p>
+    <div class="blog-byline__top">
+      <p class="blog-byline__name">{author.name}</p>
+      {
+        socials.length > 0 ? (
+          <ul class="blog-byline__socials">
+            {socials.map((link) => (
+              <li>
+                <a
+                  class="blog-byline__social"
+                  href={link.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  title={link.iconTitle}
+                >
+                  {link.label}
+                </a>
+              </li>
+            ))}
+          </ul>
+        ) : null
+      }
+    </div>
     {
       hasDate || hasReading ? (
         <p class="blog-byline__meta">
