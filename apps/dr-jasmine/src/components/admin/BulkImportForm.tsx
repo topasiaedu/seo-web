@@ -3,13 +3,14 @@
  *
  * Lets an Admin paste or upload one Markdown document containing many Posts
  * (frontmatter + body per post, separated by `===NEW POST===`), attach one
- * hero image per parsed post, preview the result, then create every valid Post
- * via `@seo/blog`.
+ * hero image per parsed post, set Malaysia Time go-live slots (section 4),
+ * preview the result, then create every valid Post via `@seo/blog`.
  *
  * Runs entirely as the signed-in Admin (browser Supabase client + cookie
  * session). Categories referenced by name that do not exist yet are created
  * on the fly. Covers may be a `heroImageUrl` in frontmatter or a file uploaded
- * per post in section 3.
+ * per post in section 3. Publish times come from section 4 only — Markdown
+ * `publishAt` is ignored.
  */
 import {
   createCategory,
@@ -34,6 +35,14 @@ import {
   type BulkImportStatusIntent,
   type ParsedBulkPost,
 } from "../../lib/bulk-import";
+import {
+  applyCadenceSchedule,
+  buildMytIso,
+  formatMytPreview,
+  isValidDateYmd,
+  isValidTimeHm,
+  type MytDateTimeParts,
+} from "../../lib/bulk-import-schedule";
 import { BULK_IMPORT_WRITER_TEMPLATE } from "../../lib/bulk-import-template";
 import styles from "./BulkImportForm.module.css";
 
@@ -65,6 +74,27 @@ type RowRuntimeState = {
 
 /** Copy-to-clipboard feedback for the writer template toolbar. */
 type TemplateCopyState = "idle" | "copied" | "failed";
+
+/** Cadence helper field state for the current import batch only. */
+type CadenceHelperState = {
+  startDate: string;
+  timeOfDay: string;
+  intervalDays: string;
+};
+
+/** Resolved go-live intent after merging Markdown status with section 4 UI. */
+type EffectivePublishState = {
+  statusIntent: BulkImportStatusIntent;
+  publishAtIso: string | null;
+  scheduleError: string | null;
+};
+
+/** Default cadence helper values (empty start date — writer must choose). */
+const DEFAULT_CADENCE: CadenceHelperState = {
+  startDate: "",
+  timeOfDay: "08:00",
+  intervalDays: "1",
+};
 
 /**
  * Converts unknown errors into a short user-facing message.
@@ -114,7 +144,7 @@ function createAdminBlogClient(): BlogSupabaseClient {
 /**
  * Maps the writer-facing status intent to the stored `posts.status` value.
  *
- * @param intent - Parsed frontmatter status.
+ * @param intent - Effective status after schedule merge.
  * @returns DB status (`scheduled` maps to `published`, matching Admin's
  *   lazy time-gate model — see `docs/implementation-plan/cae-blog-scheduling.md`).
  */
@@ -126,6 +156,96 @@ function mapStatusIntentToStored(intent: BulkImportStatusIntent): PostStatus {
 }
 
 /**
+ * Reads schedule parts for one post, treating blank date or time as unset.
+ *
+ * @param parts - UI schedule slot, or `undefined` when never set.
+ * @returns Parts when both fields are non-empty, otherwise `null`.
+ */
+function readScheduleParts(parts: MytDateTimeParts | undefined): MytDateTimeParts | null {
+  if (parts === undefined) {
+    return null;
+  }
+  const dateYmd = parts.dateYmd.trim();
+  const timeHm = parts.timeHm.trim();
+  if (dateYmd.length === 0 && timeHm.length === 0) {
+    return null;
+  }
+  if (dateYmd.length === 0 || timeHm.length === 0) {
+    return { dateYmd, timeHm };
+  }
+  return { dateYmd, timeHm };
+}
+
+/**
+ * Merges Markdown status with section 4 MYT schedule UI.
+ *
+ * A future UI go-live time schedules the post (overrides draft/published).
+ * Archived rows keep archived and ignore schedule times. Markdown `publishAt`
+ * is never used.
+ *
+ * @param entry - Parsed row.
+ * @param scheduleParts - Per-post MYT date/time from section 4, if any.
+ * @returns Effective status, UTC ISO go-live, and optional schedule error.
+ */
+function resolveEffectivePublish(
+  entry: ParsedBulkPost,
+  scheduleParts: MytDateTimeParts | undefined,
+): EffectivePublishState {
+  if (entry.statusIntent === "archived") {
+    return {
+      statusIntent: "archived",
+      publishAtIso: null,
+      scheduleError: null,
+    };
+  }
+
+  const parts = readScheduleParts(scheduleParts);
+  if (parts !== null) {
+    if (!isValidDateYmd(parts.dateYmd) || !isValidTimeHm(parts.timeHm)) {
+      return {
+        statusIntent: entry.statusIntent,
+        publishAtIso: null,
+        scheduleError: "Go-live date/time in section 4 is incomplete or invalid.",
+      };
+    }
+    const publishAtIso = buildMytIso(parts.dateYmd, parts.timeHm);
+    if (publishAtIso === null) {
+      return {
+        statusIntent: entry.statusIntent,
+        publishAtIso: null,
+        scheduleError: "Go-live date/time in section 4 could not be read.",
+      };
+    }
+    if (Date.parse(publishAtIso) <= Date.now()) {
+      return {
+        statusIntent: "scheduled",
+        publishAtIso,
+        scheduleError: "Go-live time in section 4 must be in the future (Malaysia Time).",
+      };
+    }
+    return {
+      statusIntent: "scheduled",
+      publishAtIso,
+      scheduleError: null,
+    };
+  }
+
+  if (entry.statusIntent === "scheduled") {
+    return {
+      statusIntent: "scheduled",
+      publishAtIso: null,
+      scheduleError: "Set a go-live date and time in section 4 (Malaysia Time).",
+    };
+  }
+
+  return {
+    statusIntent: entry.statusIntent,
+    publishAtIso: null,
+    scheduleError: null,
+  };
+}
+
+/**
  * Builds the `createPost` payload for one resolved row.
  *
  * @param siteId - Brand `sites.id` UUID.
@@ -133,6 +253,7 @@ function mapStatusIntentToStored(intent: BulkImportStatusIntent): PostStatus {
  * @param entry - Parsed + resolved row.
  * @param categoryId - Resolved category id, or `null`.
  * @param heroImageUrl - Resolved hero image URL, or `null`.
+ * @param effective - Merged status + go-live from section 4.
  * @returns Create payload for `@seo/blog` `createPost`.
  */
 function buildCreatePostInput(
@@ -141,6 +262,7 @@ function buildCreatePostInput(
   entry: ParsedBulkPost,
   categoryId: string | null,
   heroImageUrl: string | null,
+  effective: EffectivePublishState,
 ): CreatePostInput {
   return {
     siteId,
@@ -148,8 +270,8 @@ function buildCreatePostInput(
     title: entry.title,
     excerpt: entry.excerpt,
     bodyMd: entry.bodyMd,
-    status: mapStatusIntentToStored(entry.statusIntent),
-    publishedAt: entry.publishAtIso,
+    status: mapStatusIntentToStored(effective.statusIntent),
+    publishedAt: effective.publishAtIso,
     authorId: author?.id ?? null,
     heroImageUrl,
     heroImageAlt: entry.heroImageAlt,
@@ -188,13 +310,13 @@ function readFileListEntries(fileList: FileList | null): File[] {
 }
 
 /**
- * Human-readable label for a row's writer-facing status intent.
+ * Human-readable label for effective publish intent (after section 4 merge).
  *
- * @param entry - Parsed row.
+ * @param intent - Effective status intent.
  * @returns Display label matching the Admin Post form's status options.
  */
-function formatStatusIntentLabel(entry: ParsedBulkPost): string {
-  switch (entry.statusIntent) {
+function formatStatusIntentLabel(intent: BulkImportStatusIntent): string {
+  switch (intent) {
     case "scheduled":
       return "Scheduled";
     case "published":
@@ -204,29 +326,6 @@ function formatStatusIntentLabel(entry: ParsedBulkPost): string {
     default:
       return "Draft";
   }
-}
-
-/**
- * Formats a row's resolved `publishAt` for the preview table.
- *
- * @param entry - Parsed row.
- * @returns Locale date/time string, or an em dash when not set.
- */
-function formatPublishAtPreview(entry: ParsedBulkPost): string {
-  if (entry.publishAtIso === null) {
-    return "—";
-  }
-  const date = new Date(entry.publishAtIso);
-  if (Number.isNaN(date.getTime())) {
-    return "—";
-  }
-  return date.toLocaleString(undefined, {
-    year: "numeric",
-    month: "short",
-    day: "numeric",
-    hour: "2-digit",
-    minute: "2-digit",
-  });
 }
 
 /**
@@ -260,13 +359,14 @@ function formatImagePreview(entry: ParsedBulkPost, attachedFile: File | undefine
 }
 
 /**
- * Builds the full list of blocking issues shown for a row (parse errors plus
- * cross-entry problems resolved separately, e.g. slug conflicts).
+ * Builds the full list of blocking issues shown for a row (parse errors, slug
+ * conflicts, and section 4 schedule problems).
  *
  * @param entry - Resolved row.
+ * @param effective - Merged publish state for the row.
  * @returns Issue strings; empty when the row is ready to import.
  */
-function collectRowIssues(entry: ParsedBulkPost): string[] {
+function collectRowIssues(entry: ParsedBulkPost, effective: EffectivePublishState): string[] {
   const issues = [...entry.errors];
   if (entry.slugConflict === "duplicate") {
     issues.push("Duplicate slug elsewhere in this batch.");
@@ -274,7 +374,42 @@ function collectRowIssues(entry: ParsedBulkPost): string[] {
   if (entry.slugConflict === "existing") {
     issues.push("A Post with this slug already exists — will be skipped.");
   }
+  if (effective.scheduleError !== null) {
+    issues.push(effective.scheduleError);
+  }
   return issues;
+}
+
+/**
+ * Whether a row can be imported after schedule merge.
+ *
+ * @param entry - Resolved row.
+ * @param effective - Merged publish state.
+ * @returns `true` when parse/slug/schedule checks all pass.
+ */
+function isRowReadyWithSchedule(
+  entry: ParsedBulkPost,
+  effective: EffectivePublishState,
+): boolean {
+  return isBulkImportRowReady(entry) && effective.scheduleError === null;
+}
+
+/**
+ * Parses the cadence interval field into an integer ≥ 1.
+ *
+ * @param raw - Interval days string from the helper input.
+ * @returns Integer ≥ 1, or `null` when invalid.
+ */
+function parseIntervalDays(raw: string): number | null {
+  const trimmed = raw.trim();
+  if (trimmed.length === 0) {
+    return null;
+  }
+  const parsed = Number(trimmed);
+  if (!Number.isInteger(parsed) || parsed < 1) {
+    return null;
+  }
+  return parsed;
 }
 
 /**
@@ -293,6 +428,10 @@ export function BulkImportForm(props: BulkImportFormProps): JSX.Element {
   const [rawText, setRawText] = useState("");
   /** Hero image file keyed by 1-based post index from the parsed document. */
   const [heroImagesByIndex, setHeroImagesByIndex] = useState<Record<number, File>>({});
+  /** Per-post MYT go-live slots keyed by 1-based post index (current batch only). */
+  const [scheduleByIndex, setScheduleByIndex] = useState<Record<number, MytDateTimeParts>>({});
+  const [cadence, setCadence] = useState<CadenceHelperState>(DEFAULT_CADENCE);
+  const [cadenceError, setCadenceError] = useState<string | null>(null);
   const [knownCategories, setKnownCategories] = useState<Category[]>(categories);
   const [knownSlugs, setKnownSlugs] = useState<Set<string>>(() => new Set(existingSlugs));
   const [rowStates, setRowStates] = useState<Record<number, RowRuntimeState>>({});
@@ -315,8 +454,8 @@ export function BulkImportForm(props: BulkImportFormProps): JSX.Element {
   }, [rawText, categoryLookups, knownSlugs]);
 
   /**
-   * Drops hero uploads for post indexes that no longer exist after the
-   * Markdown document changes.
+   * Drops hero uploads and schedule slots for indexes that no longer exist
+   * after the Markdown document changes (new batch / edited paste).
    */
   useEffect(() => {
     const validIndexes = new Set(rows.map((entry) => entry.index));
@@ -333,14 +472,48 @@ export function BulkImportForm(props: BulkImportFormProps): JSX.Element {
       }
       return changed ? next : previous;
     });
+    setScheduleByIndex((previous) => {
+      let changed = false;
+      const next: Record<number, MytDateTimeParts> = {};
+      for (const [key, parts] of Object.entries(previous)) {
+        const index = Number(key);
+        if (validIndexes.has(index)) {
+          next[index] = parts;
+        } else {
+          changed = true;
+        }
+      }
+      return changed ? next : previous;
+    });
   }, [rows]);
 
-  const readyRows = useMemo(() => rows.filter(isBulkImportRowReady), [rows]);
+  const effectiveByIndex = useMemo(() => {
+    const map = new Map<number, EffectivePublishState>();
+    for (const entry of rows) {
+      map.set(entry.index, resolveEffectivePublish(entry, scheduleByIndex[entry.index]));
+    }
+    return map;
+  }, [rows, scheduleByIndex]);
+
+  const readyRows = useMemo(() => {
+    return rows.filter((entry) => {
+      const effective = effectiveByIndex.get(entry.index);
+      if (effective === undefined) {
+        return false;
+      }
+      return isRowReadyWithSchedule(entry, effective);
+    });
+  }, [rows, effectiveByIndex]);
+
   const blockedCount = rows.length - readyRows.length;
   const busy = isImporting;
   const postsWithCoverCount = rows.filter(
     (entry) => entry.heroImageUrl !== null || heroImagesByIndex[entry.index] !== undefined,
   ).length;
+  const postsWithScheduleCount = rows.filter((entry) => {
+    const parts = readScheduleParts(scheduleByIndex[entry.index]);
+    return parts !== null && isValidDateYmd(parts.dateYmd) && isValidTimeHm(parts.timeHm);
+  }).length;
 
   /**
    * Copies the annotated writer template to the clipboard (for LLMs or external editors).
@@ -415,8 +588,97 @@ export function BulkImportForm(props: BulkImportFormProps): JSX.Element {
   }
 
   /**
+   * Updates one field of a per-post MYT schedule slot.
+   *
+   * @param postIndex - 1-based post index.
+   * @param field - Which part to update.
+   * @param value - New date or time string.
+   */
+  function handleScheduleFieldChange(
+    postIndex: number,
+    field: keyof MytDateTimeParts,
+    value: string,
+  ): void {
+    setScheduleByIndex((previous) => {
+      const existing = previous[postIndex] ?? { dateYmd: "", timeHm: "" };
+      const nextParts: MytDateTimeParts = {
+        dateYmd: field === "dateYmd" ? value : existing.dateYmd,
+        timeHm: field === "timeHm" ? value : existing.timeHm,
+      };
+      if (nextParts.dateYmd.trim().length === 0 && nextParts.timeHm.trim().length === 0) {
+        if (previous[postIndex] === undefined) {
+          return previous;
+        }
+        const next = { ...previous };
+        delete next[postIndex];
+        return next;
+      }
+      return { ...previous, [postIndex]: nextParts };
+    });
+  }
+
+  /**
+   * Clears the MYT schedule slot for one post.
+   *
+   * @param postIndex - 1-based post index.
+   */
+  function handleClearScheduleForPost(postIndex: number): void {
+    setScheduleByIndex((previous) => {
+      if (previous[postIndex] === undefined) {
+        return previous;
+      }
+      const next = { ...previous };
+      delete next[postIndex];
+      return next;
+    });
+  }
+
+  /**
+   * Applies the cadence helper to every post in the current batch (document order).
+   */
+  function handleApplyCadence(): void {
+    setCadenceError(null);
+    if (rows.length === 0) {
+      setCadenceError("Add Markdown content in section 2 before applying a cadence.");
+      return;
+    }
+    if (!isValidDateYmd(cadence.startDate)) {
+      setCadenceError("Choose a valid start date for post 1.");
+      return;
+    }
+    if (!isValidTimeHm(cadence.timeOfDay)) {
+      setCadenceError("Enter a valid time of day (HH:mm, Malaysia Time).");
+      return;
+    }
+    const intervalDays = parseIntervalDays(cadence.intervalDays);
+    if (intervalDays === null) {
+      setCadenceError("Interval must be a whole number of days (1 or more).");
+      return;
+    }
+
+    try {
+      const slots = applyCadenceSchedule({
+        startDate: cadence.startDate.trim(),
+        timeOfDay: cadence.timeOfDay.trim(),
+        intervalDays,
+        postCount: rows.length,
+      });
+      const next: Record<number, MytDateTimeParts> = {};
+      rows.forEach((entry, orderIndex) => {
+        const slot = slots[orderIndex];
+        if (slot !== undefined) {
+          next[entry.index] = slot;
+        }
+      });
+      setScheduleByIndex(next);
+    } catch (error) {
+      setCadenceError(toErrorMessage(error));
+    }
+  }
+
+  /**
    * Creates every ready row in sequence, resolving categories and hero image
-   * uploads per row.
+   * uploads per row. Go-live times come from section 4 only.
    */
   async function handleImportAll(): Promise<void> {
     if (readyRows.length === 0) {
@@ -474,7 +736,21 @@ export function BulkImportForm(props: BulkImportFormProps): JSX.Element {
           heroImageUrl = await uploadBulkImportCoverImage(client, attachedFile);
         }
 
-        const input = buildCreatePostInput(siteId, author, entry, categoryId, heroImageUrl);
+        const effective =
+          effectiveByIndex.get(entry.index) ??
+          resolveEffectivePublish(entry, scheduleByIndex[entry.index]);
+        if (effective.scheduleError !== null) {
+          throw new Error(effective.scheduleError);
+        }
+
+        const input = buildCreatePostInput(
+          siteId,
+          author,
+          entry,
+          categoryId,
+          heroImageUrl,
+          effective,
+        );
         const created = await createPost(client, input);
         createdSlugs.push(created.slug);
         createdCount += 1;
@@ -514,8 +790,9 @@ export function BulkImportForm(props: BulkImportFormProps): JSX.Element {
         <div>
           <h1 className="admin-page__title">Bulk import posts</h1>
           <p className="admin-page__lede">
-            Paste or upload one Markdown document with many Posts. Preview what
-            will be created, then import everything in one pass.
+            Paste or upload one Markdown document with many Posts. Set go-live
+            times in Malaysia Time, preview what will be created, then import
+            everything in one pass.
           </p>
         </div>
         <a className="admin-link" href={postsListHref}>
@@ -560,6 +837,7 @@ export function BulkImportForm(props: BulkImportFormProps): JSX.Element {
           Copy the template and share it with your writer (or paste it into an
           AI assistant). The template includes inline instructions for LLMs and
           supports multi-post documents separated by <code>{POST_DIVIDER_LINE}</code>.
+          Go-live dates are set here in Admin section 4 — not in the Markdown.
         </p>
         <details className={styles.templateDetails}>
           <summary className={styles.templateSummary}>Quick field guide</summary>
@@ -567,9 +845,9 @@ export function BulkImportForm(props: BulkImportFormProps): JSX.Element {
             Required: <code>title</code>. Optional: <code>excerpt</code>,{" "}
             <code>category</code>, <code>tags</code>, <code>keyTakeaway</code>,{" "}
             <code>heroImageUrl</code>, <code>heroImageAlt</code>, <code>faq</code>,{" "}
-            <code>sources</code>, <code>status</code>, <code>publishAt</code>.
-            Use <code>status: &quot;scheduled&quot;</code> with a future{" "}
-            <code>publishAt</code> when you want timed publishing.
+            <code>sources</code>, <code>status</code> (<code>draft</code> |{" "}
+            <code>published</code> | <code>archived</code>). Set publish times in
+            section 4 (Malaysia Time) after hero images.
           </p>
         </details>
       </section>
@@ -618,7 +896,8 @@ export function BulkImportForm(props: BulkImportFormProps): JSX.Element {
         {rows.length > 0 ? (
           <p className={styles.summaryLine}>
             <strong>{rows.length}</strong> post{rows.length === 1 ? "" : "s"} detected from
-            this document. Upload a cover for each one in section 3.
+            this document. Upload a cover for each one in section 3, then set
+            go-live times in section 4.
           </p>
         ) : null}
       </section>
@@ -709,7 +988,188 @@ export function BulkImportForm(props: BulkImportFormProps): JSX.Element {
       </section>
 
       <section className="admin-card">
-        <h2 className="admin-card__title">4. Preview &amp; import</h2>
+        <h2 className="admin-card__title">4. Publish schedule</h2>
+        {rows.length === 0 ? (
+          <p className="admin-empty">
+            Add Markdown content in section 2 first. Once posts are detected, you
+            can set Malaysia Time go-live slots here.
+          </p>
+        ) : (
+          <>
+            <p className={styles.instructions}>
+              Times are Malaysia Time (UTC+8). Cadence applies only to this import
+              batch. A future go-live time schedules the post on import
+              ({postsWithScheduleCount} of {rows.length} have a time so far).
+            </p>
+
+            <div className={styles.cadencePanel}>
+              <h3 className={styles.cadenceTitle}>Cadence helper</h3>
+              <p className="admin-field__hint">
+                Choose when post 1 goes live, then how many days between each
+                following post at the same clock time. Click Apply to write
+                times onto every post in this batch.
+              </p>
+              <div className={styles.cadenceFields}>
+                <div className="admin-field">
+                  <label className="admin-field__label" htmlFor="bulk-cadence-start">
+                    Start date (post 1)
+                  </label>
+                  <input
+                    id="bulk-cadence-start"
+                    className={styles.scheduleInput}
+                    type="date"
+                    value={cadence.startDate}
+                    disabled={busy}
+                    onChange={(event: ChangeEvent<HTMLInputElement>) => {
+                      setCadenceError(null);
+                      setCadence((previous) => ({
+                        ...previous,
+                        startDate: event.target.value,
+                      }));
+                    }}
+                  />
+                </div>
+                <div className="admin-field">
+                  <label className="admin-field__label" htmlFor="bulk-cadence-time">
+                    Time of day (MYT)
+                  </label>
+                  <input
+                    id="bulk-cadence-time"
+                    className={styles.scheduleInput}
+                    type="time"
+                    value={cadence.timeOfDay}
+                    disabled={busy}
+                    onChange={(event: ChangeEvent<HTMLInputElement>) => {
+                      setCadenceError(null);
+                      setCadence((previous) => ({
+                        ...previous,
+                        timeOfDay: event.target.value,
+                      }));
+                    }}
+                  />
+                </div>
+                <div className="admin-field">
+                  <label className="admin-field__label" htmlFor="bulk-cadence-interval">
+                    Every N days
+                  </label>
+                  <input
+                    id="bulk-cadence-interval"
+                    className={styles.scheduleInput}
+                    type="number"
+                    min={1}
+                    step={1}
+                    value={cadence.intervalDays}
+                    disabled={busy}
+                    onChange={(event: ChangeEvent<HTMLInputElement>) => {
+                      setCadenceError(null);
+                      setCadence((previous) => ({
+                        ...previous,
+                        intervalDays: event.target.value,
+                      }));
+                    }}
+                  />
+                </div>
+                <div className={styles.cadenceApplyWrap}>
+                  <button
+                    type="button"
+                    className="admin-btn admin-btn--primary"
+                    disabled={busy}
+                    onClick={handleApplyCadence}
+                  >
+                    Apply to all posts
+                  </button>
+                </div>
+              </div>
+              {cadenceError !== null ? (
+                <p className="admin-message admin-message--error" role="alert">
+                  {cadenceError}
+                </p>
+              ) : null}
+            </div>
+
+            <ul className={styles.heroSlotList}>
+              {rows.map((entry) => {
+                const parts = scheduleByIndex[entry.index] ?? { dateYmd: "", timeHm: "" };
+                const dateId = `bulk-schedule-date-${String(entry.index)}`;
+                const timeId = `bulk-schedule-time-${String(entry.index)}`;
+                const effective = effectiveByIndex.get(entry.index);
+                const hasValidSlot =
+                  isValidDateYmd(parts.dateYmd) && isValidTimeHm(parts.timeHm);
+                return (
+                  <li key={entry.index} className={styles.heroSlot}>
+                    <div className={styles.heroSlotMeta}>
+                      <span className={styles.heroSlotIndex}>Post {entry.index}</span>
+                      <span className={styles.heroSlotTitle}>
+                        {entry.title.length > 0 ? entry.title : "(missing title)"}
+                      </span>
+                      {hasValidSlot ? (
+                        <span className={`${styles.pill} ${styles.pillReady}`}>
+                          {formatMytPreview({
+                            dateYmd: parts.dateYmd,
+                            timeHm: parts.timeHm,
+                          })}
+                        </span>
+                      ) : (
+                        <span className={`${styles.pill} ${styles.pillCreating}`}>No time</span>
+                      )}
+                    </div>
+                    <div className={styles.scheduleRow}>
+                      <div className="admin-field">
+                        <label className="admin-field__label" htmlFor={dateId}>
+                          Date (MYT)
+                        </label>
+                        <input
+                          id={dateId}
+                          className={styles.scheduleInput}
+                          type="date"
+                          value={parts.dateYmd}
+                          disabled={busy}
+                          onChange={(event: ChangeEvent<HTMLInputElement>) => {
+                            handleScheduleFieldChange(entry.index, "dateYmd", event.target.value);
+                          }}
+                        />
+                      </div>
+                      <div className="admin-field">
+                        <label className="admin-field__label" htmlFor={timeId}>
+                          Time (MYT)
+                        </label>
+                        <input
+                          id={timeId}
+                          className={styles.scheduleInput}
+                          type="time"
+                          value={parts.timeHm}
+                          disabled={busy}
+                          onChange={(event: ChangeEvent<HTMLInputElement>) => {
+                            handleScheduleFieldChange(entry.index, "timeHm", event.target.value);
+                          }}
+                        />
+                      </div>
+                      {scheduleByIndex[entry.index] !== undefined ? (
+                        <button
+                          type="button"
+                          className="admin-btn admin-btn--small"
+                          disabled={busy}
+                          onClick={() => {
+                            handleClearScheduleForPost(entry.index);
+                          }}
+                        >
+                          Clear
+                        </button>
+                      ) : null}
+                    </div>
+                    {effective?.scheduleError !== null && effective?.scheduleError !== undefined ? (
+                      <p className={styles.issueItem}>{effective.scheduleError}</p>
+                    ) : null}
+                  </li>
+                );
+              })}
+            </ul>
+          </>
+        )}
+      </section>
+
+      <section className="admin-card">
+        <h2 className="admin-card__title">5. Preview &amp; import</h2>
 
         {rows.length === 0 ? (
           <p className="admin-empty">
@@ -747,9 +1207,13 @@ export function BulkImportForm(props: BulkImportFormProps): JSX.Element {
                 </thead>
                 <tbody>
                   {rows.map((entry) => {
-                    const issues = collectRowIssues(entry);
-                    const ready = isBulkImportRowReady(entry);
+                    const effective =
+                      effectiveByIndex.get(entry.index) ??
+                      resolveEffectivePublish(entry, scheduleByIndex[entry.index]);
+                    const issues = collectRowIssues(entry, effective);
+                    const ready = isRowReadyWithSchedule(entry, effective);
                     const runtime = rowStates[entry.index];
+                    const scheduleParts = readScheduleParts(scheduleByIndex[entry.index]);
                     return (
                       <tr
                         key={entry.index}
@@ -762,8 +1226,8 @@ export function BulkImportForm(props: BulkImportFormProps): JSX.Element {
                         <td className={styles.slugCell}>{entry.slug || "—"}</td>
                         <td>{formatCategoryPreview(entry)}</td>
                         <td>{entry.tags.length > 0 ? entry.tags.join(", ") : "—"}</td>
-                        <td>{formatStatusIntentLabel(entry)}</td>
-                        <td>{formatPublishAtPreview(entry)}</td>
+                        <td>{formatStatusIntentLabel(effective.statusIntent)}</td>
+                        <td>{formatMytPreview(scheduleParts)}</td>
                         <td>{formatImagePreview(entry, heroImagesByIndex[entry.index])}</td>
                         <td>
                           {runtime !== undefined ? (

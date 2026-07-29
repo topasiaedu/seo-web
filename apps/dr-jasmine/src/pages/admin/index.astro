@@ -24,6 +24,7 @@ const counts = countPostsByStatus(posts);
 const drafts = recentDrafts(posts);
 
 const postsListHref = joinAdminPath(base, "admin/posts");
+const bulkImportHref = joinAdminPath(base, "admin/posts/import");
 const newPostHref = joinAdminPath(base, "admin/posts/new");
 const draftsFilterHref = joinAdminPath(base, "admin/posts?status=draft");
 const publishedFilterHref = joinAdminPath(base, "admin/posts?status=published");
@@ -41,6 +42,7 @@ const archivedFilterHref = joinAdminPath(base, "admin/posts?status=archived");
         </p>
       </div>
       <div class="admin-actions">
+        <a class="admin-btn" href={bulkImportHref}>Bulk import</a>
         <a class="admin-btn admin-btn--primary" href={newPostHref}>New post</a>
         <a class="admin-btn" href={postsListHref}>All posts</a>
       </div>

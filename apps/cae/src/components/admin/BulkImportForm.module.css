@@ -184,6 +184,61 @@
   word-break: break-all;
 }
 
+.cadencePanel {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+  padding: 0.85rem 1rem;
+  border: 1px solid var(--admin-border);
+  border-radius: 0.375rem;
+  background: var(--admin-surface-soft);
+}
+
+.cadenceTitle {
+  margin: 0;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--admin-text-bright);
+}
+
+.cadenceFields {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 0.75rem 1rem;
+}
+
+.cadenceApplyWrap {
+  display: flex;
+  align-items: flex-end;
+  padding-bottom: 0.15rem;
+}
+
+.scheduleRow {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 0.65rem 0.85rem;
+}
+
+.scheduleInput {
+  box-sizing: border-box;
+  min-width: 9rem;
+  padding: 0.45rem 0.55rem;
+  border: 1px solid var(--admin-border);
+  border-radius: 0.375rem;
+  background: var(--admin-surface);
+  color: var(--admin-text-bright);
+  font: inherit;
+  font-size: 0.85rem;
+}
+
+.scheduleInput:focus {
+  outline: 2px solid var(--admin-focus);
+  outline-offset: 1px;
+}
+
 .summaryLine {
   margin: 0;
   font-size: 0.9rem;

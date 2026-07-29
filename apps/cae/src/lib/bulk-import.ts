@@ -84,7 +84,11 @@ export type ParsedBulkPost = {
   faq: BulkImportFaqItem[];
   sources: BulkImportSourceItem[];
   statusIntent: BulkImportStatusIntent;
-  /** ISO-8601 UTC timestamp, or `null` when not provided / not applicable. */
+  /**
+   * Always `null` after parse — go-live times come from Admin section 4
+   * (Malaysia Time), not Markdown. Kept on the type so the form can merge UI
+   * schedule state without reshaping the row.
+   */
   publishAtIso: string | null;
   /** Blocking problems; a row with any entry here cannot be imported. */
   errors: string[];
@@ -264,30 +268,6 @@ function readStatusIntent(data: Record<string, unknown>, errors: string[]): Bulk
 }
 
 /**
- * Coerces a frontmatter publish-time value to an ISO-8601 UTC string.
- *
- * YAML parses unquoted date-like text into native `Date` objects, so this
- * accepts both `Date` and `string` inputs.
- *
- * @param value - Raw `publishAt` / `publishedAt` frontmatter value.
- * @returns ISO string, or `null` when absent / unparseable.
- */
-function coercePublishAtIso(value: unknown): string | null {
-  if (value instanceof Date) {
-    return Number.isNaN(value.getTime()) ? null : value.toISOString();
-  }
-  if (typeof value === "string") {
-    const trimmed = value.trim();
-    if (trimmed.length === 0) {
-      return null;
-    }
-    const parsedMs = Date.parse(trimmed);
-    return Number.isNaN(parsedMs) ? null : new Date(parsedMs).toISOString();
-  }
-  return null;
-}
-
-/**
  * Splits a bulk-import document into raw per-post chunks.
  *
  * @param raw - Full pasted / uploaded document text.
@@ -382,24 +362,10 @@ export function parseBulkImportEntry(index: number, chunk: string): ParsedBulkPo
   }
 
   const publishAtRaw = data["publishAt"] ?? data["publishedAt"];
-  const publishAtIso = coercePublishAtIso(publishAtRaw);
-  if (publishAtRaw !== undefined && publishAtRaw !== null && publishAtIso === null) {
-    errors.push('"publishAt" could not be read as a date/time.');
-  }
-
-  if (statusIntent === "scheduled") {
-    if (publishAtIso === null) {
-      errors.push('"publishAt" is required when status is "scheduled".');
-    } else if (Date.parse(publishAtIso) <= Date.now()) {
-      errors.push('"publishAt" must be in the future when status is "scheduled".');
-    }
-  }
-  if (
-    statusIntent === "published" &&
-    publishAtIso !== null &&
-    Date.parse(publishAtIso) > Date.now()
-  ) {
-    notes.push('"publishAt" is in the future — this will show as Scheduled in Admin.');
+  if (publishAtRaw !== undefined && publishAtRaw !== null) {
+    notes.push(
+      "`publishAt` in the Markdown is ignored — set go-live times in section 4 (Malaysia Time).",
+    );
   }
 
   const heroImageUrlRaw = readOptionalString(data, "heroImageUrl");
@@ -429,7 +395,8 @@ export function parseBulkImportEntry(index: number, chunk: string): ParsedBulkPo
     faq: readFaqArray(data, notes),
     sources: readSourcesArray(data, notes),
     statusIntent,
-    publishAtIso,
+    /** Go-live times are set in Admin section 4; Markdown publishAt is ignored. */
+    publishAtIso: null,
     errors,
     notes,
     slugConflict: null,

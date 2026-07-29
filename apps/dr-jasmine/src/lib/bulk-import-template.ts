@@ -5,6 +5,9 @@
  * to a human writer) so they know the exact shape Dr Jasmine Admin expects. HTML
  * comment blocks and YAML `#` lines are stripped or ignored on import — see
  * {@link prepareBulkImportRawText} in `bulk-import.ts`.
+ *
+ * Go-live date/time is set in Admin Bulk Import section 4 (Malaysia Time), not
+ * in this Markdown file.
  */
 
 import { POST_DIVIDER_LINE } from "./bulk-import";
@@ -58,12 +61,13 @@ OPTIONAL — images
                  section 3 after the Markdown is parsed — do not put local
                  filenames in this file.
 
-OPTIONAL — publishing
-  status         draft | published | scheduled | archived
-  publishAt      ISO 8601 date/time, e.g. "2026-08-05T09:00:00+08:00"
-                 Required when status is "scheduled" (must be in the future).
-                 For scheduled posts the site stores status=published and hides
-                 the post until publishAt — it then goes live automatically.
+OPTIONAL — status
+  status         draft | published | archived
+                 Default is draft when omitted.
+                 Do NOT put publish times in this file. Set go-live dates in
+                 Admin Bulk Import section 4 (Malaysia Time / UTC+8), after
+                 hero images. Section 4 can schedule the whole batch
+                 (e.g. every day at 8:00 AM from a chosen start date).
 
 OPTIONAL — FAQ & sources (YAML lists in frontmatter)
   faq            List of { question, answer } objects
@@ -75,6 +79,7 @@ IMPORT RULES
 • This HTML comment block at the top is also ignored on import.
 • Duplicate slugs or slugs that already exist on the site are skipped.
 • Delete example posts below or replace them with real content.
+• Any leftover publishAt / publishedAt fields are ignored on import.
 
 FOR AI ASSISTANTS
 -----------------
@@ -83,8 +88,8 @@ When filling this template for a human to import:
 - Preserve ${POST_DIVIDER_LINE} between posts (exact spelling, on its own line).
 - Do NOT wrap the entire file in a markdown code fence.
 - Replace placeholder values with real content; remove unused optional fields.
-- Default to status: "scheduled" with staggered future publishAt times unless
-  the user asks for drafts or immediate publish.
+- Do NOT invent publishAt / publishedAt timestamps — scheduling is done in Admin.
+- Default to status: "draft" unless the user asks for published or archived.
 - Write article bodies in Markdown (## headings, lists, **bold**, links).
 - Keep FAQ answers and excerpts concise and factual.
 ================================================================================
@@ -113,11 +118,8 @@ keyTakeaway: "The single most important point readers should remember."
 # heroImageUrl: "https://example.com/your-cover.jpg"
 # heroImageAlt: "Describe the image for screen readers"
 
-# OPTIONAL — draft | published | scheduled | archived
-status: "scheduled"
-
-# REQUIRED when status is "scheduled" — must be a future date/time
-publishAt: "2026-08-05T09:00:00+08:00"
+# OPTIONAL — draft | published | archived (go-live times are set in Admin section 4)
+status: "draft"
 
 # OPTIONAL — FAQ accordion on the published post
 faq:
@@ -149,7 +151,6 @@ title: "Second Post Title"
 category: "Wellness"
 tags: ["mindfulness"]
 
-# Draft posts omit publishAt; they stay hidden until you publish in Admin
 status: "draft"
 ---
 
