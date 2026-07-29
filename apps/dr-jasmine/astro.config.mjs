@@ -2,8 +2,9 @@
  * @fileoverview Astro config for the independent Dr Jasmine brand app.
  * Served under `/dr-jasmine/` (gateway proxies to this process on port 4323).
  * Server output enables future Admin session cookies; marketing pages may opt into prerender.
+ * Uses @astrojs/vercel adapter for Vercel serverless deployment.
  */
-import node from "@astrojs/node";
+import vercel from "@astrojs/vercel";
 import react from "@astrojs/react";
 import sitemap from "@astrojs/sitemap";
 import { defineConfig } from "astro/config";
@@ -45,9 +46,7 @@ const sitemapCustomPages = ssrSitemapSegments.map(publicRouteAbsoluteUrl);
 export default defineConfig({
   site: siteOrigin,
   output: "server",
-  adapter: node({
-    mode: "standalone",
-  }),
+  adapter: vercel(),
   base: basePath,
   server: {
     host: true,

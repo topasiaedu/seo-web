@@ -2,8 +2,9 @@
  * @fileoverview Astro config for the independent CAE brand app.
  * Served under `/cae/` (gateway proxies to this process on port 4322).
  * Server output enables Admin session cookies; marketing pages opt into prerender.
+ * Uses @astrojs/vercel adapter for Vercel serverless deployment.
  */
-import node from "@astrojs/node";
+import vercel from "@astrojs/vercel";
 import react from "@astrojs/react";
 import sitemap from "@astrojs/sitemap";
 import { defineConfig } from "astro/config";
@@ -18,9 +19,7 @@ const siteOrigin =
 export default defineConfig({
   site: siteOrigin,
   output: "server",
-  adapter: node({
-    mode: "standalone",
-  }),
+  adapter: vercel(),
   base: "/cae/",
   server: {
     host: true,
