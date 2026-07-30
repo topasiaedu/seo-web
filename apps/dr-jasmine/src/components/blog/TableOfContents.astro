@@ -1,6 +1,7 @@
 ---
 /**
  * Minimal story TOC — desktop sticky rail with markers; mobile collapsible.
+ * Active section is highlighted via scroll spy (`aria-current`).
  */
 import type { TocHeading } from "@/lib/markdown";
 
@@ -14,7 +15,11 @@ const { headings } = Astro.props;
 {
   headings.length > 0 ? (
     <>
-      <nav class="blog-toc blog-toc--desktop blog-toc--rail" aria-label="On this page">
+      <nav
+        class="blog-toc blog-toc--desktop blog-toc--rail"
+        aria-label="On this page"
+        data-blog-toc
+      >
         <p class="blog-toc__title">Contents</p>
         <ol class="blog-toc__list">
           {headings.map((heading) => (
@@ -27,7 +32,7 @@ const { headings } = Astro.props;
           ))}
         </ol>
       </nav>
-      <details class="blog-toc blog-toc--mobile">
+      <details class="blog-toc blog-toc--mobile" data-blog-toc>
         <summary class="blog-toc__summary">On this page</summary>
         <ol class="blog-toc__list">
           {headings.map((heading) => (
@@ -40,3 +45,157 @@ const { headings } = Astro.props;
     </>
   ) : null
 }
+
+<script>
+  let blogTocCleanup: (() => void) | null = null;
+
+  /**
+   * Reads the sticky-header offset used for scroll-spy activation.
+   *
+   * @returns Pixel offset from the top of the viewport.
+   */
+  function readBlogNavOffset(): number {
+    const page = document.querySelector(".blog-page");
+    if (!(page instanceof HTMLElement)) {
+      return 96;
+    }
+    const raw = getComputedStyle(page).getPropertyValue("--blog-nav-offset").trim();
+    const parsed = Number.parseFloat(raw);
+    if (!Number.isFinite(parsed)) {
+      return 96;
+    }
+    return parsed + 12;
+  }
+
+  /**
+   * Collects unique heading elements referenced by TOC anchors.
+   *
+   * @param links - TOC anchor elements.
+   * @returns Heading elements in document order.
+   */
+  function resolveHeadingElements(
+    links: ReadonlyArray<HTMLAnchorElement>,
+  ): HTMLElement[] {
+    const seen = new Set<string>();
+    const headings: HTMLElement[] = [];
+    for (const link of links) {
+      const hash = link.hash;
+      if (hash.length < 2) {
+        continue;
+      }
+      const id = decodeURIComponent(hash.slice(1));
+      if (id.length === 0 || seen.has(id)) {
+        continue;
+      }
+      seen.add(id);
+      const el = document.getElementById(id);
+      if (el instanceof HTMLElement) {
+        headings.push(el);
+      }
+    }
+    return headings;
+  }
+
+  /**
+   * Marks matching TOC links as the current reading section.
+   *
+   * @param links - All TOC anchors on the page.
+   * @param activeId - Heading id currently in the reading band, or null.
+   */
+  function setActiveTocLinks(
+    links: ReadonlyArray<HTMLAnchorElement>,
+    activeId: string | null,
+  ): void {
+    for (const link of links) {
+      const hash = link.hash;
+      const id =
+        hash.length > 1 ? decodeURIComponent(hash.slice(1)) : "";
+      if (activeId !== null && id === activeId) {
+        link.setAttribute("aria-current", "true");
+      } else {
+        link.removeAttribute("aria-current");
+      }
+    }
+  }
+
+  /**
+   * Picks the last heading whose top has crossed the sticky offset line.
+   *
+   * @param headings - Article h2 elements with ids.
+   * @param offset - Sticky-header offset in pixels.
+   * @returns Active heading id, or null when none apply.
+   */
+  function findActiveHeadingId(
+    headings: ReadonlyArray<HTMLElement>,
+    offset: number,
+  ): string | null {
+    if (headings.length === 0) {
+      return null;
+    }
+    let activeId: string | null = null;
+    for (const heading of headings) {
+      if (heading.getBoundingClientRect().top - offset <= 0) {
+        activeId = heading.id;
+      }
+    }
+    if (activeId === null) {
+      const first = headings[0];
+      return first !== undefined ? first.id : null;
+    }
+    return activeId;
+  }
+
+  /**
+   * Wires scroll-spy highlighting for blog TOC links.
+   */
+  function initBlogTocScrollSpy(): void {
+    if (blogTocCleanup !== null) {
+      blogTocCleanup();
+      blogTocCleanup = null;
+    }
+
+    const links = Array.from(
+      document.querySelectorAll<HTMLAnchorElement>(
+        "[data-blog-toc] .blog-toc__list a[href^='#']",
+      ),
+    );
+    if (links.length === 0) {
+      return;
+    }
+
+    const headings = resolveHeadingElements(links);
+    if (headings.length === 0) {
+      return;
+    }
+
+    let frame = 0;
+    const update = (): void => {
+      frame = 0;
+      const activeId = findActiveHeadingId(headings, readBlogNavOffset());
+      setActiveTocLinks(links, activeId);
+    };
+
+    const scheduleUpdate = (): void => {
+      if (frame !== 0) {
+        return;
+      }
+      frame = window.requestAnimationFrame(update);
+    };
+
+    update();
+    window.addEventListener("scroll", scheduleUpdate, { passive: true });
+    window.addEventListener("resize", scheduleUpdate);
+
+    blogTocCleanup = (): void => {
+      window.removeEventListener("scroll", scheduleUpdate);
+      window.removeEventListener("resize", scheduleUpdate);
+      if (frame !== 0) {
+        window.cancelAnimationFrame(frame);
+        frame = 0;
+      }
+    };
+  }
+
+  initBlogTocScrollSpy();
+  document.addEventListener("astro:page-load", initBlogTocScrollSpy);
+</script>
