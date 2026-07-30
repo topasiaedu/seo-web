@@ -2,12 +2,22 @@
  * @fileoverview Astro config for the independent CAE brand app.
  * Served under `/cae/` (gateway proxies to this process on port 4322).
  * Server output enables Admin session cookies; marketing pages opt into prerender.
- * Uses @astrojs/vercel adapter for Vercel serverless deployment.
+ *
+ * Adapter selection:
+ * - Vercel (`VERCEL=1` during platform builds) → `@astrojs/vercel` (Build Output API)
+ * - Local / Node hosts (Render, `pnpm start`) → `@astrojs/node` standalone
  */
-import vercel from "@astrojs/vercel";
+import node from "@astrojs/node";
 import react from "@astrojs/react";
 import sitemap from "@astrojs/sitemap";
+import vercel from "@astrojs/vercel";
 import { defineConfig } from "astro/config";
+
+/**
+ * True on Vercel CI/runtime so we emit `.vercel/output` instead of a Node standalone server.
+ * Local Windows builds stay on `@astrojs/node` to avoid NFT symlink EPERM failures.
+ */
+const useVercelAdapter = process.env.VERCEL === "1";
 
 /** Production origin for absolute sitemap / canonical URLs. */
 const siteOrigin =
@@ -19,7 +29,11 @@ const siteOrigin =
 export default defineConfig({
   site: siteOrigin,
   output: "server",
-  adapter: vercel(),
+  adapter: useVercelAdapter
+    ? vercel()
+    : node({
+        mode: "standalone",
+      }),
   base: "/cae/",
   server: {
     host: true,

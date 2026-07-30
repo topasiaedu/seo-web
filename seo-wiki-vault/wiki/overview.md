@@ -2,15 +2,16 @@
 
 Living synthesis of the monorepo. Agents update this on ingest and code-sync.
 
-Last updated: 2026-07-29 (merge CAE native ZWDS + Dr Jasmine onto main)
+Last updated: 2026-07-30 (sync Vercel dual-project SSR adapters)
 
 ## Current focus
 
-- Primary site: **CAE** (`apps/cae` / `@seo/cae`) — **native ZWDS homepage** (Insights Blog soft bento after Press; home **SSR**); **native Media & Press**; **Admin Blog** at `/cae/admin` with **Published vs Scheduled** UI + lazy `published_at` gate; simplified PostForm; **Bulk import**; **public blog SSR** at `/cae/blog` (Immersive Story + shared native chrome); nm-zwds tokens + public Light/Dark toggle; preview via **gateway** `/cae`
-- Second brand: **Dr Jasmine** (`apps/dr-jasmine` / `@seo/dr-jasmine`) — **single-home** native site (`/` GHL LDP copy + Meet/FAQ + **Health Insights** latest-3 Post tiles; home **SSR**; **no** `/about` `/workshop` `/programs` `/faq` pages) + Admin + **light** public `/blog`; gateway `/dr-jasmine` → `:4323`; GHL capture archive/reference only
+- Primary site: **CAE** (`apps/cae` / `@seo/cae`) — **native ZWDS homepage** (Insights Blog soft bento after Press; home **SSR**); **native Media & Press**; **Admin Blog** at `/cae/admin` with **Published vs Scheduled** UI + lazy `published_at` gate; simplified PostForm; **Bulk import** (section 4 MYT cadence; no MD `publishAt`); **public blog SSR** at `/cae/blog` (Immersive Story + shared native chrome); nm-zwds tokens + public Light/Dark toggle; preview via **gateway** `/cae`
+- Second brand: **Dr Jasmine** (`apps/dr-jasmine` / `@seo/dr-jasmine`) — **single-home** native site (`/` GHL LDP copy + Meet/FAQ + **Health Insights** latest-3 Post tiles; home **SSR**; **no** `/about` `/workshop` `/programs` `/faq` pages) + Admin (**Bulk import** section 4 MYT cadence) + **light** public `/blog`; gateway `/dr-jasmine` → `:4323`; GHL capture archive/reference only
 - Path gateway: `apps/gateway` (`@seo/gateway`) on port **4321** (proxies `/cae` + `/dr-jasmine`; `/cms` still not migrated)
+- **Git:** integration on **`main`** + pre-prod **`staging`** (both apps always present). Flow `feat/...` → `staging` → PR → `main`. Brand-only long-lived branches retired ([branch model source](sources/monorepo-main-staging-branch-model.md))
 - Legacy `website/` shell: **removed** — future brands/CMS scaffold under `apps/` only
-- Deploy: root `vercel.json` builds **`@seo/cae`** → `apps/cae/dist` (`base: "/cae/"`; server output + Node adapter). DJ build is separate (`pnpm build:dr-jasmine`)
+- Deploy: prefer Git branches **`main`** / **`staging`**; two Vercel projects (`seo-web-cae`, `seo-web-dr-jasmine`) with Root Directory `apps/cae` / `apps/dr-jasmine`. On Vercel: `@astrojs/vercel` → `.vercel/output`; locally: `@astrojs/node` standalone. Astro `base` paths `/cae/`, `/dr-jasmine/` until host-based routing
 - Framework: **Astro** · Package manager: **pnpm**
 - Knowledge vault: `seo-wiki-vault/`
 
@@ -22,7 +23,7 @@ Last updated: 2026-07-29 (merge CAE native ZWDS + Dr Jasmine onto main)
 |---------|------|--------|
 | Gateway | `apps/gateway/` | Proxies `/cae` → 4322, `/dr-jasmine` → 4323; `/cms` “not migrated yet” |
 | Site:CAE | `apps/cae/` | Native ZWDS marketing (home + media) + Insights Blog bento + Admin Blog + public `/blog`; vault GHL scrapes in `raw/research/cae-ghl-capture*` |
-| Site:DrJasmine | `apps/dr-jasmine/` | Single-home marketing (GHL LDP copy + Health Insights teaser) + Admin Blog + light public `/blog`; GHL capture archive in `raw/research/dr-jasmine-ghl-capture/` |
+| Site:DrJasmine | `apps/dr-jasmine/` | Single-home marketing (GHL LDP copy + Health Insights teaser) + Admin Blog (Bulk import MYT schedule) + light public `/blog`; GHL capture archive in `raw/research/dr-jasmine-ghl-capture/` |
 | Shared platform | `packages/`, `supabase/` | `@seo/db` clients + `@seo/blog` CRUD; authors/categories/posts + Storage `media` |
 | CMS | (not scaffolded) | Deferred → `apps/cms` (not the same as brand Admin) |
 | Wiki vault | `seo-wiki-vault/` | See `AGENTS.md` |
@@ -103,6 +104,7 @@ Smoke: [CAE](sites/cae.md#smoke-checklist-admin--public-blog) · [Dr Jasmine](si
 
 ## Deferred
 
+- Set GitHub default branch to `main`, delete `origin/cae`, retarget hosts off retired brand tips ([branch model](sources/monorepo-main-staging-branch-model.md))
 - Scaffold `apps/cms` + activate gateway `/cms` — [independent-apps doc](../../docs/future-enhancements/independent-apps-dr-jasmine-and-cms.md) (DJ superseded)
 - Host-based multi-brand production routing / multi-app Vercel topology
 - `@astrojs/vercel` adapter for production host middleware (CAE/DJ already use Node adapter locally/server)
@@ -138,6 +140,9 @@ Smoke: [CAE](sites/cae.md#smoke-checklist-admin--public-blog) · [Dr Jasmine](si
 - [cae-blog-scheduled-publishing](../raw/inbox/2026-07-27-cae-blog-scheduled-publishing.md) → [sources/cae-blog-scheduled-publishing.md](sources/cae-blog-scheduled-publishing.md)
 - [cae-admin-postform-simplifications](../raw/inbox/2026-07-27-cae-admin-postform-simplifications.md) → [sources/cae-admin-postform-simplifications.md](sources/cae-admin-postform-simplifications.md)
 - [cae-admin-bulk-import](../raw/inbox/2026-07-27-cae-admin-bulk-import.md) → [sources/cae-admin-bulk-import.md](sources/cae-admin-bulk-import.md)
+- [cae-bulk-import-schedule-ui](../raw/inbox/2026-07-29-cae-bulk-import-schedule-ui.md) → [sources/cae-bulk-import-schedule-ui.md](sources/cae-bulk-import-schedule-ui.md)
+- [dr-jasmine-bulk-import-schedule-ui](../raw/inbox/2026-07-30-dr-jasmine-bulk-import-schedule-ui.md) → [sources/dr-jasmine-bulk-import-schedule-ui.md](sources/dr-jasmine-bulk-import-schedule-ui.md)
 - [cae-blog-immersive-story-redesign](../raw/inbox/2026-07-27-cae-blog-immersive-story-redesign.md) → [sources/cae-blog-immersive-story-redesign.md](sources/cae-blog-immersive-story-redesign.md)
 - [cae-nm-zwds-brand-theme-and-public-theme-toggle](../raw/inbox/2026-07-28-cae-nm-zwds-brand-theme-and-public-theme-toggle.md) → [sources/cae-nm-zwds-brand-theme-and-public-theme-toggle.md](sources/cae-nm-zwds-brand-theme-and-public-theme-toggle.md)
 - [cae-native-zwds-public-redesign](../raw/inbox/2026-07-28-cae-native-zwds-public-redesign.md) → [sources/cae-native-zwds-public-redesign.md](sources/cae-native-zwds-public-redesign.md)
+- [monorepo-main-staging-branch-model](../raw/inbox/2026-07-29-monorepo-main-staging-branch-model.md) → [sources/monorepo-main-staging-branch-model.md](sources/monorepo-main-staging-branch-model.md)

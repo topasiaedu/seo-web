@@ -2,6 +2,35 @@
 
 Append-only timeline. Each entry starts with `## [YYYY-MM-DD] <verb> | <title>` for easy grepping.
 
+## [2026-07-30] sync | Vercel dual-project SSR + conditional adapters
+
+- Updated: `architecture/routing-vercel.md`, `overview.md`, root `CONTEXT.md`
+- Code: `VERCEL=1` → `@astrojs/vercel`; else `@astrojs/node`; root `.npmrc` hoist; frozen-lockfile install in per-app `vercel.json`
+- Open: Vercel team must turn Off Output Directory override, keep Include-files-outside-root On, and fix Git author access for `KWen-22` (or Redeploy from a team member)
+
+## [2026-07-30] ingest | Dr Jasmine bulk import schedule UI
+
+- Raw: `raw/inbox/2026-07-30-dr-jasmine-bulk-import-schedule-ui.md`
+- Source: `wiki/sources/dr-jasmine-bulk-import-schedule-ui.md`
+- Updated: `sites/dr-jasmine` (import route + Related), `sources/cae-bulk-import-schedule-ui` (DJ port no longer deferred), glossary (Bulk import both brands), overview related sources, index
+- Note: surgical port from CAE; DJ cover upload / slug / Wellness branding preserved; shipped in `24e7c68` with CAE schedule UI
+- Scheduling still lazy time-gate — no cron
+
+## [2026-07-29] ingest | CAE bulk import schedule UI
+
+- Raw: `raw/inbox/2026-07-29-cae-bulk-import-schedule-ui.md`
+- Source: `wiki/sources/cae-bulk-import-schedule-ui.md`
+- Updated: `sites/cae` (import route + smoke + lib paths), `sources/cae-admin-bulk-import` (schedule claims), glossary (Bulk import), overview related sources, index
+- Note: DJ schedule port deferred (`docs/implementation-plan/dr-jasmine-bulk-import-schedule-ui.md`); dashboard Bulk import button exists on both brands
+- Scheduling still lazy time-gate — no cron
+
+## [2026-07-29] ingest | monorepo main + staging branch model
+
+- Raw: `raw/inbox/2026-07-29-monorepo-main-staging-branch-model.md`
+- Source: `wiki/sources/monorepo-main-staging-branch-model.md`
+- Updated: `architecture/monorepo` (branch table), `architecture/routing-vercel` (deploy branches), architecture overview, overview, glossary (`main`/`staging`/feature branch), index
+- Open: GitHub default still `cae` → delete `origin/cae` after switch; retarget hosts off retired brand tips
+
 ## [2026-07-29] sync | merge CAE + Dr Jasmine onto main
 
 - Merged `cae` (native ZWDS public redesign) into `main` after fast-forward from `dr-jasmine`

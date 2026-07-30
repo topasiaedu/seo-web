@@ -26,6 +26,8 @@ Read this first, then open the wiki vault:
 
 - **Deferred:** shared CMS only (`apps/cms`) — see [docs/future-enhancements/independent-apps-dr-jasmine-and-cms.md](docs/future-enhancements/independent-apps-dr-jasmine-and-cms.md) (DJ Workstream A superseded by [dr-jasmine-landing-and-admin.md](docs/implementation-plan/dr-jasmine-landing-and-admin.md) + [dr-jasmine-true-website.md](docs/implementation-plan/dr-jasmine-true-website.md))
 
+- **Git:** `main` (prod) + `staging` (check); work on `feat/...` then merge → staging → PR → main. Both apps always on the tree — see [branch model](seo-wiki-vault/wiki/sources/monorepo-main-staging-branch-model.md)
+
 
 
 ## Quick map
@@ -78,7 +80,14 @@ Env: `apps/cae/.env.example` → `.env.local`; `apps/dr-jasmine/.env.example` �
 
 ## Deploy note (`vercel.json`)
 
-Root `vercel.json` currently assumes a **static** `@seo/cae` → `apps/cae/dist` build. CAE Admin requires **server mode** (`@astrojs/node`); deploy config must move to a Node host (or a Vercel SSR adapter) before Admin works in production. Dr Jasmine uses the same Node/server pattern locally (`pnpm build:dr-jasmine`); production DJ wiring is separate. Host-based multi-brand routing remains deferred.
+Two Vercel projects share this monorepo:
+
+| Project | Root Directory | Build |
+|---------|----------------|-------|
+| `seo-web-cae` | `apps/cae` | `pnpm --filter @seo/cae build` |
+| `seo-web-dr-jasmine` | `apps/dr-jasmine` | `pnpm --filter @seo/dr-jasmine build` |
+
+Both apps use `output: "server"`. On Vercel (`VERCEL=1`) the adapter is `@astrojs/vercel` (writes `.vercel/output`). Locally / on Node hosts the adapter is `@astrojs/node` standalone (`pnpm start`). Per-app `apps/*/vercel.json` sets install/build; **do not** set an Output Directory override in the Vercel dashboard. Public URLs remain under Astro `base` (`/cae/`, `/dr-jasmine/`) until host-based routing ships.
 
 
 
