@@ -35,11 +35,24 @@ html[data-theme="light"] .cae-connect {
   letter-spacing: -0.02em;
   line-height: 1.2;
   text-transform: uppercase;
+  /* Dark (default): solid gold — brand-gradient purple stops vanish on purple bg */
+  color: var(--cae-gold);
+  background-image: none;
+  -webkit-text-fill-color: var(--cae-gold);
+}
+
+html[data-theme="light"] .cae-connect__headline {
+  background-image: var(--cae-brand-gradient);
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+  -webkit-text-fill-color: transparent;
 }
 
 @supports not (background-clip: text) {
-  .cae-connect__headline {
+  html[data-theme="light"] .cae-connect__headline {
     color: var(--cae-text-bright);
+    -webkit-text-fill-color: var(--cae-text-bright);
   }
 }
 
