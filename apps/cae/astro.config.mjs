@@ -9,6 +9,12 @@
  * Adapter selection:
  * - Vercel (`VERCEL=1` during platform builds) → `@astrojs/vercel` (Build Output API)
  * - Local / Node hosts (Render, `pnpm start`) → `@astrojs/node` standalone
+ *
+ * CSRF / logout: Astro `security.checkOrigin` compares the browser `Origin` header to
+ * the request URL. Behind the local gateway (`changeOrigin` + `xfwd`) or Vercel
+ * (internal `localhost` URL), that mismatch returns
+ * "Cross-site POST form submissions are forbidden". `security.allowedDomains`
+ * lets Astro trust `X-Forwarded-Host` / `X-Forwarded-Proto` for those hosts.
  */
 import node from "@astrojs/node";
 import react from "@astrojs/react";
@@ -35,6 +41,47 @@ const siteOrigin =
     ? process.env.PUBLIC_SITE_ORIGIN.trim().replace(/\/+$/, "")
     : "https://caegoh.com";
 
+/**
+ * Builds Astro `security.allowedDomains` so forwarded hosts are trusted for CSRF.
+ *
+ * @returns {Array<{ hostname: string, protocol?: string }>} Permitted host patterns.
+ */
+function buildAllowedDomains() {
+  /** @type {Array<{ hostname: string, protocol?: string }>} */
+  const domains = [
+    { hostname: "caegoh.com", protocol: "https" },
+    { hostname: "www.caegoh.com", protocol: "https" },
+    { hostname: "seo-web-cae.vercel.app", protocol: "https" },
+    // Preview / branch deployments: `*.vercel.app` and nested `**.vercel.app`
+    { hostname: "*.vercel.app", protocol: "https" },
+    { hostname: "**.vercel.app", protocol: "https" },
+    // Local gateway (`:4321`) and direct app (`:4322`)
+    { hostname: "localhost", protocol: "http" },
+    { hostname: "127.0.0.1", protocol: "http" },
+  ];
+
+  try {
+    const parsed = new URL(siteOrigin);
+    domains.push({
+      hostname: parsed.hostname,
+      protocol: parsed.protocol.replace(":", ""),
+    });
+  } catch {
+    // Keep the static defaults when PUBLIC_SITE_ORIGIN is malformed.
+  }
+
+  const vercelUrl =
+    typeof process.env.VERCEL_URL === "string" ? process.env.VERCEL_URL.trim() : "";
+  if (vercelUrl.length > 0) {
+    domains.push({
+      hostname: vercelUrl.replace(/^https?:\/\//i, "").split("/")[0] ?? vercelUrl,
+      protocol: "https",
+    });
+  }
+
+  return domains;
+}
+
 export default defineConfig({
   site: siteOrigin,
   output: "server",
@@ -44,6 +91,10 @@ export default defineConfig({
         mode: "standalone",
       }),
   base: basePath,
+  security: {
+    checkOrigin: true,
+    allowedDomains: buildAllowedDomains(),
+  },
   server: {
     host: true,
     port: 4322,

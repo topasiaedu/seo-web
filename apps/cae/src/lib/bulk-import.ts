@@ -28,19 +28,144 @@ const FRONTMATTER_PATTERN = /^\s*---\r?\n([\s\S]*?)\r?\n---[ \t]*\r?\n?([\s\S]*)
 const HTML_COMMENT_PATTERN = /<!--[\s\S]*?-->/g;
 
 /**
+ * Matches a document whose entire body is wrapped in a Markdown code fence
+ * (common when ChatGPT / Gemini paste “helpful” ```markdown blocks).
+ * Kept for documentation; unwrapping uses start/end fence detection below.
+ */
+const OUTER_MARKDOWN_FENCE_OPENER =
+  /^```(?:markdown|md|mdx|text|yaml|yml|plain)?[ \t]*\r?\n/i;
+
+/** Closing fence anchored to the end of the string. */
+const OUTER_MARKDOWN_FENCE_CLOSER = /\r?\n```[ \t]*$/i;
+
+/**
+ * Unwraps a single outer Markdown/code fence when the whole paste starts and
+ * ends with a fence. Closing fence is end-anchored so nested body fences survive.
+ *
+ * @param text - Trimmed candidate document.
+ * @returns Inner text when fenced; otherwise the original trimmed text.
+ */
+function unwrapOuterMarkdownFence(text: string): string {
+  const openerMatch = OUTER_MARKDOWN_FENCE_OPENER.exec(text);
+  if (openerMatch === null) {
+    return text;
+  }
+
+  const afterOpener = text.slice(openerMatch[0].length);
+  const closerMatch = OUTER_MARKDOWN_FENCE_CLOSER.exec(afterOpener);
+  if (closerMatch === null) {
+    return text;
+  }
+
+  return afterOpener.slice(0, closerMatch.index).trim();
+}
+
+/**
+ * Pulls an importable document out of a fenced block that appears after chat prose.
+ *
+ * ChatGPT / Gemini often reply like: `Sure! …` then a ```markdown fence. The
+ * whole paste is not a pure fence, so {@link unwrapOuterMarkdownFence} alone
+ * is not enough. Uses the last closing fence so nested body fences survive.
+ *
+ * @param text - Trimmed candidate (may include preamble + fence).
+ * @returns Inner fenced text when it looks like a bulk-import document; otherwise null.
+ */
+function extractFencedImportDocument(text: string): string | null {
+  const openerMatch =
+    /```(?:markdown|md|mdx|text|yaml|yml|plain)?[ \t]*\r?\n/i.exec(text);
+  if (openerMatch === null || typeof openerMatch.index !== "number") {
+    return null;
+  }
+
+  // Ignore fences that appear after real frontmatter / template comments —
+  // those belong to the article body, not an AI chat wrapper.
+  const beforeFence = text.slice(0, openerMatch.index);
+  if (beforeFence.includes("<!--") || /^---[ \t]*$/m.test(beforeFence)) {
+    return null;
+  }
+
+  const afterOpener = text.slice(openerMatch.index + openerMatch[0].length);
+  const closerPattern = /\r?\n```[ \t]*(?:\r?\n|$)/g;
+  let lastCloser: RegExpExecArray | null = null;
+  let closerMatch: RegExpExecArray | null = closerPattern.exec(afterOpener);
+  while (closerMatch !== null) {
+    lastCloser = closerMatch;
+    closerMatch = closerPattern.exec(afterOpener);
+  }
+
+  if (lastCloser === null) {
+    return null;
+  }
+
+  const trimmedInner = afterOpener.slice(0, lastCloser.index).trim();
+  if (trimmedInner.startsWith("---") || trimmedInner.startsWith("<!--")) {
+    return trimmedInner;
+  }
+  return null;
+}
+
+/**
+ * Drops chat preamble before the first importable marker (`<!--` or `---`).
+ *
+ * @param text - Candidate document (may include “Sure! Here is…” prose).
+ * @returns Text starting at the first template comment or frontmatter fence.
+ */
+function stripLeadingChatPreamble(text: string): string {
+  const htmlCommentIndex = text.indexOf("<!--");
+  const frontmatterMatch = /^---[ \t]*$/m.exec(text);
+  const frontmatterIndex = frontmatterMatch === null ? -1 : frontmatterMatch.index;
+
+  let startIndex = -1;
+  if (htmlCommentIndex >= 0 && (frontmatterIndex < 0 || htmlCommentIndex < frontmatterIndex)) {
+    startIndex = htmlCommentIndex;
+  } else if (frontmatterIndex >= 0) {
+    startIndex = frontmatterIndex;
+  }
+
+  if (startIndex > 0) {
+    return text.slice(startIndex).trim();
+  }
+  return text;
+}
+
+/**
+ * Removes a dangling closing fence left after preamble stripping.
+ *
+ * @param text - Candidate document.
+ * @returns Text without a trailing ``` line.
+ */
+function stripTrailingFenceCloser(text: string): string {
+  return text.replace(/\r?\n```[ \t]*$/i, "").trim();
+}
+
+/**
  * Prepares raw bulk-import text for parsing.
  *
- * Removes HTML comment blocks (template instructions for writers/LLMs) so a
+ * Removes common AI chat wrappers (outer code fences + leading prose), then
+ * strips HTML comment blocks (template instructions for writers/LLMs) so a
  * pasted annotated template still imports correctly.
  *
  * @param raw - Pasted or uploaded document text.
- * @returns Text with instructional HTML comments removed.
+ * @returns Text ready for post splitting / frontmatter parse.
  */
 export function prepareBulkImportRawText(raw: string): string {
   if (typeof raw !== "string") {
     throw new TypeError("prepareBulkImportRawText: raw must be a string");
   }
-  return raw.replace(HTML_COMMENT_PATTERN, "").trim();
+
+  let text = raw.trim();
+  text = unwrapOuterMarkdownFence(text);
+
+  const fencedDocument = extractFencedImportDocument(text);
+  if (fencedDocument !== null) {
+    text = fencedDocument;
+  } else {
+    text = stripLeadingChatPreamble(text);
+    text = unwrapOuterMarkdownFence(text);
+    text = stripTrailingFenceCloser(text);
+  }
+
+  return text.replace(HTML_COMMENT_PATTERN, "").trim();
 }
 
 /** Writer-facing publish intent, matching the Admin Post form's status options. */

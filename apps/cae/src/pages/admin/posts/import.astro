@@ -1,7 +1,7 @@
 ---
 /**
  * CAE Admin — bulk import Posts from one pasted/uploaded Markdown document.
- * Loads site Author, categories, and existing slugs for the BulkImportForm island.
+ * Loads site Author, categories, tags, and existing slugs for the BulkImportForm island.
  */
 import { getAuthorForSite, listCategories, listPosts } from "@seo/blog";
 import { BulkImportForm } from "../../../components/admin/BulkImportForm";
@@ -23,6 +23,19 @@ const [author, categories, posts] = await Promise.all([
 
 const existingSlugs = posts.map((post) => post.slug);
 
+/** Distinct tags already used on posts (for the live writer/LLM template). */
+const existingTags = Array.from(
+  new Set(
+    posts.flatMap((post) =>
+      Array.isArray(post.tags)
+        ? post.tags.filter(
+            (tag): tag is string => typeof tag === "string" && tag.trim().length > 0,
+          )
+        : [],
+    ),
+  ),
+).sort((left, right) => left.localeCompare(right));
+
 const postsListHref = joinAdminPath(base, "admin/posts");
 const postsBaseHref = joinAdminPath(base, "admin/posts");
 ---
@@ -35,6 +48,7 @@ const postsBaseHref = joinAdminPath(base, "admin/posts");
     postsBaseHref={postsBaseHref}
     author={author}
     categories={categories}
+    existingTags={existingTags}
     existingSlugs={existingSlugs}
   />
 </AdminLayout>

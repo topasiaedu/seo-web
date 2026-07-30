@@ -43,7 +43,7 @@ import {
   isValidTimeHm,
   type MytDateTimeParts,
 } from "../../lib/bulk-import-schedule";
-import { BULK_IMPORT_WRITER_TEMPLATE } from "../../lib/bulk-import-template";
+import { buildBulkImportWriterTemplate } from "../../lib/bulk-import-template";
 import styles from "./BulkImportForm.module.css";
 
 /** Serializable props for the bulk import island. */
@@ -58,6 +58,8 @@ export type BulkImportFormProps = {
   author: Author | null;
   /** Categories available for this site at page load. */
   categories: Category[];
+  /** Distinct tags already used on Posts for this site at page load. */
+  existingTags: string[];
   /** Slugs already used by Posts on this site at page load. */
   existingSlugs: string[];
 };
@@ -419,7 +421,15 @@ function parseIntervalDays(raw: string): number | null {
  * @returns Form island UI.
  */
 export function BulkImportForm(props: BulkImportFormProps): JSX.Element {
-  const { siteId, postsListHref, postsBaseHref, author, categories, existingSlugs } = props;
+  const {
+    siteId,
+    postsListHref,
+    postsBaseHref,
+    author,
+    categories,
+    existingTags,
+    existingSlugs,
+  } = props;
 
   if (typeof siteId !== "string" || siteId.trim().length === 0) {
     throw new Error("BulkImportForm requires a non-empty siteId.");
@@ -439,6 +449,19 @@ export function BulkImportForm(props: BulkImportFormProps): JSX.Element {
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [summary, setSummary] = useState<{ created: number; failed: number } | null>(null);
   const [templateCopyState, setTemplateCopyState] = useState<TemplateCopyState>("idle");
+
+  /**
+   * Writer/LLM template with live category + tag lists from this Admin page load
+   * (and any categories created during the current import session).
+   */
+  const writerTemplate = useMemo(
+    () =>
+      buildBulkImportWriterTemplate({
+        categories: knownCategories.map((category) => category.name),
+        tags: existingTags,
+      }),
+    [knownCategories, existingTags],
+  );
 
   const categoryLookups: BulkImportCategoryLookup[] = useMemo(
     () => knownCategories.map((category) => ({ id: category.id, name: category.name })),
@@ -521,7 +544,7 @@ export function BulkImportForm(props: BulkImportFormProps): JSX.Element {
   async function handleCopyTemplate(): Promise<void> {
     setTemplateCopyState("idle");
     try {
-      await navigator.clipboard.writeText(BULK_IMPORT_WRITER_TEMPLATE);
+      await navigator.clipboard.writeText(writerTemplate);
       setTemplateCopyState("copied");
       window.setTimeout(() => {
         setTemplateCopyState("idle");
@@ -529,6 +552,25 @@ export function BulkImportForm(props: BulkImportFormProps): JSX.Element {
     } catch {
       setTemplateCopyState("failed");
     }
+  }
+
+  /**
+   * Downloads the annotated writer template as a `.md` file (handy to attach in
+   * ChatGPT / Gemini, or to hand to a human writer).
+   */
+  function handleDownloadTemplate(): void {
+    const blob = new Blob([writerTemplate], {
+      type: "text/markdown;charset=utf-8",
+    });
+    const objectUrl = URL.createObjectURL(blob);
+    const anchor = document.createElement("a");
+    anchor.href = objectUrl;
+    anchor.download = "dr-jasmine-bulk-import-template.md";
+    anchor.rel = "noopener";
+    document.body.appendChild(anchor);
+    anchor.click();
+    anchor.remove();
+    URL.revokeObjectURL(objectUrl);
   }
 
   /**
@@ -831,23 +873,38 @@ export function BulkImportForm(props: BulkImportFormProps): JSX.Element {
                   ? "Copy failed"
                   : "Copy template"}
             </button>
+            <button
+              type="button"
+              className="admin-btn admin-btn--small"
+              disabled={busy}
+              onClick={() => {
+                handleDownloadTemplate();
+              }}
+            >
+              Download .md
+            </button>
           </div>
         </div>
         <p className={styles.instructions}>
-          Copy the template and share it with your writer (or paste it into an
-          AI assistant). The template includes inline instructions for LLMs and
-          supports multi-post documents separated by <code>{POST_DIVIDER_LINE}</code>.
-          Go-live dates are set here in Admin section 4 — not in the Markdown.
+          Copy or download the template, then paste/attach it in ChatGPT, Gemini,
+          or Claude. The file includes this site&apos;s current categories and
+          tags so the AI can reuse them. Ask for a plain{" "}
+          <code>bulk-import-posts.md</code> file (download preferred) — not a
+          chat explanation and not a pretty rendered article. Posts are separated
+          by <code>{POST_DIVIDER_LINE}</code>. Go-live dates are set here in Admin
+          section 4 — not in the Markdown.
         </p>
         <details className={styles.templateDetails}>
           <summary className={styles.templateSummary}>Quick field guide</summary>
           <p className={styles.instructions}>
-            Required: <code>title</code>. Optional: <code>excerpt</code>,{" "}
-            <code>category</code>, <code>tags</code>, <code>keyTakeaway</code>,{" "}
-            <code>heroImageUrl</code>, <code>heroImageAlt</code>, <code>faq</code>,{" "}
-            <code>sources</code>, <code>status</code> (<code>draft</code> |{" "}
-            <code>published</code> | <code>archived</code>). Set publish times in
-            section 4 (Malaysia Time) after hero images.
+            Required: <code>title</code>, and a body long enough for a{" "}
+            <strong>5–15 minute</strong> read (~1,000–3,000 words). Optional:{" "}
+            <code>excerpt</code>, <code>category</code>, <code>tags</code>,{" "}
+            <code>keyTakeaway</code>, <code>heroImageUrl</code>,{" "}
+            <code>heroImageAlt</code>, <code>faq</code>, <code>sources</code>,{" "}
+            <code>status</code> (<code>draft</code> | <code>published</code> |{" "}
+            <code>archived</code>). Set publish times in section 4 (Malaysia
+            Time) after hero images.
           </p>
         </details>
       </section>
