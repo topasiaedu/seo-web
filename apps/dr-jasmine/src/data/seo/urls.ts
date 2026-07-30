@@ -71,12 +71,12 @@ export const SSR_SITEMAP_SEGMENTS: readonly PublicSitemapSegment[] = [
  * Builds absolute URLs for sitemap `customPages` entries.
  *
  * @param origin - Production origin; defaults to {@link getSiteOrigin} when omitted
- * @param basePath - Astro base path (defaults to `/dr-jasmine/`)
+ * @param basePath - Astro base path (defaults to `import.meta.env.BASE_URL`)
  * @returns Absolute URLs for SSR public routes
  */
 export function buildSitemapCustomPages(
   origin?: string,
-  basePath = "/dr-jasmine/",
+  basePath = import.meta.env.BASE_URL,
 ): string[] {
   const resolvedOrigin =
     origin !== undefined && origin.trim().length > 0

@@ -1,7 +1,10 @@
 /**
  * @fileoverview Astro config for the independent CAE brand app.
- * Served under `/cae/` (gateway proxies to this process on port 4322).
- * Server output enables Admin session cookies; marketing pages opt into prerender.
+ *
+ * Hosting modes:
+ * - Local gateway: `base: "/cae/"` (proxied from `:4321` → this process on `:4322`)
+ * - Dedicated Vercel project (`seo-web-cae`): `base: "/"` so HTML asset URLs match
+ *   Build Output API paths (`/_astro/...`, `/`, `/blog/`)
  *
  * Adapter selection:
  * - Vercel (`VERCEL=1` during platform builds) → `@astrojs/vercel` (Build Output API)
@@ -19,6 +22,12 @@ import { defineConfig } from "astro/config";
  */
 const useVercelAdapter = process.env.VERCEL === "1";
 
+/**
+ * Path prefix for this app.
+ * Dedicated Vercel hosts mount the app at `/`; local gateway keeps `/cae/`.
+ */
+const basePath = useVercelAdapter ? "/" : "/cae/";
+
 /** Production origin for absolute sitemap / canonical URLs. */
 const siteOrigin =
   typeof process.env.PUBLIC_SITE_ORIGIN === "string" &&
@@ -34,7 +43,7 @@ export default defineConfig({
     : node({
         mode: "standalone",
       }),
-  base: "/cae/",
+  base: basePath,
   server: {
     host: true,
     port: 4322,

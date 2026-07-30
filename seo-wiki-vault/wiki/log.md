@@ -2,6 +2,22 @@
 
 Append-only timeline. Each entry starts with `## [YYYY-MM-DD] <verb> | <title>` for easy grepping.
 
+## [2026-07-30] sync | Vercel base `/` for dedicated brand projects
+
+- Code: `apps/cae/astro.config.mjs` + `apps/dr-jasmine/astro.config.mjs` — `VERCEL=1` → `base: "/"`; local gateway keeps `/cae/` / `/dr-jasmine/`
+- Also: `apps/dr-jasmine/src/data/seo/urls.ts` default base → `import.meta.env.BASE_URL`
+- Updated: `architecture/routing-vercel`, `sites/cae`, `sites/dr-jasmine`, `overview`, `sources/vercel-output-directory-off-deploy-success`, `index`
+- Why: fixed `base` prefix made HTML request `/cae/_astro/*` while Vercel served `/_astro/*` (unstyled UI)
+- After deploy: open host root (`https://seo-web-cae.vercel.app/`), not `/cae/`
+
+## [2026-07-30] ingest | Vercel Output Directory off — dual-site deploy success
+
+- Raw: `raw/inbox/2026-07-30-vercel-output-directory-off-deploy-success.md`
+- Source: `wiki/sources/vercel-output-directory-off-deploy-success.md`
+- Updated: `architecture/routing-vercel`, `sites/cae`, `sites/dr-jasmine`, `overview`, `index`
+- Note: Output Directory=`dist` caused Success + platform NOT_FOUND; Off + Redeploy fixed `seo-web-cae` / `seo-web-dr-jasmine`. Open `/cae/` and `/dr-jasmine/` (not bare `/`)
+- Open: root redirects; custom domains + drop `base`; Git author gate for `KWen-22`
+
 ## [2026-07-30] sync | Vercel dual-project SSR + conditional adapters
 
 - Updated: `architecture/routing-vercel.md`, `overview.md`, root `CONTEXT.md`

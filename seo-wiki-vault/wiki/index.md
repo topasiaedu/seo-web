@@ -13,14 +13,14 @@ Read this first when answering queries, then open linked pages.
 ## Architecture
 
 - [Overview](architecture/overview.md) — system design short form
-- [Monorepo](architecture/monorepo.md) — `apps/*` + `packages/*`
-- [Routing / Vercel](architecture/routing-vercel.md) — gateway preview (`/cae`, `/dr-jasmine`; `/cms` deferred) + `@seo/cae` deploy
+- [Monorepo](architecture/monorepo.md) — `apps/*` + `packages/*`; Git `main` / `staging` / `feat/...`
+- [Routing / Vercel](architecture/routing-vercel.md) — gateway preview (`/cae`, `/dr-jasmine`; `/cms` deferred) + dual Vercel projects; Output Directory Off; env-conditional `base` (`/` on Vercel)
 - [Supabase](architecture/supabase.md) — sites/posts + authors/categories/editorial columns; Storage bucket `media`; anon posts RLS time-gate on `published_at`
 
 ## Sites
 
 - [CAE](sites/cae.md) — `apps/cae` native ZWDS (home + `/media/`) + Insights Blog bento + Admin (`/cae/admin`, Published/Scheduled, PostForm, Bulk import) + public `/cae/blog` (slug Immersive Story)
-- [Dr Jasmine](sites/dr-jasmine.md) — `apps/dr-jasmine` single-home (GHL LDP copy + Health Insights teaser) + light `/blog` + Admin (`/dr-jasmine/admin`); CMS still deferred
+- [Dr Jasmine](sites/dr-jasmine.md) — `apps/dr-jasmine` single-home (GHL LDP copy + Health Insights teaser) + light `/blog` + Admin (`/dr-jasmine/admin`, Bulk import MYT schedule); CMS still deferred
 - [CMS](sites/cms.md) — deferred shared platform; **not** brand Admin
 
 ## Packages
@@ -52,7 +52,9 @@ Read this first when answering queries, then open linked pages.
 - [CAE homepage Blog band (soft bento)](sources/cae-homepage-blog-bento.md) — from `raw/inbox/` (2026-07-27); Offerings → Insights bento
 - [CAE blog scheduled publishing](sources/cae-blog-scheduled-publishing.md) — from `raw/inbox/` (2026-07-27); lazy `published_at` gate + Admin Scheduled label
 - [CAE Admin PostForm simplifications](sources/cae-admin-postform-simplifications.md) — from `raw/inbox/` (2026-07-27); previews, Summary, tags typeahead, auto related, Published vs Scheduled select
-- [CAE Admin bulk Post import](sources/cae-admin-bulk-import.md) — from `raw/inbox/` (2026-07-27); multi-post Markdown + per-post heroes + schedule-aware frontmatter
+- [CAE Admin bulk Post import](sources/cae-admin-bulk-import.md) — from `raw/inbox/` (2026-07-27); multi-post Markdown + per-post heroes
+- [CAE bulk import schedule UI](sources/cae-bulk-import-schedule-ui.md) — from `raw/inbox/` (2026-07-29); Admin section 4 MYT cadence; no MD `publishAt`
+- [Dr Jasmine bulk import schedule UI](sources/dr-jasmine-bulk-import-schedule-ui.md) — from `raw/inbox/` (2026-07-30); surgical port of CAE section 4 MYT cadence; DJ upload/slug kept
 - [CAE blog Immersive Story redesign](sources/cae-blog-immersive-story-redesign.md) — from `raw/inbox/` (2026-07-27); dark feature slug UI (replaces light paper)
 - [CAE ← nm-zwds brand theme + public theme toggle](sources/cae-nm-zwds-brand-theme-and-public-theme-toggle.md) — from `raw/inbox/` (2026-07-28); tokens, gradient, Light/Dark
 - [CAE native ZWDS public redesign cutover](sources/cae-native-zwds-public-redesign.md) — from `raw/inbox/` (2026-07-28); native home/media/blog chrome; supersedes live GHL chrome
@@ -62,3 +64,5 @@ Read this first when answering queries, then open linked pages.
 - [Dr Jasmine Admin theme + light blog readability](sources/dr-jasmine-admin-theme-and-blog-readability.md) — from `raw/inbox/` (2026-07-28); forest Admin; light blog; promise-first slug
 - [Dr Jasmine responsive audit — no code changes](sources/dr-jasmine-responsive-audit.md) — from `raw/inbox/` (2026-07-28); public mobile-friendly pass; polish deferred
 - [Dr Jasmine homepage Health Insights band (Option B)](sources/dr-jasmine-homepage-blog-band.md) — from `raw/inbox/` (2026-07-28); latest 3 `PostCard` tiles after Proof
+- [Monorepo main + staging branch model](sources/monorepo-main-staging-branch-model.md) — from `raw/inbox/` (2026-07-29); retire brand-only branches; `feat` → `staging` → `main`
+- [Vercel Output Directory off → dual-site deploy success](sources/vercel-output-directory-off-deploy-success.md) — from `raw/inbox/` (2026-07-30); `dist` override caused Success+404; Off + Redeploy fixed CAE/DJ

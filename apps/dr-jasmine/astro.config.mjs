@@ -1,7 +1,10 @@
 /**
  * @fileoverview Astro config for the independent Dr Jasmine brand app.
- * Served under `/dr-jasmine/` (gateway proxies to this process on port 4323).
- * Server output enables future Admin session cookies; marketing pages may opt into prerender.
+ *
+ * Hosting modes:
+ * - Local gateway: `base: "/dr-jasmine/"` (proxied from `:4321` → this process on `:4323`)
+ * - Dedicated Vercel project (`seo-web-dr-jasmine`): `base: "/"` so HTML asset URLs
+ *   match Build Output API paths (`/_astro/...`, `/`, `/blog/`)
  *
  * Adapter selection:
  * - Vercel (`VERCEL=1` during platform builds) → `@astrojs/vercel` (Build Output API)
@@ -26,8 +29,11 @@ const siteOrigin =
     ? process.env.PUBLIC_SITE_ORIGIN.trim().replace(/\/+$/, "")
     : "https://doctorjasmine.com";
 
-/** Astro base path for this app (must match `defineConfig.base`). */
-const basePath = "/dr-jasmine/";
+/**
+ * Path prefix for this app (must match `defineConfig.base`).
+ * Dedicated Vercel hosts mount the app at `/`; local gateway keeps `/dr-jasmine/`.
+ */
+const basePath = useVercelAdapter ? "/" : "/dr-jasmine/";
 
 /**
  * SSR public routes not prerendered at build time — listed via `customPages`.

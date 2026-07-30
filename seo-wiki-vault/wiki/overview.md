@@ -2,7 +2,7 @@
 
 Living synthesis of the monorepo. Agents update this on ingest and code-sync.
 
-Last updated: 2026-07-30 (sync Vercel dual-project SSR adapters)
+Last updated: 2026-07-30 (ingest Vercel Output Directory off — dual-site deploy success)
 
 ## Current focus
 
@@ -11,7 +11,7 @@ Last updated: 2026-07-30 (sync Vercel dual-project SSR adapters)
 - Path gateway: `apps/gateway` (`@seo/gateway`) on port **4321** (proxies `/cae` + `/dr-jasmine`; `/cms` still not migrated)
 - **Git:** integration on **`main`** + pre-prod **`staging`** (both apps always present). Flow `feat/...` → `staging` → PR → `main`. Brand-only long-lived branches retired ([branch model source](sources/monorepo-main-staging-branch-model.md))
 - Legacy `website/` shell: **removed** — future brands/CMS scaffold under `apps/` only
-- Deploy: prefer Git branches **`main`** / **`staging`**; two Vercel projects (`seo-web-cae`, `seo-web-dr-jasmine`) with Root Directory `apps/cae` / `apps/dr-jasmine`. On Vercel: `@astrojs/vercel` → `.vercel/output`; locally: `@astrojs/node` standalone. Astro `base` paths `/cae/`, `/dr-jasmine/` until host-based routing
+- Deploy: prefer Git branches **`main`** / **`staging`**; two Vercel projects (`seo-web-cae`, `seo-web-dr-jasmine`) with Root Directory `apps/cae` / `apps/dr-jasmine`. **Confirmed live (2026-07-30):** Output Directory **Off**; `@astrojs/vercel` → `.vercel/output`. **Base:** `VERCEL=1` → `base: "/"` (open host root); local gateway keeps `/cae/` and `/dr-jasmine/`. See [routing](architecture/routing-vercel.md) · [deploy success source](sources/vercel-output-directory-off-deploy-success.md)
 - Framework: **Astro** · Package manager: **pnpm**
 - Knowledge vault: `seo-wiki-vault/`
 

@@ -6,13 +6,13 @@
 | Slug | `dr-jasmine` |
 | Project id | `00000000-0000-4000-8000-000000000002` |
 | Enabled | Independent app (`apps/dr-jasmine`) |
-| Astro `base` | `/dr-jasmine/` |
-| Output | **Server** (`@astrojs/node`) — GHL-sourced home + Admin + `/blog` SSR |
+| Astro `base` | Local `/dr-jasmine/`; Vercel (`VERCEL=1`) `/` |
+| Output | **Server** — on Vercel: `@astrojs/vercel`; locally / Node hosts: `@astrojs/node` standalone. Home + Admin + `/blog` SSR |
 | Dev port | `4323` (gateway proxies `/dr-jasmine` from `:4321`) |
 | Domains (config) | `dr-jasmine.localhost`, `doctorjasmine.com`, `www.doctorjasmine.com` |
 | Seed domains | `dr-jasmine.localhost` only |
-| SEO origin | `PUBLIC_SITE_ORIGIN` (default `https://doctorjasmine.com`) + `base: "/dr-jasmine/"` |
-| Status | **Active** — single-home public site (GHL bands + Health Insights teaser) + Admin Blog + public `/dr-jasmine/blog` |
+| SEO origin | `PUBLIC_SITE_ORIGIN` (default `https://doctorjasmine.com`) + env-conditional `base` |
+| Status | **Active** — single-home public site (GHL bands + Health Insights teaser) + Admin Blog + public blog. **Vercel** project `seo-web-dr-jasmine` — open `/` (assets at `/_astro/`); local gateway still `/dr-jasmine/`; Output Directory must stay Off |
 
 Domain language: [`apps/dr-jasmine/CONTEXT.md`](../../../apps/dr-jasmine/CONTEXT.md) — **Admin ≠ CMS**.
 
@@ -20,6 +20,7 @@ Plans:
 
 - Landing + Admin (complete): [dr-jasmine-landing-and-admin.md](../../../docs/implementation-plan/dr-jasmine-landing-and-admin.md)
 - Option A true website (T1–T12 complete; **live IA later collapsed** — see [home IA polish](../sources/dr-jasmine-home-ia-and-polish.md)): [dr-jasmine-true-website.md](../../../docs/implementation-plan/dr-jasmine-true-website.md)
+- Bulk import schedule UI (complete): [dr-jasmine-bulk-import-schedule-ui.md](../../../docs/implementation-plan/dr-jasmine-bulk-import-schedule-ui.md) · [source](../sources/dr-jasmine-bulk-import-schedule-ui.md)
 - Responsive audit (2026-07-28; **pass — no code changes**): [dr-jasmine-responsive-audit.md](../../../docs/implementation-plan/dr-jasmine-responsive-audit.md) · [source](../sources/dr-jasmine-responsive-audit.md)
 
 CMS remains deferred (shared platform).
@@ -83,10 +84,10 @@ All public routes use `PublicLayout` (SiteNav + SiteFooter). Nav: Home (logo), A
 |-------|---------|
 | `/dr-jasmine/admin/login` | Email/password login (Supabase Auth); forest/ivory theme |
 | `/dr-jasmine/admin/logout` | Clears session |
-| `/dr-jasmine/admin` | Dashboard — counts (incl. Scheduled) + recent drafts |
+| `/dr-jasmine/admin` | Dashboard — counts (incl. Scheduled) + recent drafts; **Bulk import** + New post |
 | `/dr-jasmine/admin/posts` | Filters: All / Draft / Published (live) / Scheduled / Archived; Bulk import link |
 | `/dr-jasmine/admin/posts/new` | Create Post |
-| `/dr-jasmine/admin/posts/import` | Bulk Markdown import; slug conflicts skipped |
+| `/dr-jasmine/admin/posts/import` | **Bulk import** — one Markdown doc → many Posts; per-post heroes; **section 4** MYT schedule / cadence (not Markdown `publishAt`); DJ cover upload / Wellness template kept |
 | `/dr-jasmine/admin/posts/[id]/edit` | Edit Post (TipTap + Quote; FAQ; sources; tags; category; cover; schedule) |
 | `/dr-jasmine/admin/author` | Single DJ Author profile |
 | `/dr-jasmine/admin/categories` | Site-scoped Categories |
@@ -134,10 +135,10 @@ Use gateway (`pnpm dev` → `:4321`) or DJ alone (`:4323`).
 ### Human leftover
 
 1. Docker → `supabase db reset` if seed missing  
-2. Auth CRUD / schedule / bulk import smoke  
+2. Auth CRUD / schedule / bulk import smoke (incl. section 4 MYT cadence → Scheduled → public hide until due)  
 3. Optional visual brand-test on a physical phone (responsive baseline already audited; no code work queued)
 
 ## Related
 
-- [Home IA polish](../sources/dr-jasmine-home-ia-and-polish.md) · [Homepage Health Insights band](../sources/dr-jasmine-homepage-blog-band.md) · [Admin theme + blog readability](../sources/dr-jasmine-admin-theme-and-blog-readability.md) · [Option A tokens](../sources/dr-jasmine-option-a-true-website.md) · [Responsive audit](../sources/dr-jasmine-responsive-audit.md)
+- [Vercel Output Directory Off deploy success](../sources/vercel-output-directory-off-deploy-success.md) · [Bulk import schedule UI](../sources/dr-jasmine-bulk-import-schedule-ui.md) · [Home IA polish](../sources/dr-jasmine-home-ia-and-polish.md) · [Homepage Health Insights band](../sources/dr-jasmine-homepage-blog-band.md) · [Admin theme + blog readability](../sources/dr-jasmine-admin-theme-and-blog-readability.md) · [Option A tokens](../sources/dr-jasmine-option-a-true-website.md) · [Responsive audit](../sources/dr-jasmine-responsive-audit.md)
 - [Overview](../overview.md) · [CAE](cae.md) · [CMS](cms.md)
