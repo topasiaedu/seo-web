@@ -86,7 +86,7 @@ function buildAllowedDomains() {
  * SSR public routes not prerendered at build time — listed via `customPages`.
  * Prerendered routes are discovered automatically.
  */
-const ssrSitemapSegments = ["", "blog"];
+const ssrSitemapSegments = ["", "about", "reels", "blog"];
 
 /**
  * Builds an absolute sitemap URL for a public route segment.

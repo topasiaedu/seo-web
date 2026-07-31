@@ -8,7 +8,7 @@
 
 Both `seo-web-cae` and `seo-web-dr-jasmine` now deploy and serve after the Vercel dashboard **Output Directory override was turned off**. Root Directory, include-files-outside-root, and monorepo install/build commands were already correct; leaving Output Directory = `dist` was the remaining cause of “Success” deploys with platform `404 NOT_FOUND` on all paths (including prerendered `/cae/media/`).
 
-Working entries (after Output Directory Off): SSR HTML on each project host. **Follow-up:** with fixed `base: "/cae/"` (or `/dr-jasmine/`), HTML at `/` linked assets under `/cae/_astro/…` while files lived at `/_astro/…` → unstyled UI. Fixed by env-conditional `base` (`/` on Vercel). See [routing-vercel](../architecture/routing-vercel.md).
+Working entries (after Output Directory Off): SSR HTML on each project host. **Follow-up (resolved):** fixed path `base` caused unstyled UI — see [vercel-base-root-unstyled-ui](vercel-base-root-unstyled-ui.md) (`538a722`).
 
 ## Key facts
 
@@ -24,7 +24,8 @@ Working entries (after Output Directory Off): SSR HTML on each project host. **F
 
 - [Routing / Vercel](../architecture/routing-vercel.md)
 - [CAE](../sites/cae.md) · [Dr Jasmine](../sites/dr-jasmine.md)
-- Prior: [dual-site hosting + SSR](../../raw/inbox/2026-07-30-vercel-dual-site-hosting-and-ssr.md) (settings discovery; Output Directory left open until this note)
+- Follow-up base fix: [vercel-base-root-unstyled-ui](vercel-base-root-unstyled-ui.md)
+- Prior: [dual-site hosting + SSR](vercel-dual-site-hosting-and-ssr.md) (settings discovery; Output Directory left open until this note)
 
 ## Open (from raw)
 

@@ -1,7 +1,7 @@
 ---
 /**
  * @fileoverview Native home composed from GHL registration LDP content,
- * plus a latest-posts Health Insights band (image tiles).
+ * plus Health Insights and Featured Reels teasers.
  */
 import { listPublishedPostsPage } from "@seo/blog";
 import portraitImage from "@/assets/ghl/dr-jasmine-portrait.jpg";
@@ -12,6 +12,7 @@ import HomeFaqTeaser from "@/components/home/HomeFaqTeaser.astro";
 import HomeHero from "@/components/home/HomeHero.astro";
 import HomeMeetDoctor from "@/components/home/HomeMeetDoctor.astro";
 import HomeProof from "@/components/home/HomeProof.astro";
+import HomeReels from "@/components/home/HomeReels.astro";
 import HomeWorkshopBand from "@/components/home/HomeWorkshopBand.astro";
 import "@/components/home/home.css";
 import {
@@ -23,6 +24,7 @@ import {
 } from "@/data/site";
 import { buildWebSiteJsonLd } from "@/data/seo/jsonld-pages";
 import { defaultPublicOgImageUrl } from "@/data/seo/og-defaults";
+import { listPublishedReels } from "@/lib/instagram-reels";
 import PublicLayout from "@/layouts/PublicLayout.astro";
 import { drJasmineSiteConfig } from "@/site-config";
 
@@ -30,6 +32,9 @@ export const prerender = false;
 
 /** Newest posts to surface on the homepage blog teaser. */
 const HOME_BLOG_LIMIT = 3;
+
+/** Featured Instagram Reels to surface on the homepage. */
+const HOME_REELS_LIMIT = 3;
 
 /** GHL document title from the registration LDP capture. */
 const title = "Reverse Diabetes Workshop";
@@ -44,11 +49,15 @@ const jsonLd = buildWebSiteJsonLd({
 const ogImage = defaultPublicOgImageUrl();
 
 const supabase = requireBlogSupabase(Astro.locals.supabase);
-const { posts: latestPosts } = await listPublishedPostsPage(
-  supabase,
-  drJasmineSiteConfig.projectId,
-  { limit: HOME_BLOG_LIMIT, offset: 0 },
-);
+const siteId = drJasmineSiteConfig.projectId;
+
+const [{ posts: latestPosts }, homeReels] = await Promise.all([
+  listPublishedPostsPage(supabase, siteId, {
+    limit: HOME_BLOG_LIMIT,
+    offset: 0,
+  }),
+  listPublishedReels(supabase, siteId, { limit: HOME_REELS_LIMIT }),
+]);
 ---
 
 <PublicLayout title={title} description={description} ogImage={ogImage} jsonLd={jsonLd}>
@@ -56,6 +65,7 @@ const { posts: latestPosts } = await listPublishedPostsPage(
   <HomeDiscover copy={workshopCopy} />
   <HomeMeetDoctor credentials={credentials} portrait={portraitImage} />
   <HomeProof testimonials={testimonials} />
+  {homeReels.length > 0 ? <HomeReels reels={homeReels} /> : null}
   {latestPosts.length > 0 ? <HomeBlog posts={latestPosts} /> : null}
   <HomeWorkshopBand copy={workshopCopy} />
   <HomeFaqTeaser items={faqs} />

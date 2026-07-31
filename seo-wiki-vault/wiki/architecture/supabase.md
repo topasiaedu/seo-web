@@ -9,6 +9,8 @@ Shared project for all sites.
 | `supabase/migrations/20260722100000_sites_and_posts.sql` | `sites`, base `posts`, initial RLS |
 | `supabase/migrations/20260723160000_blog_authors_categories_posts.sql` | `authors`, `categories`, posts editorial columns, Storage bucket `media` |
 | `supabase/migrations/20260727033138_posts_public_read_published_at_gate.sql` | Anon public-read RLS time-gate on `published_at`; index `(site_id, status, published_at DESC NULLS LAST)` |
+| `supabase/migrations/20260731120000_instagram_reels.sql` | Curated Instagram Reels table + RLS (DJ Option C) |
+| `supabase/migrations/20260731133000_instagram_reels_drop_title_caption.sql` | Drop `title`/`caption` from `instagram_reels` (embed supplies copy) |
 
 ## Tables
 
@@ -70,11 +72,24 @@ Editorial / SEO extensions (`20260723160000`):
 
 `updated_at` triggers on `posts` and `authors`.
 
+### `instagram_reels` (curated Instagram showcase; DJ Option C)
+
+- `id` uuid PK
+- `site_id` uuid FK → `sites`
+- `permalink` text (canonical `instagram.com/(reel|p)/…` URL; unique per site)
+- `sort_order` int ≥ 0
+- `is_published` boolean
+- `created_at` / `updated_at` (trigger)
+- App enforces max **6** rows per site; title/caption removed (official embed supplies copy)
+- Types on `@seo/blog` `Database`; CRUD lives in `apps/dr-jasmine/src/lib/instagram-reels.ts`
+- Source: [dr-jasmine-curated-instagram-reels](../sources/dr-jasmine-curated-instagram-reels.md)
+
 ## RLS
 
 - **Sites** — public SELECT (`anon` / `authenticated`)
 - **Posts** — anon SELECT where `status = 'published'` **and** `published_at IS NOT NULL` **and** `published_at <= now()` (lazy schedule; matches `@seo/blog` public helpers). Authenticated ALL via `"Editors manage posts"` (Admin can read drafts/scheduled). Tighten roles later.
 - **Authors / categories** — public SELECT; authenticated ALL
+- **instagram_reels** — anon SELECT where `is_published = true`; authenticated SELECT all + manage ALL
 - Site scope for writes is enforced in app queries (CAE Admin hardcodes `site_id = cae`)
 
 Scheduled publishing source: [cae-blog-scheduled-publishing](../sources/cae-blog-scheduled-publishing.md).

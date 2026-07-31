@@ -14,6 +14,8 @@
 4. `/cms` on the gateway returns **not migrated yet** (`DEFERRED_PATH_PREFIXES = ["/cms"]`).
 5. Root `pnpm dev` starts gateway + CAE + Dr Jasmine concurrently.
 
+**Admin logout CSRF note:** Gateway uses `changeOrigin` + `xfwd`. Astro `security.checkOrigin` can 403 Logout (`Cross-site POST form submissions are forbidden`) unless `security.allowedDomains` trusts the public host (localhost + vercel.app + custom domains). Fixed in commit `4b50cf4` — [bulk-import-llm-template-and-logout-csrf](../sources/bulk-import-llm-template-and-logout-csrf.md). Same config also covers Vercel’s internal `localhost` request URL vs browser Origin.
+
 ## Deploy branches (current)
 
 - Prefer Git production branch **`main`** and pre-prod **`staging`** (full monorepo on both).
@@ -63,8 +65,9 @@ Preview entries after a healthy deploy:
 1. Git author must have Vercel project access (team rule) — commits from `KWen-22` were blocked until invited or gate disabled. **Status:** confirm with team whether resolved.
 2. Mixed Root Directory / Build Command across brands (e.g. Root=`apps/dr-jasmine` but build `@seo/cae`) fails output detection.
 3. Leaving Output Directory=`dist` after the SSR adapter switch breaks Build Output API detection. **Resolved** when override is Off ([source](../sources/vercel-output-directory-off-deploy-success.md)).
+4. Fixed Astro `base` `/cae/` or `/dr-jasmine/` on dedicated Vercel hosts → HTML 200 but `/cae/_astro/*` 404 (unstyled UI). **Resolved** with env-conditional `base: "/"` ([source](../sources/vercel-base-root-unstyled-ui.md), commit `538a722`).
 
-Source notes: [vercel-dual-site-hosting-and-ssr](../../raw/inbox/2026-07-30-vercel-dual-site-hosting-and-ssr.md) · [output-directory-off success](../sources/vercel-output-directory-off-deploy-success.md).
+Source notes: [dual-site hosting + SSR](../sources/vercel-dual-site-hosting-and-ssr.md) · [output-directory-off success](../sources/vercel-output-directory-off-deploy-success.md) · [base `/` unstyled UI](../sources/vercel-base-root-unstyled-ui.md).
 
 ## Root `vercel.json`
 
@@ -73,8 +76,8 @@ Still points at CAE for any project linked at repo root. Prefer per-app `apps/ca
 ## Key files
 
 - `apps/gateway/src/` — path proxy (`/cae`, `/dr-jasmine`; deferred `/cms`)
-- `apps/cae/astro.config.mjs` — `base: "/cae/"`, port 4322, conditional Vercel/Node adapter
-- `apps/dr-jasmine/astro.config.mjs` — `base: "/dr-jasmine/"`, port 4323, conditional Vercel/Node adapter
+- `apps/cae/astro.config.mjs` — env-conditional `base` (`/` on Vercel, `/cae/` local), port 4322, conditional Vercel/Node adapter
+- `apps/dr-jasmine/astro.config.mjs` — env-conditional `base` (`/` on Vercel, `/dr-jasmine/` local), port 4323, conditional Vercel/Node adapter
 - `apps/cae/vercel.json` / `apps/dr-jasmine/vercel.json`
 - `vercel.json` (root fallback for CAE-linked projects)
 - `docs/future-enhancements/independent-apps-dr-jasmine-and-cms.md` (CMS only)

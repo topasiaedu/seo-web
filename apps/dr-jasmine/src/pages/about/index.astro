@@ -1,0 +1,42 @@
+---
+/**
+ * @fileoverview Patient-first About page for Dr Jasmine (Clinical Trust layout).
+ */
+import portraitImage from "@/assets/ghl/dr-jasmine-portrait.jpg";
+import AboutApproach from "@/components/about/AboutApproach.astro";
+import AboutCredentials from "@/components/about/AboutCredentials.astro";
+import AboutCta from "@/components/about/AboutCta.astro";
+import AboutFit from "@/components/about/AboutFit.astro";
+import AboutHero from "@/components/about/AboutHero.astro";
+import AboutStory from "@/components/about/AboutStory.astro";
+import "@/components/about/about.css";
+import "@/components/home/home.css";
+import {
+  aboutCopy,
+  credentials,
+  pillars,
+} from "@/data/site";
+import { buildAboutJsonLd } from "@/data/seo/jsonld-pages";
+import { defaultPublicOgImageUrl } from "@/data/seo/og-defaults";
+import PublicLayout from "@/layouts/PublicLayout.astro";
+
+export const prerender = false;
+
+const title = aboutCopy.metaTitle;
+const description = aboutCopy.metaDescription;
+const jsonLd = buildAboutJsonLd({
+  pathname: Astro.url.pathname,
+  description,
+  name: aboutCopy.heroName,
+});
+const ogImage = defaultPublicOgImageUrl();
+---
+
+<PublicLayout title={title} description={description} ogImage={ogImage} jsonLd={jsonLd}>
+  <AboutHero copy={aboutCopy} portrait={portraitImage} />
+  <AboutStory copy={aboutCopy} />
+  <AboutCredentials copy={aboutCopy} credentials={credentials} />
+  <AboutApproach copy={aboutCopy} pillars={pillars} />
+  <AboutFit copy={aboutCopy} />
+  <AboutCta copy={aboutCopy} />
+</PublicLayout>

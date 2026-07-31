@@ -1,0 +1,44 @@
+---
+/**
+ * @fileoverview About page hero — brand name first, clinical role, workshop CTA, portrait.
+ */
+import type { ImageMetadata } from "astro";
+import RegisterCta from "@/components/site/RegisterCta.astro";
+import { landingImageAlts } from "@/data/landing/images";
+import type { AboutCopy } from "@/data/site";
+
+interface Props {
+  /** About hero copy strings. */
+  copy: AboutCopy;
+  /** Doctor portrait asset. */
+  portrait: ImageMetadata;
+}
+
+const { copy, portrait } = Astro.props;
+const portraitAlt = landingImageAlts.drJasminePortrait;
+---
+
+<section class="dj-about-hero" aria-labelledby="dj-about-hero-name">
+  <div class="dj-about-hero__grid">
+    <div class="dj-about-hero__copy">
+      <p class="dj-about-hero__role">{copy.heroRole}</p>
+      <h1 class="dj-about-hero__name" id="dj-about-hero-name">{copy.heroName}</h1>
+      <p class="dj-about-hero__support">{copy.heroSupport}</p>
+      <div class="dj-about-hero__cta">
+        <RegisterCta />
+      </div>
+    </div>
+
+    <figure class="dj-about-hero__portrait">
+      <img
+        class="dj-about-hero__portrait-img"
+        src={portrait.src}
+        width={portrait.width}
+        height={portrait.height}
+        alt={portraitAlt}
+        decoding="async"
+        fetchpriority="high"
+      />
+    </figure>
+  </div>
+</section>

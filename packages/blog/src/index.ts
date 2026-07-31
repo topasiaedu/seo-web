@@ -21,7 +21,13 @@ export type {
   UpsertAuthorInput,
 } from "./types.js";
 
-export type { BlogSupabaseClient, Database } from "./database.js";
+export type {
+  BlogSupabaseClient,
+  Database,
+  InstagramReelInsert,
+  InstagramReelRow,
+  InstagramReelUpdate,
+} from "./database.js";
 
 export { readingTimeMinutesFromMarkdown } from "./reading-time.js";
 

@@ -1,0 +1,48 @@
+---
+/**
+ * @fileoverview About who-it's-for band: bold typographic audience grid.
+ */
+import type { AboutCopy } from "@/data/site";
+
+interface Props {
+  /** Fit section heading and audience items. */
+  copy: AboutCopy;
+}
+
+const { copy } = Astro.props;
+---
+
+<section
+  class="dj-home-section dj-about-fit"
+  aria-labelledby="dj-about-fit-heading"
+>
+  <div class="dj-public-container dj-about-fit__inner">
+    <header class="dj-about-fit__header">
+      <p class="dj-about-fit__eyebrow">Audience</p>
+      <h2 class="dj-about-fit__heading" id="dj-about-fit-heading">
+        {copy.fitHeading}
+      </h2>
+    </header>
+
+    <ul class="dj-about-fit__grid">
+      {
+        copy.fitGood.map((item, index) => (
+          <li class="dj-about-fit__item" data-fit-index={String(index + 1)}>
+            <span class="dj-about-fit__mark" aria-hidden="true">
+              <svg viewBox="0 0 24 24" width="28" height="28" focusable="false">
+                <path
+                  fill="currentColor"
+                  d="M5 12h11.2l-3.6-3.6L14 7l6 6-6 6-1.4-1.4 3.6-3.6H5z"
+                />
+              </svg>
+            </span>
+            <div class="dj-about-fit__copy">
+              <h3 class="dj-about-fit__title">{item.title}</h3>
+              <p class="dj-about-fit__label">{item.label}</p>
+            </div>
+          </li>
+        ))
+      }
+    </ul>
+  </div>
+</section>

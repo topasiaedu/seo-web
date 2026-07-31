@@ -1,0 +1,126 @@
+/**
+ * @fileoverview Public `/reels` page styles — compact 3×2 Instagram embed grid.
+ */
+
+.dj-reels-grid-section {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  padding-block: clamp(2rem, 5vw, 3.25rem);
+  background:
+    radial-gradient(ellipse 70% 55% at 12% 20%, rgba(45, 94, 76, 0.08), transparent 58%),
+    radial-gradient(ellipse 55% 45% at 88% 78%, rgba(184, 134, 11, 0.06), transparent 55%),
+    linear-gradient(165deg, #f7f3ee 0%, var(--dj-public-bg) 48%, #efe8df 100%);
+}
+
+.dj-reels-grid-section__inner {
+  width: min(100%, var(--dj-public-max-width));
+  margin-inline: auto;
+  padding-inline: var(--dj-public-gutter);
+}
+
+.dj-reels-grid-section__header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--dj-public-space-4);
+  margin-bottom: var(--dj-public-space-8);
+}
+
+.dj-reels-grid-section__heading {
+  margin: 0;
+  font-family: var(--dj-public-font-display);
+  font-size: clamp(1.75rem, 3.5vw, 2.25rem);
+  font-weight: var(--dj-public-font-weight-regular);
+  line-height: 1.2;
+  letter-spacing: -0.02em;
+  color: var(--dj-public-teal-deep);
+}
+
+.dj-reels-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--dj-public-space-6);
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  justify-items: center;
+  align-items: start;
+}
+
+@media (min-width: 40rem) {
+  .dj-reels-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 64rem) {
+  .dj-reels-grid {
+    /* 3 columns × up to 2 rows for the max-6 curated set */
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: var(--dj-public-space-5);
+  }
+}
+
+.dj-reels-item {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  max-width: 20rem;
+}
+
+.dj-reels-embed {
+  width: 100%;
+  max-width: 20rem;
+  margin-inline: auto;
+  display: flex;
+  justify-content: center;
+  overflow: hidden;
+}
+
+/* Instagram injects an iframe; keep the blockquote from overflowing the column.
+ * Primary sizing lives on InstagramReelEmbed; these rules cover legacy markup. */
+.dj-reels-embed .instagram-media,
+.dj-reels-item .instagram-media {
+  margin: 0 auto !important;
+  min-width: 0 !important;
+  max-width: 100% !important;
+  width: 100% !important;
+}
+
+.dj-reels-empty {
+  margin: 0;
+  max-width: 32rem;
+  font-size: 1.0625rem;
+  line-height: 1.6;
+  color: var(--dj-public-text-soft);
+}
+
+.dj-reels-footer-cta {
+  padding-block: clamp(2.5rem, 6vw, 4rem);
+  background:
+    linear-gradient(180deg, var(--dj-public-bg) 0%, #efe8df 100%);
+}
+
+.dj-reels-footer-cta__inner {
+  width: min(100%, var(--dj-public-max-width));
+  margin-inline: auto;
+  padding-inline: var(--dj-public-gutter);
+  max-width: 36rem;
+  text-align: center;
+}
+
+.dj-reels-footer-cta__heading {
+  margin: 0 0 var(--dj-public-space-3);
+  font-family: var(--dj-public-font-display);
+  font-size: clamp(1.5rem, 3vw, 1.85rem);
+  color: var(--dj-public-teal-deep);
+}
+
+.dj-reels-footer-cta__lede {
+  margin: 0 0 var(--dj-public-space-6);
+  font-size: 1rem;
+  line-height: 1.6;
+  color: var(--dj-public-text-soft);
+}

@@ -15,7 +15,7 @@ Site-scoped blog domain: types + Supabase query helpers. Callers pass a client f
 | `FaqItem`, `SourceItem` | JSON field item types |
 | `CreatePostInput`, `UpdatePostInput`, `ListPostsOptions` | Admin write / filter inputs |
 | `CreateCategoryInput`, `UpsertAuthorInput` | Author / category inputs |
-| `BlogSupabaseClient`, `Database` | Client typing |
+| `BlogSupabaseClient`, `Database` | Client typing (includes `instagram_reels` row types for DJ curated Reels; CRUD is app-local) |
 
 ### Public queries
 

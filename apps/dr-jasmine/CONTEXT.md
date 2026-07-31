@@ -10,9 +10,15 @@ The live site is a **native Astro marketing site**. Home page visible copy is ta
 
 | Route (under `/dr-jasmine/`) | Purpose |
 |------------------------------|---------|
-| `/` | Brand home (GHL LDP copy) + Meet Dr. Jasmine + FAQ accordion; CTAs to GHL register |
+| `/` | Brand home (GHL LDP copy) + Meet Dr. Jasmine teaser + Featured Reels teaser (up to 3 embeds) + FAQ accordion; CTAs to GHL register |
+| `/about` | Patient-first About — bio, credentials, approach pillars, who it's for; CTAs to `registerUrl` |
+| `/reels` | Curated Instagram Reels (manual Admin list, max 6); official Instagram embed players; Follow CTA |
 | `/blog` | Public blog index + post detail |
 | `/admin` | Login-only authoring (hidden from public nav) |
+
+Nav: Home (logo), **About** → `/about`, **Reels** → `/reels`, Blog, workshop CTA. Home Meet band links to `/about` (“Read full story”).
+
+Admin → **Reels** (`/admin/reels`): paste Instagram Reel/post URL only. Public page uses Instagram’s official `embed.js` player (title/caption come from the embed). No Meta Graph API / auto-sync in v1.
 
 ### Conversion funnel: `registerUrl`
 

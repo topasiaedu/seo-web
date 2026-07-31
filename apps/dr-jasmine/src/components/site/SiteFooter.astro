@@ -13,7 +13,8 @@ const currentYear = new Date().getFullYear();
 
 const footerNavItems: ReadonlyArray<{ href: string; label: string }> = [
   { href: joinPublicPath(base, "/"), label: "Home" },
-  { href: `${joinPublicPath(base, "/")}#dj-home-meet`, label: "About" },
+  { href: joinPublicPath(base, "about"), label: "About" },
+  { href: joinPublicPath(base, "reels"), label: "Reels" },
   { href: joinPublicPath(base, "blog"), label: "Blog" },
 ];
 

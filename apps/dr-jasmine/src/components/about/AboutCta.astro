@@ -1,0 +1,30 @@
+---
+/**
+ * @fileoverview About closing workshop CTA: bold forest band + registerUrl.
+ */
+import RegisterCta from "@/components/site/RegisterCta.astro";
+import type { AboutCopy } from "@/data/site";
+
+interface Props {
+  /** Closing CTA heading and lede. */
+  copy: AboutCopy;
+}
+
+const { copy } = Astro.props;
+---
+
+<section class="dj-about-cta" aria-labelledby="dj-about-cta-heading">
+  <div class="dj-about-cta__glow" aria-hidden="true"></div>
+  <div class="dj-about-cta__glow dj-about-cta__glow--secondary" aria-hidden="true"></div>
+
+  <div class="dj-public-container dj-about-cta__inner">
+    <p class="dj-about-cta__eyebrow">Free workshop</p>
+    <h2 class="dj-about-cta__heading" id="dj-about-cta-heading">
+      {copy.ctaHeading}
+    </h2>
+    <p class="dj-about-cta__lede">{copy.ctaLede}</p>
+    <div class="dj-about-cta__actions">
+      <RegisterCta class="dj-about-cta__button" />
+    </div>
+  </div>
+</section>

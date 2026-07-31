@@ -70,6 +70,7 @@ const dashboardHref = joinAdminPath(base, "admin");
 const postsHref = joinAdminPath(base, "admin/posts");
 const authorHref = joinAdminPath(base, "admin/author");
 const categoriesHref = joinAdminPath(base, "admin/categories");
+const reelsHref = joinAdminPath(base, "admin/reels");
 
 const navItems: ReadonlyArray<{
   href: string;
@@ -80,6 +81,7 @@ const navItems: ReadonlyArray<{
   { href: postsHref, label: "Posts", exact: false },
   { href: authorHref, label: "Author", exact: true },
   { href: categoriesHref, label: "Categories", exact: false },
+  { href: reelsHref, label: "Reels", exact: false },
 ];
 ---
 

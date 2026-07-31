@@ -657,6 +657,58 @@
   flex-shrink: 0;
 }
 
+/* ── Reels band (Instagram official embeds) ──────────────────────────── */
+
+.dj-home-reels__header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: end;
+  justify-content: space-between;
+  gap: var(--dj-public-space-4);
+  margin-bottom: var(--dj-public-space-8);
+}
+
+.dj-home-reels__header .dj-home-lede {
+  margin-top: var(--dj-public-space-3);
+}
+
+.dj-home-reels__header .dj-home-heading {
+  margin-bottom: 0;
+}
+
+.dj-home-reels__all {
+  margin-top: 0;
+  flex-shrink: 0;
+}
+
+.dj-home-reels__grid {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--dj-public-space-6);
+  justify-items: center;
+  align-items: start;
+}
+
+@media (min-width: 40rem) {
+  .dj-home-reels__grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 64rem) {
+  .dj-home-reels__grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+.dj-home-reels__item {
+  width: 100%;
+  max-width: 20rem;
+}
+
 /* ── Discover (GHL main-body bullets) ────────────────────────────────── */
 
 .dj-home-discover__list {

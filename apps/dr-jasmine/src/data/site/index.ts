@@ -1,7 +1,14 @@
 /**
  * @fileoverview Barrel exports for Dr Jasmine shared site content (T2).
- * Marketing copy for public pages is sourced from the GHL registration LDP.
+ * Marketing copy for public pages is sourced from the GHL registration LDP
+ * plus patient-first About copy.
  */
+
+export {
+  aboutCopy,
+  type AboutCopy,
+  type AboutFitItem,
+} from "./about-copy.ts";
 
 export {
   credentials,

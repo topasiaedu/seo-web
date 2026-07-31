@@ -15,6 +15,20 @@ docs/implementation-plan/          # active/completed feature plans
 
 pnpm workspaces: `apps/*` + `packages/*`.
 
+## Git branches (integration model)
+
+Both brand apps always live on the same tree. Do **not** use long-lived brand-only content branches that omit the other app.
+
+| Branch | Role |
+|--------|------|
+| `main` | Production integration — `apps/cae` + `apps/dr-jasmine` always present |
+| `staging` | Pre-prod check — same full monorepo as `main` |
+| `feat/...` | Day-to-day work; branch from `main` (or `staging`); merge → `staging` → PR → `main` |
+
+“Push only CAE” = commit changes under `apps/cae` (and shared packages if needed) on a **full-monorepo** branch — never delete `apps/dr-jasmine` from the tree. Same for DJ-only work under `apps/dr-jasmine`.
+
+Source: [monorepo-main-staging-branch-model](../sources/monorepo-main-staging-branch-model.md). Retired tips `origin/cae` / `origin/dr-jasmine` are historical; delete remote `cae` after GitHub default branch is `main`.
+
 ## Brand ownership
 
 | Brand / surface | Location | Status |
@@ -31,4 +45,4 @@ CAE **vault archives** (immutable scrapes) live under `seo-wiki-vault/raw/resear
 
 Dr Jasmine **vault archive**: `seo-wiki-vault/raw/research/dr-jasmine-ghl-capture/` — see [dr-jasmine-ghl-capture](../sources/dr-jasmine-ghl-capture.md).
 
-**Runtime:** CAE still mounts sanitized GHL section lift under `src/styles/ghl/` and `src/components/ghl/`. Dr Jasmine public routes are **native Option A** pages; `apps/dr-jasmine/src/components/ghl/` is deprecated archive/reference only (assets under `src/assets/ghl/` remain in use). Vault `_ghl-extract/` folders must never be Vite-imported.
+**Runtime:** CAE public chrome is the **native ZWDS** stack (`components/home/*` + SiteHeader/SiteFooter); `components/ghl/` is unwired archive. Dr Jasmine public routes are **native Option A** pages; `apps/dr-jasmine/src/components/ghl/` is deprecated archive/reference only (assets under `src/assets/ghl/` remain in use). Vault `_ghl-extract/` folders must never be Vite-imported.

@@ -1,0 +1,40 @@
+---
+/**
+ * @fileoverview About approach — three pillars as numbered text stacks (not cards).
+ */
+import type { AboutCopy, Pillar } from "@/data/site";
+
+interface Props {
+  /** Approach heading and lede. */
+  copy: AboutCopy;
+  /** Shared three-pillar framework. */
+  pillars: readonly Pillar[];
+}
+
+const { copy, pillars } = Astro.props;
+---
+
+<section
+  class="dj-home-section dj-home-section--soft dj-about-approach"
+  aria-labelledby="dj-about-approach-heading"
+>
+  <div class="dj-public-container">
+    <h2 class="dj-home-heading" id="dj-about-approach-heading">
+      {copy.approachHeading}
+    </h2>
+    <p class="dj-about-approach__lede">{copy.approachLede}</p>
+    <ol class="dj-about-approach__list">
+      {
+        pillars.map((pillar, index) => (
+          <li class="dj-about-pillar">
+            <span class="dj-about-pillar__index" aria-hidden="true">
+              {String(index + 1).padStart(2, "0")}
+            </span>
+            <h3 class="dj-about-pillar__title">{pillar.title}</h3>
+            <p class="dj-about-pillar__blurb">{pillar.blurb}</p>
+          </li>
+        ))
+      }
+    </ol>
+  </div>
+</section>

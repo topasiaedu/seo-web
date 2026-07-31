@@ -8,6 +8,7 @@
 | Kind | Session notes (implementation) |
 | Related site | [CAE](../sites/cae.md) |
 | Related prior | [cae-nm-zwds-brand-theme-and-public-theme-toggle](cae-nm-zwds-brand-theme-and-public-theme-toggle.md); [cae-blog-immersive-story-redesign](cae-blog-immersive-story-redesign.md); [cae-homepage-blog-bento](cae-homepage-blog-bento.md); [cae-ghl-section-lift-and-media-page](cae-ghl-section-lift-and-media-page.md) (**superseded** for live home/media chrome) |
+| Follow-on | [cae-connect-headline-dark-gold](cae-connect-headline-dark-gold.md) (Connect headline dark contrast) |
 
 ## Takeaways
 

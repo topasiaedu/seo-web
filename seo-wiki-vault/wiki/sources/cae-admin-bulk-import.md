@@ -11,12 +11,12 @@
 
 ## Takeaways
 
-- New Admin route **`/cae/admin/posts/import`** (Posts list → **Bulk import**) creates many Posts from one Markdown document.
+- New Admin route **`/cae/admin/posts/import`** (Posts list / Dashboard → **Bulk import**) creates many Posts from one Markdown document.
 - Posts in one file are separated by `===NEW POST===`; each chunk is YAML frontmatter + Markdown body.
 - Only **`title`** is required in frontmatter; slug auto-generates; categories match by name or are created; FAQ/sources/tags supported.
-- **`status` / `publishAt` are respected** — writers typically use `scheduled` + future ISO time (maps to stored `published` + future `published_at`).
+- **Go-live times (2026-07-29):** set in Admin **section 4** (Malaysia Time + cadence helper) — **not** Markdown `publishAt`. See [cae-bulk-import-schedule-ui](cae-bulk-import-schedule-ui.md). Leftover `publishAt` in MD is ignored.
 - **Hero images:** optional `heroImageUrl` in Markdown, or **one file upload slot per parsed post** in UI section 3 (filename-in-frontmatter approach removed).
-- Writer template is **copy-first** (`BULK_IMPORT_WRITER_TEMPLATE`) with LLM instructions in an HTML comment; page layout keeps section 1 compact.
+- Writer template is **copy/download** via `buildBulkImportWriterTemplate` (live categories + tags + AI output / 5–15 min rules). See [bulk-import-llm-template-and-logout-csrf](bulk-import-llm-template-and-logout-csrf.md). Page layout keeps section 1 compact.
 - Import uses the **signed-in Admin** session and `@seo/blog` `createPost` / `createCategory`. Duplicate/existing slugs are skipped (no overwrite).
 
 ## Key code paths
@@ -24,7 +24,8 @@
 | Path | Role |
 |------|------|
 | `apps/cae/src/lib/bulk-import.ts` | Parse / validate / resolve |
-| `apps/cae/src/lib/bulk-import-template.ts` | Copyable writer template |
+| `apps/cae/src/lib/bulk-import-template.ts` | Writer/LLM template (`buildBulkImportWriterTemplate`) |
+| `apps/cae/src/lib/bulk-import-schedule.ts` | MYT + cadence (see schedule-ui source) |
 | `apps/cae/src/components/admin/BulkImportForm.tsx` | UI island |
 | `apps/cae/src/pages/admin/posts/import.astro` | Route |
 

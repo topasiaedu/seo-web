@@ -163,6 +163,42 @@ export type CategoryUpdate = {
 };
 
 /**
+ * Row shape for `public.instagram_reels` (curated Instagram showcase).
+ */
+export type InstagramReelRow = {
+  id: string;
+  site_id: string;
+  permalink: string;
+  sort_order: number;
+  is_published: boolean;
+  created_at: string;
+  updated_at: string;
+};
+
+/**
+ * Insert payload for `public.instagram_reels`.
+ */
+export type InstagramReelInsert = {
+  id?: string;
+  site_id: string;
+  permalink: string;
+  sort_order?: number;
+  is_published?: boolean;
+  created_at?: string;
+  updated_at?: string;
+};
+
+/**
+ * Update payload for `public.instagram_reels`.
+ */
+export type InstagramReelUpdate = {
+  permalink?: string;
+  sort_order?: number;
+  is_published?: boolean;
+  updated_at?: string;
+};
+
+/**
  * Typed Database schema covering blog-related tables only.
  */
 export type Database = {
@@ -199,6 +235,12 @@ export type Database = {
         Row: CategoryRow;
         Insert: CategoryInsert;
         Update: CategoryUpdate;
+        Relationships: [];
+      };
+      instagram_reels: {
+        Row: InstagramReelRow;
+        Insert: InstagramReelInsert;
+        Update: InstagramReelUpdate;
         Relationships: [];
       };
     };

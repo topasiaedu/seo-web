@@ -1,0 +1,389 @@
+---
+/**
+ * Dr Jasmine Admin Reels page — curated Instagram permalinks (max 6).
+ * Staff paste a Reel/post URL. Instagram’s embed supplies title/caption publicly.
+ */
+import AdminLayout from "../../../layouts/AdminLayout.astro";
+import { drJasmineSiteConfig } from "../../../site-config";
+import { requireLocalsSupabase } from "../../../lib/admin-auth";
+import {
+  createReel,
+  deleteReel,
+  listReelsForAdmin,
+  MAX_INSTAGRAM_REELS,
+  updateReel,
+  type InstagramReel,
+} from "../../../lib/instagram-reels";
+
+export const prerender = false;
+
+type ReelsState = {
+  errorMessage: string | null;
+  successMessage: string | null;
+  createPermalinkDraft: string;
+};
+
+const SITE_ID = drJasmineSiteConfig.projectId;
+
+/**
+ * Reads and trims a required text field from FormData.
+ *
+ * @param formData - Submitted form payload.
+ * @param key - Field key.
+ * @returns Trimmed non-empty string.
+ */
+function readRequiredText(formData: FormData, key: string): string {
+  const value = formData.get(key);
+  if (typeof value !== "string") {
+    throw new Error(`Missing required field: ${key}`);
+  }
+  const trimmedValue = value.trim();
+  if (trimmedValue.length === 0) {
+    throw new Error(`Field "${key}" cannot be empty.`);
+  }
+  return trimmedValue;
+}
+
+/**
+ * Reads an optional text field from FormData (empty string when absent).
+ *
+ * @param formData - Submitted form payload.
+ * @param key - Field key.
+ * @returns Trimmed string (may be empty).
+ */
+function readOptionalText(formData: FormData, key: string): string {
+  const value = formData.get(key);
+  if (typeof value !== "string") {
+    return "";
+  }
+  return value.trim();
+}
+
+/**
+ * Converts unknown error values into stable user-facing text.
+ *
+ * @param error - Unknown caught value.
+ * @returns User-facing message.
+ */
+function toErrorMessage(error: unknown): string {
+  if (error instanceof Error && error.message.trim().length > 0) {
+    return error.message;
+  }
+  return "Could not update Reels. Please try again.";
+}
+
+/**
+ * Resolves a reel by id.
+ *
+ * @param reels - Current reel list.
+ * @param reelId - Candidate reel id.
+ * @returns Matching reel or `undefined`.
+ */
+function findReelById(
+  reels: readonly InstagramReel[],
+  reelId: string,
+): InstagramReel | undefined {
+  return reels.find((reel) => reel.id === reelId);
+}
+
+/**
+ * Short label for delete confirmations (media code from permalink).
+ *
+ * @param permalink - Canonical Instagram URL.
+ * @returns Short display string.
+ */
+function reelLabel(permalink: string): string {
+  const parts = permalink.split("/").filter((part) => part.length > 0);
+  const code = parts[parts.length - 1];
+  if (typeof code === "string" && code.length > 0) {
+    return code;
+  }
+  return permalink;
+}
+
+const supabase = requireLocalsSupabase(Astro.locals.supabase);
+let reels = await listReelsForAdmin(supabase, SITE_ID);
+
+let state: ReelsState = {
+  errorMessage: null,
+  successMessage: null,
+  createPermalinkDraft: "",
+};
+
+if (Astro.request.method === "POST") {
+  const formData = await Astro.request.formData();
+  const actionValue = formData.get("action");
+  const action = typeof actionValue === "string" ? actionValue.trim() : "";
+  const submittedPermalink = readOptionalText(formData, "permalink");
+
+  try {
+    if (action === "create") {
+      const permalink = readRequiredText(formData, "permalink");
+      const isPublished = formData.get("is_published") === "on";
+
+      const created = await createReel(supabase, SITE_ID, {
+        permalink,
+        isPublished,
+      });
+      reels = await listReelsForAdmin(supabase, SITE_ID);
+      state = {
+        errorMessage: null,
+        successMessage: `Added Reel (${reelLabel(created.permalink)}).`,
+        createPermalinkDraft: "",
+      };
+    } else if (action === "update") {
+      const reelId = readRequiredText(formData, "reel_id");
+      const existing = findReelById(reels, reelId);
+      if (existing === undefined) {
+        throw new Error("Reel not found.");
+      }
+
+      const permalink = readRequiredText(formData, "permalink");
+      const isPublished = formData.get("is_published") === "on";
+
+      const updated = await updateReel(supabase, SITE_ID, reelId, {
+        permalink,
+        isPublished,
+      });
+      reels = await listReelsForAdmin(supabase, SITE_ID);
+      state = {
+        errorMessage: null,
+        successMessage: `Updated Reel (${reelLabel(updated.permalink)}).`,
+        createPermalinkDraft: "",
+      };
+    } else if (action === "delete") {
+      const reelId = readRequiredText(formData, "reel_id");
+      const existing = findReelById(reels, reelId);
+      if (existing === undefined) {
+        throw new Error("Reel not found.");
+      }
+
+      await deleteReel(supabase, SITE_ID, reelId);
+      reels = await listReelsForAdmin(supabase, SITE_ID);
+      state = {
+        errorMessage: null,
+        successMessage: `Removed Reel (${reelLabel(existing.permalink)}).`,
+        createPermalinkDraft: "",
+      };
+    } else {
+      throw new Error("Unknown Reels action.");
+    }
+  } catch (error) {
+    state = {
+      errorMessage: toErrorMessage(error),
+      successMessage: null,
+      createPermalinkDraft: action === "create" ? submittedPermalink : "",
+    };
+  }
+}
+
+const slotsUsed = reels.length;
+const slotsRemaining = Math.max(0, MAX_INSTAGRAM_REELS - slotsUsed);
+const canAddMore = slotsRemaining > 0;
+---
+
+<AdminLayout title="Dr Jasmine Admin Reels">
+  <section class="admin-page">
+    <header>
+      <h1 class="admin-page__title">Instagram Reels</h1>
+      <p class="admin-page__lede">
+        Feature up to {MAX_INSTAGRAM_REELS} Instagram Reels or posts on the public
+        <code>/reels</code> page. Paste the Instagram URL — the official embed shows
+        Instagram’s own title and caption. Visitors can play each Reel on the page.
+      </p>
+      <p class="admin-help">
+        Slots used: <strong>{slotsUsed}</strong> / {MAX_INSTAGRAM_REELS}
+        {canAddMore ? ` (${slotsRemaining} remaining)` : " (full)"}
+      </p>
+    </header>
+
+    {state.errorMessage !== null ? (
+      <p class="admin-message admin-message--error" role="alert">{state.errorMessage}</p>
+    ) : null}
+
+    {state.successMessage !== null ? (
+      <p class="admin-message admin-message--success" role="status">{state.successMessage}</p>
+    ) : null}
+
+    {canAddMore ? (
+      <form method="POST" class="admin-card admin-card--emphasize">
+        <h2 class="admin-card__title">Add Reel</h2>
+        <input type="hidden" name="action" value="create" />
+        <label class="admin-field">
+          <span class="admin-field__label">Instagram URL</span>
+          <input
+            class="admin-input"
+            name="permalink"
+            type="url"
+            required
+            placeholder="https://www.instagram.com/reel/..."
+            value={state.createPermalinkDraft}
+          />
+        </label>
+        <label class="admin-field admin-field--checkbox">
+          <input type="checkbox" name="is_published" checked />
+          <span>Published on /reels</span>
+        </label>
+        <div class="admin-actions">
+          <button class="admin-btn admin-btn--primary" type="submit">Add Reel</button>
+        </div>
+      </form>
+    ) : (
+      <p class="admin-empty">
+        You have {MAX_INSTAGRAM_REELS} Reels. Remove one before adding another.
+      </p>
+    )}
+
+    <div class="admin-reels">
+      <h2 class="admin-card__title">Existing Reels</h2>
+      {reels.length === 0 ? (
+        <p class="admin-empty">
+          No Reels yet. Paste an Instagram URL above to feature the first one.
+        </p>
+      ) : (
+        <div class="admin-reels__list">
+          {reels.map((reel) => (
+            <article class="admin-card admin-reels__card">
+              <form method="POST" class="admin-reels__edit">
+                <input type="hidden" name="action" value="update" />
+                <input type="hidden" name="reel_id" value={reel.id} />
+                <label class="admin-field">
+                  <span class="admin-field__label">Instagram URL</span>
+                  <input
+                    class="admin-input"
+                    name="permalink"
+                    type="url"
+                    required
+                    value={reel.permalink}
+                  />
+                </label>
+                <label class="admin-field admin-field--checkbox">
+                  <input
+                    type="checkbox"
+                    name="is_published"
+                    checked={reel.isPublished}
+                  />
+                  <span>Published on /reels</span>
+                </label>
+                <p class="admin-help">Sort order: {reel.sortOrder}</p>
+                <div class="admin-reels__actions">
+                  <button class="admin-btn admin-btn--small" type="submit">
+                    Save
+                  </button>
+                </div>
+              </form>
+
+              <form
+                method="POST"
+                class="admin-reels__delete"
+                data-reel-delete
+                data-reel-label={reelLabel(reel.permalink)}
+              >
+                <input type="hidden" name="action" value="delete" />
+                <input type="hidden" name="reel_id" value={reel.id} />
+                <button
+                  class="admin-btn admin-btn--small admin-btn--danger"
+                  type="submit"
+                >
+                  Remove
+                </button>
+              </form>
+            </article>
+          ))}
+        </div>
+      )}
+    </div>
+  </section>
+
+  <script>
+    /**
+     * Confirms Reel removal before the delete form submits.
+     */
+    function initReelDeleteConfirm(): void {
+      const forms = document.querySelectorAll<HTMLFormElement>(
+        "form[data-reel-delete]",
+      );
+
+      for (const form of forms) {
+        form.addEventListener("submit", (event: SubmitEvent) => {
+          const rawLabel = form.dataset.reelLabel;
+          const reelLabelText =
+            typeof rawLabel === "string" && rawLabel.trim().length > 0
+              ? rawLabel.trim()
+              : "this Reel";
+
+          const confirmed = window.confirm(
+            [
+              "Remove this Reel from the site?",
+              `Permalink code: ${reelLabelText}`,
+              "This cannot be undone.",
+            ].join("\n"),
+          );
+
+          if (!confirmed) {
+            event.preventDefault();
+          }
+        });
+      }
+    }
+
+    initReelDeleteConfirm();
+  </script>
+</AdminLayout>
+
+<style>
+  .admin-reels {
+    display: flex;
+    flex-direction: column;
+    gap: 0.85rem;
+  }
+
+  .admin-reels__list {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 0.85rem;
+  }
+
+  @media (min-width: 48rem) {
+    .admin-reels__list {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  .admin-reels__card {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    height: 100%;
+  }
+
+  .admin-reels__edit {
+    display: flex;
+    flex: 1 1 auto;
+    flex-direction: column;
+    gap: 0.65rem;
+  }
+
+  .admin-reels__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+
+  .admin-reels__delete {
+    margin: 0;
+    padding-top: 0.65rem;
+    border-top: 1px solid var(--admin-border);
+  }
+
+  .admin-field--checkbox {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .admin-field--checkbox input {
+    width: auto;
+  }
+</style>

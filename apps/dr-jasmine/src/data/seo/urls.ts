@@ -11,6 +11,8 @@ import { getSiteOrigin, normalizeBase } from "@/lib/site-url";
  */
 export const PUBLIC_SITEMAP_SEGMENTS = [
   "",
+  "about",
+  "reels",
   "blog",
 ] as const;
 
@@ -64,6 +66,8 @@ export function publicRouteAbsoluteUrl(
  */
 export const SSR_SITEMAP_SEGMENTS: readonly PublicSitemapSegment[] = [
   "",
+  "about",
+  "reels",
   "blog",
 ];
 

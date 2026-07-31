@@ -1,0 +1,57 @@
+---
+/**
+ * @fileoverview Homepage Instagram Reels teaser — up to three official embeds.
+ */
+import InstagramEmbedScript from "@/components/reels/InstagramEmbedScript.astro";
+import InstagramReelEmbed from "@/components/reels/InstagramReelEmbed.astro";
+import type { InstagramReel } from "@/lib/instagram-reels";
+import { joinPublicPath } from "@/scripts/site-nav";
+
+interface Props {
+  /** Published reels to surface (caller omits section when empty). */
+  reels: readonly InstagramReel[];
+}
+
+const { reels } = Astro.props;
+
+if (!Array.isArray(reels) || reels.length === 0) {
+  throw new Error("HomeReels requires a non-empty reels array.");
+}
+
+const reelsHref = joinPublicPath(import.meta.env.BASE_URL, "reels");
+---
+
+<section
+  class="dj-home-section dj-home-section--soft dj-home-reels"
+  aria-labelledby="dj-home-reels-heading"
+>
+  <div class="dj-public-container">
+    <header class="dj-home-reels__header">
+      <div>
+        <p class="dj-home-eyebrow">Instagram</p>
+        <h2 class="dj-home-heading" id="dj-home-reels-heading">
+          Featured Reels
+        </h2>
+        <p class="dj-home-lede">
+          Short tips on blood sugar and metabolic health — watch a few here, then
+          see more on the Reels page.
+        </p>
+      </div>
+      <a class="dj-home-text-link dj-home-reels__all" href={reelsHref}>
+        View all Reels
+      </a>
+    </header>
+
+    <ul class="dj-home-reels__grid" aria-label="Featured Instagram Reels">
+      {
+        reels.map((reel) => (
+          <li class="dj-home-reels__item">
+            <InstagramReelEmbed permalink={reel.permalink} />
+          </li>
+        ))
+      }
+    </ul>
+  </div>
+</section>
+
+<InstagramEmbedScript />

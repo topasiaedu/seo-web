@@ -2,6 +2,76 @@
 
 Append-only timeline. Each entry starts with `## [YYYY-MM-DD] <verb> | <title>` for easy grepping.
 
+## [2026-07-31] ingest | Dr Jasmine curated Instagram Reels (Option C)
+
+- Raw: `raw/inbox/2026-07-31-dr-jasmine-curated-instagram-reels.md`
+- Source: `wiki/sources/dr-jasmine-curated-instagram-reels.md`
+- Updated: `sites/dr-jasmine`, `architecture/supabase`, `architecture/overview`, `packages/blog`, `overview`, `index`
+- Note: `/reels` official embeds; Admin paste URL (max 6); home ≤3 teaser; no Graph API / title-caption fields; apply migrations before live use
+
+## [2026-07-31] ingest | Dr Jasmine About page restored + polish
+
+- Raw: `raw/inbox/2026-07-31-dr-jasmine-about-page.md`
+- Source: `wiki/sources/dr-jasmine-about-page.md`
+- Updated: `sites/dr-jasmine`, `overview`, `architecture/overview`, `index`, `sources/dr-jasmine-home-ia-and-polish` (About removal superseded)
+- Note: patient-first `/about`; polish (no em dashes; no MBBS in H1; no “not right fit”); still omit `/faq` `/programs` `/workshop`
+- Prior same-day sync entry kept (implementation); this ingest captures full polish + provenance
+
+## [2026-07-31] sync | Dr Jasmine About page restored
+
+- Updated: `sites/dr-jasmine`, `overview`, `index`, `apps/dr-jasmine/CONTEXT.md`
+- Route: `/about` — patient-first Clinical Trust layout (hero, story, credentials, approach, who it's for, workshop CTA)
+- Nav/footer About → `/about`; home Meet band “Read full story”; sitemap + Person/MedicalWebPage JSON-LD
+- Still omitted: `/faq`, `/programs`, `/workshop`
+
+## [2026-07-30] ingest | Bulk-import LLM template + Admin logout CSRF
+
+- Raw: `raw/inbox/2026-07-30-bulk-import-llm-template-and-logout-csrf.md`
+- Source: `wiki/sources/bulk-import-llm-template-and-logout-csrf.md`
+- Updated: `sites/cae`, `sites/dr-jasmine`, `cae-admin-bulk-import`, `glossary`, `architecture/routing-vercel`, `overview`, `index`
+- Note: live taxonomy Copy/Download; 5–15 min + plain `.md` AI rules; parser strips chat fences; `security.allowedDomains` for gateway/Vercel logout; commit `4b50cf4`
+
+## [2026-07-30] lint | post–Connect-gold / DJ-TOC / dual-site ingest
+
+- Broken links: **1** fixed (`monorepo-main-staging-branch-model` → `../../raw/inbox/…git-init…`); recheck **0**
+- Index orphans: **0**
+- ADR 0001 updated (dual Vercel projects supersede one-project topology; host rewrite still open)
+- Overview Deferred cleaned (removed done adapter / dual-project items; added Git author gate)
+- Code spot-check: Connect gold, `base: "/"`, DJ `data-blog-toc` OK
+- Uningested inbox: 8 older Jul 23–27 notes (deferred)
+- Full report: `outputs/lint-2026-07-30.md`
+
+## [2026-07-30] ingest | CAE Connect headline dark-mode gold
+
+- Raw: `raw/inbox/2026-07-30-cae-connect-headline-dark-gold.md`
+- Source: `wiki/sources/cae-connect-headline-dark-gold.md`
+- Updated: `sites/cae`, `sources/cae-nm-zwds-brand-theme-and-public-theme-toggle`, `sources/cae-native-zwds-public-redesign`, `overview`, `index`
+- Note: purple brand-gradient clip-text on elevated purple band → solid `--cae-gold` in dark; light keeps gradient; commit `4d47da1`
+
+## [2026-07-30] ingest | Dr Jasmine blog TOC scroll-spy + section eyebrows
+
+- Raw: `raw/inbox/2026-07-30-dr-jasmine-blog-toc-scroll-spy-and-eyebrows.md`
+- Source: `wiki/sources/dr-jasmine-blog-toc-scroll-spy-and-eyebrows.md`
+- Updated: `sites/dr-jasmine`, `overview`, `index`
+- Note: surgical port from CAE Immersive Story; clinic eyebrows (`Common questions` / `References` / `Keep reading`); commit `c60d701`
+- Out of scope: CAE hero chrome, theme toggle, favicon/OG
+
+## [2026-07-30] ingest | Vercel dual-site hosting + SSR adapter
+
+- Raw: `raw/inbox/2026-07-30-vercel-dual-site-hosting-and-ssr.md`
+- Source: `wiki/sources/vercel-dual-site-hosting-and-ssr.md`
+- Updated: `architecture/routing-vercel` (source link), `sources/vercel-output-directory-off-deploy-success` (prior link), `overview`, `index`
+- Note: two-project topology + `@astrojs/vercel`; raw URL/`base` guidance superseded by Output Directory Off + `base: "/"` follow-ons
+- Open: Git author gate for `KWen-22`; custom domains
+
+## [2026-07-30] ingest | Vercel base `/` — unstyled UI on dedicated hosts
+
+- Raw: `raw/inbox/2026-07-30-vercel-base-root-unstyled-ui.md`
+- Source: `wiki/sources/vercel-base-root-unstyled-ui.md`
+- Updated: `architecture/routing-vercel`, `sites/cae`, `sites/dr-jasmine`, `overview`, `index`, `sources/vercel-output-directory-off-deploy-success` (follow-up link)
+- Note: HTML 200 + `/cae/_astro/*` 404 after Output Directory Off; `538a722` sets `base: "/"` when `VERCEL=1`
+- Open: custom domains; Git author gate for `KWen-22`; optional legacy path redirects
+
 ## [2026-07-30] sync | Vercel base `/` for dedicated brand projects
 
 - Code: `apps/cae/astro.config.mjs` + `apps/dr-jasmine/astro.config.mjs` — `VERCEL=1` → `base: "/"`; local gateway keeps `/cae/` / `/dr-jasmine/`

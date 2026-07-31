@@ -1,7 +1,7 @@
 ---
 /**
  * @fileoverview Public site header navigation with mobile menu.
- * IA: Home (logo), About → home Meet section, Blog, GHL workshop CTA.
+ * IA: Home (logo), About, Reels, Blog, GHL workshop CTA.
  */
 import { drJasmineSiteConfig } from "@/site-config";
 import { isPublicNavActive, joinPublicPath } from "@/scripts/site-nav";
@@ -18,11 +18,13 @@ type NavItem = {
 const base = import.meta.env.BASE_URL;
 const pathname = Astro.url.pathname;
 const homeHref = joinPublicPath(base, "/");
-const meetHref = `${homeHref}#dj-home-meet`;
+const aboutHref = joinPublicPath(base, "about");
+const reelsHref = joinPublicPath(base, "reels");
 const blogHref = joinPublicPath(base, "blog");
 
 const navItems: readonly NavItem[] = [
-  { href: meetHref, label: "About", exact: true },
+  { href: aboutHref, label: "About", exact: false },
+  { href: reelsHref, label: "Reels", exact: false },
   { href: blogHref, label: "Blog", exact: false },
 ];
 

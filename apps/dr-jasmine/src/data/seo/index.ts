@@ -3,8 +3,12 @@
  */
 
 export {
+  buildAboutJsonLd,
   buildFaqPageJsonLd,
+  buildReelsJsonLd,
   buildWebSiteJsonLd,
+  type AboutJsonLdInput,
+  type ReelsJsonLdInput,
   type WebSiteJsonLdInput,
 } from "@/data/seo/jsonld-pages";
 

@@ -1,0 +1,86 @@
+---
+/**
+ * @fileoverview Public curated Instagram Reels page for Dr Jasmine.
+ * Compact 3×2 official embed grid (Admin → Reels).
+ */
+import RegisterCta from "@/components/site/RegisterCta.astro";
+import InstagramEmbedScript from "@/components/reels/InstagramEmbedScript.astro";
+import InstagramReelEmbed from "@/components/reels/InstagramReelEmbed.astro";
+import "@/components/reels/reels.css";
+import { buildReelsJsonLd } from "@/data/seo/jsonld-pages";
+import { defaultPublicOgImageUrl } from "@/data/seo/og-defaults";
+import { requireBlogSupabase } from "@/components/blog/blog-format";
+import { listPublishedReels } from "@/lib/instagram-reels";
+import PublicLayout from "@/layouts/PublicLayout.astro";
+import { drJasmineSiteConfig } from "@/site-config";
+
+export const prerender = false;
+
+const title = "Instagram Reels | Dr Jasmine";
+const description =
+  "Watch short metabolic health tips from Dr Jasmine on Instagram — then follow for the latest Reels.";
+
+const supabase = requireBlogSupabase(Astro.locals.supabase);
+const reels = await listPublishedReels(supabase, drJasmineSiteConfig.projectId);
+const instagramUrl = drJasmineSiteConfig.social.instagram;
+
+const jsonLd = buildReelsJsonLd({
+  pathname: Astro.url.pathname,
+  description,
+});
+const ogImage = defaultPublicOgImageUrl();
+const hasEmbeds = reels.length > 0;
+---
+
+<PublicLayout title={title} description={description} ogImage={ogImage} jsonLd={jsonLd}>
+  <section class="dj-reels-grid-section" aria-labelledby="dj-reels-grid-heading">
+    <div class="dj-reels-grid-section__inner">
+      <header class="dj-reels-grid-section__header">
+        <h1 class="dj-reels-grid-section__heading" id="dj-reels-grid-heading">
+          Featured Reels
+        </h1>
+        <RegisterCta
+          class="dj-reels-grid-section__follow"
+          href={instagramUrl}
+          label="Follow on Instagram"
+          variant="secondary"
+        />
+      </header>
+
+      {
+        reels.length === 0 ? (
+          <p class="dj-reels-empty">
+            Featured Reels will appear here soon. In the meantime, visit the Instagram
+            profile to see the latest posts.
+          </p>
+        ) : (
+          <ul class="dj-reels-grid">
+            {reels.map((reel) => (
+              <li class="dj-reels-item">
+                <InstagramReelEmbed permalink={reel.permalink} />
+              </li>
+            ))}
+          </ul>
+        )
+      }
+    </div>
+  </section>
+
+  <section class="dj-reels-footer-cta" aria-labelledby="dj-reels-footer-heading">
+    <div class="dj-reels-footer-cta__inner">
+      <h2 class="dj-reels-footer-cta__heading" id="dj-reels-footer-heading">
+        Stay connected
+      </h2>
+      <p class="dj-reels-footer-cta__lede">
+        Follow @drjasminechiew for new Reels and practical tips.
+      </p>
+      <RegisterCta
+        href={instagramUrl}
+        label="Follow on Instagram"
+        variant="primary"
+      />
+    </div>
+  </section>
+
+  {hasEmbeds ? <InstagramEmbedScript /> : null}
+</PublicLayout>

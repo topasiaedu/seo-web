@@ -2,16 +2,16 @@
 
 Living synthesis of the monorepo. Agents update this on ingest and code-sync.
 
-Last updated: 2026-07-30 (ingest Vercel Output Directory off — dual-site deploy success)
+Last updated: 2026-07-31 (ingest — DJ curated Instagram Reels)
 
 ## Current focus
 
-- Primary site: **CAE** (`apps/cae` / `@seo/cae`) — **native ZWDS homepage** (Insights Blog soft bento after Press; home **SSR**); **native Media & Press**; **Admin Blog** at `/cae/admin` with **Published vs Scheduled** UI + lazy `published_at` gate; simplified PostForm; **Bulk import** (section 4 MYT cadence; no MD `publishAt`); **public blog SSR** at `/cae/blog` (Immersive Story + shared native chrome); nm-zwds tokens + public Light/Dark toggle; preview via **gateway** `/cae`
-- Second brand: **Dr Jasmine** (`apps/dr-jasmine` / `@seo/dr-jasmine`) — **single-home** native site (`/` GHL LDP copy + Meet/FAQ + **Health Insights** latest-3 Post tiles; home **SSR**; **no** `/about` `/workshop` `/programs` `/faq` pages) + Admin (**Bulk import** section 4 MYT cadence) + **light** public `/blog`; gateway `/dr-jasmine` → `:4323`; GHL capture archive/reference only
+- Primary site: **CAE** (`apps/cae` / `@seo/cae`) — **native ZWDS homepage** (Insights Blog soft bento after Press; home **SSR**); **native Media & Press**; **Admin Blog** at `/cae/admin` with **Published vs Scheduled** UI + lazy `published_at` gate; simplified PostForm; **Bulk import** (live taxonomy template + 5–15 min AI rules; section 4 MYT cadence; no MD `publishAt`; `security.allowedDomains` for logout); **public blog SSR** at `/cae/blog` (Immersive Story + shared native chrome); nm-zwds tokens + public Light/Dark toggle; preview via **gateway** `/cae`
+- Second brand: **Dr Jasmine** (`apps/dr-jasmine` / `@seo/dr-jasmine`) — native site (`/` GHL LDP copy + Meet/FAQ + **Featured Reels** ≤3 embeds + **Health Insights** latest-3 Post tiles; **`/about`** patient-first; **`/reels`** curated IG embeds; home/about/reels **SSR**; **no** `/workshop` `/programs` `/faq` pages) + Admin (**Bulk import** live taxonomy + MYT schedule; **Reels** URL curation; logout CSRF allowedDomains) + **light** public `/blog` (TOC scroll-spy + section eyebrows); gateway `/dr-jasmine` → `:4323`; GHL capture archive/reference only
 - Path gateway: `apps/gateway` (`@seo/gateway`) on port **4321** (proxies `/cae` + `/dr-jasmine`; `/cms` still not migrated)
 - **Git:** integration on **`main`** + pre-prod **`staging`** (both apps always present). Flow `feat/...` → `staging` → PR → `main`. Brand-only long-lived branches retired ([branch model source](sources/monorepo-main-staging-branch-model.md))
 - Legacy `website/` shell: **removed** — future brands/CMS scaffold under `apps/` only
-- Deploy: prefer Git branches **`main`** / **`staging`**; two Vercel projects (`seo-web-cae`, `seo-web-dr-jasmine`) with Root Directory `apps/cae` / `apps/dr-jasmine`. **Confirmed live (2026-07-30):** Output Directory **Off**; `@astrojs/vercel` → `.vercel/output`. **Base:** `VERCEL=1` → `base: "/"` (open host root); local gateway keeps `/cae/` and `/dr-jasmine/`. See [routing](architecture/routing-vercel.md) · [deploy success source](sources/vercel-output-directory-off-deploy-success.md)
+- Deploy: prefer Git branches **`main`** / **`staging`**; two Vercel projects (`seo-web-cae`, `seo-web-dr-jasmine`) with Root Directory `apps/cae` / `apps/dr-jasmine`. **Confirmed live (2026-07-30):** Output Directory **Off**; `@astrojs/vercel` → `.vercel/output`. **Base:** `VERCEL=1` → `base: "/"` (open host root); local gateway keeps `/cae/` and `/dr-jasmine/` (`538a722`). See [routing](architecture/routing-vercel.md) · [Output Directory](sources/vercel-output-directory-off-deploy-success.md) · [base `/` unstyled UI](sources/vercel-base-root-unstyled-ui.md)
 - Framework: **Astro** · Package manager: **pnpm**
 - Knowledge vault: `seo-wiki-vault/`
 
@@ -23,7 +23,7 @@ Last updated: 2026-07-30 (ingest Vercel Output Directory off — dual-site deplo
 |---------|------|--------|
 | Gateway | `apps/gateway/` | Proxies `/cae` → 4322, `/dr-jasmine` → 4323; `/cms` “not migrated yet” |
 | Site:CAE | `apps/cae/` | Native ZWDS marketing (home + media) + Insights Blog bento + Admin Blog + public `/blog`; vault GHL scrapes in `raw/research/cae-ghl-capture*` |
-| Site:DrJasmine | `apps/dr-jasmine/` | Single-home marketing (GHL LDP copy + Health Insights teaser) + Admin Blog (Bulk import MYT schedule) + light public `/blog`; GHL capture archive in `raw/research/dr-jasmine-ghl-capture/` |
+| Site:DrJasmine | `apps/dr-jasmine/` | Home (GHL LDP copy + Featured Reels + Health Insights) + `/about` + `/reels` + Admin Blog (Bulk import MYT schedule; Reels curation) + light public `/blog`; GHL capture archive in `raw/research/dr-jasmine-ghl-capture/` |
 | Shared platform | `packages/`, `supabase/` | `@seo/db` clients + `@seo/blog` CRUD; authors/categories/posts + Storage `media` |
 | CMS | (not scaffolded) | Deferred → `apps/cms` (not the same as brand Admin) |
 | Wiki vault | `seo-wiki-vault/` | See `AGENTS.md` |
@@ -36,7 +36,7 @@ CMS (only) still deferred: [independent-apps-dr-jasmine-and-cms.md](../../docs/f
 
 - **One Astro app per brand** + path gateway ([ADR 0003](decisions/0003-astro-single-app-per-site-folders.md))
 - CAE marketing: **native** `components/home/*` + shared chrome; Insights soft bento after Press ([cae](sites/cae.md), [native redesign](sources/cae-native-zwds-public-redesign.md), [homepage blog bento](sources/cae-homepage-blog-bento.md))
-- Dr Jasmine marketing: single home (GHL copy + Health Insights Post tiles); all CTAs → live `registerUrl`; light ivory blog ([dr-jasmine](sites/dr-jasmine.md), [home IA](sources/dr-jasmine-home-ia-and-polish.md), [homepage blog band](sources/dr-jasmine-homepage-blog-band.md), [blog readability](sources/dr-jasmine-admin-theme-and-blog-readability.md))
+- Dr Jasmine marketing: home (GHL copy + Featured Reels embeds + Health Insights Post tiles) + `/about` + `/reels`; all workshop CTAs → live `registerUrl`; light ivory blog ([dr-jasmine](sites/dr-jasmine.md), [about page](sources/dr-jasmine-about-page.md), [curated Reels](sources/dr-jasmine-curated-instagram-reels.md), [home IA](sources/dr-jasmine-home-ia-and-polish.md), [homepage blog band](sources/dr-jasmine-homepage-blog-band.md), [blog readability](sources/dr-jasmine-admin-theme-and-blog-readability.md))
 - Brand Admin + public blog (+ CAE/DJ home for recent Posts): server mode, Supabase Auth where needed, `@seo/blog` queries scoped by `site_id`; public posts are **live** only (`published_at <= now()`)
 - Local front door is gateway ([routing](architecture/routing-vercel.md))
 - Shared Supabase ([schema](architecture/supabase.md))
@@ -78,7 +78,7 @@ Sites: [CAE](sites/cae.md) · [Dr Jasmine](sites/dr-jasmine.md) · [CMS](sites/c
 
 ## Accepted ADRs
 
-- [0001](decisions/0001-one-vercel-project-host-routing.md) — one Vercel project, host routing (intent; deploy wiring incomplete)
+- [0001](decisions/0001-one-vercel-project-host-routing.md) — one Vercel project, host routing (**superseded for topology** by dual projects; host rewrite still open)
 - [0002](decisions/0002-supabase-multi-site-blog.md) — multi-site blog in Supabase
 - [0003](decisions/0003-astro-single-app-per-site-folders.md) — **one Astro app per brand + path gateway**
 
@@ -98,7 +98,7 @@ pnpm --filter @seo/dr-jasmine build
 
 Env: `apps/cae/.env.example` → `.env.local`; `apps/dr-jasmine/.env.example` → `.env.local` (root `.env.example` is a pointer only).
 
-Useful paths: `/cae` · `/cae/media/` · `/cae/blog` · `/cae/admin` · `/dr-jasmine` · `/dr-jasmine/blog` · `/dr-jasmine/admin`.
+Useful paths: `/cae` · `/cae/media/` · `/cae/blog` · `/cae/admin` · `/dr-jasmine` · `/dr-jasmine/about` · `/dr-jasmine/reels` · `/dr-jasmine/blog` · `/dr-jasmine/admin`.
 
 Smoke: [CAE](sites/cae.md#smoke-checklist-admin--public-blog) · [Dr Jasmine](sites/dr-jasmine.md#smoke-checklist-option-a-true-website--t12).
 
@@ -106,9 +106,7 @@ Smoke: [CAE](sites/cae.md#smoke-checklist-admin--public-blog) · [Dr Jasmine](si
 
 - Set GitHub default branch to `main`, delete `origin/cae`, retarget hosts off retired brand tips ([branch model](sources/monorepo-main-staging-branch-model.md))
 - Scaffold `apps/cms` + activate gateway `/cms` — [independent-apps doc](../../docs/future-enhancements/independent-apps-dr-jasmine-and-cms.md) (DJ superseded)
-- Host-based multi-brand production routing / multi-app Vercel topology
-- `@astrojs/vercel` adapter for production host middleware (CAE/DJ already use Node adapter locally/server)
-- Separate Vercel project per site (optional alternative)
+- Host-based multi-brand production routing (custom domains already targetable per project; apex SEO without path prefixes is largely done via `base: "/"` on Vercel — remaining: point `caegoh.com` / `doctorjasmine.com` live)
 - Shared `@seo/ui`
 - ISR, i18n, multi-role CMS auth
 - **CMS Media Library UI** + `media` table (bucket/paths already live for Admin uploads; design: `docs/future-enhancements/cms-media-library.md`)
@@ -117,7 +115,7 @@ Smoke: [CAE](sites/cae.md#smoke-checklist-admin--public-blog) · [Dr Jasmine](si
 - Wire or drop unused blog index `LeadPost`
 - Formal Appendix B visual smoke (375/1280, light+dark) for native public surfaces
 - DJ residual human QA: Auth/CRUD/publish smoke; `supabase db reset` when Docker available (see [dr-jasmine](sites/dr-jasmine.md)). Public responsive baseline **passed** 2026-07-28 — no code changes ([responsive audit](sources/dr-jasmine-responsive-audit.md))
-- DJ brand tokens: Forest/Gold/Ivory live in public + Admin + light blog (see [home IA](sources/dr-jasmine-home-ia-and-polish.md), [blog readability](sources/dr-jasmine-admin-theme-and-blog-readability.md))
+- Vercel Git author gate for `KWen-22` (invite or disable author-access rule) — [dual-site source](sources/vercel-dual-site-hosting-and-ssr.md)
 
 ## Related raw sources
 
@@ -142,7 +140,15 @@ Smoke: [CAE](sites/cae.md#smoke-checklist-admin--public-blog) · [Dr Jasmine](si
 - [cae-admin-bulk-import](../raw/inbox/2026-07-27-cae-admin-bulk-import.md) → [sources/cae-admin-bulk-import.md](sources/cae-admin-bulk-import.md)
 - [cae-bulk-import-schedule-ui](../raw/inbox/2026-07-29-cae-bulk-import-schedule-ui.md) → [sources/cae-bulk-import-schedule-ui.md](sources/cae-bulk-import-schedule-ui.md)
 - [dr-jasmine-bulk-import-schedule-ui](../raw/inbox/2026-07-30-dr-jasmine-bulk-import-schedule-ui.md) → [sources/dr-jasmine-bulk-import-schedule-ui.md](sources/dr-jasmine-bulk-import-schedule-ui.md)
+- [bulk-import-llm-template-and-logout-csrf](../raw/inbox/2026-07-30-bulk-import-llm-template-and-logout-csrf.md) → [sources/bulk-import-llm-template-and-logout-csrf.md](sources/bulk-import-llm-template-and-logout-csrf.md)
 - [cae-blog-immersive-story-redesign](../raw/inbox/2026-07-27-cae-blog-immersive-story-redesign.md) → [sources/cae-blog-immersive-story-redesign.md](sources/cae-blog-immersive-story-redesign.md)
 - [cae-nm-zwds-brand-theme-and-public-theme-toggle](../raw/inbox/2026-07-28-cae-nm-zwds-brand-theme-and-public-theme-toggle.md) → [sources/cae-nm-zwds-brand-theme-and-public-theme-toggle.md](sources/cae-nm-zwds-brand-theme-and-public-theme-toggle.md)
 - [cae-native-zwds-public-redesign](../raw/inbox/2026-07-28-cae-native-zwds-public-redesign.md) → [sources/cae-native-zwds-public-redesign.md](sources/cae-native-zwds-public-redesign.md)
+- [cae-connect-headline-dark-gold](../raw/inbox/2026-07-30-cae-connect-headline-dark-gold.md) → [sources/cae-connect-headline-dark-gold.md](sources/cae-connect-headline-dark-gold.md)
 - [monorepo-main-staging-branch-model](../raw/inbox/2026-07-29-monorepo-main-staging-branch-model.md) → [sources/monorepo-main-staging-branch-model.md](sources/monorepo-main-staging-branch-model.md)
+- [dr-jasmine-blog-toc-scroll-spy-and-eyebrows](../raw/inbox/2026-07-30-dr-jasmine-blog-toc-scroll-spy-and-eyebrows.md) → [sources/dr-jasmine-blog-toc-scroll-spy-and-eyebrows.md](sources/dr-jasmine-blog-toc-scroll-spy-and-eyebrows.md)
+- [dr-jasmine-about-page](../raw/inbox/2026-07-31-dr-jasmine-about-page.md) → [sources/dr-jasmine-about-page.md](sources/dr-jasmine-about-page.md)
+- [dr-jasmine-curated-instagram-reels](../raw/inbox/2026-07-31-dr-jasmine-curated-instagram-reels.md) → [sources/dr-jasmine-curated-instagram-reels.md](sources/dr-jasmine-curated-instagram-reels.md)
+- [vercel-dual-site-hosting-and-ssr](../raw/inbox/2026-07-30-vercel-dual-site-hosting-and-ssr.md) → [sources/vercel-dual-site-hosting-and-ssr.md](sources/vercel-dual-site-hosting-and-ssr.md)
+- [vercel-output-directory-off-deploy-success](../raw/inbox/2026-07-30-vercel-output-directory-off-deploy-success.md) → [sources/vercel-output-directory-off-deploy-success.md](sources/vercel-output-directory-off-deploy-success.md)
+- [vercel-base-root-unstyled-ui](../raw/inbox/2026-07-30-vercel-base-root-unstyled-ui.md) → [sources/vercel-base-root-unstyled-ui.md](sources/vercel-base-root-unstyled-ui.md)

@@ -3,6 +3,9 @@
 | Term | Meaning |
 |------|---------|
 | **Brand app** | Independent Astro package under `apps/<slug>` (`@seo/<slug>`) with its own `base` and port. |
+| **main** | Git production integration branch. Always contains every live brand app (`apps/cae`, `apps/dr-jasmine`, …) plus shared packages. |
+| **staging** | Git pre-prod check branch. Same full monorepo tree as `main`; merge feature work here before PR to `main`. |
+| **Feature branch** | Short-lived `feat/...` (or similar) branched from `main`/`staging` for site or shared work. May change only one brand’s files; the other apps remain on the tree. |
 | **Gateway** | `apps/gateway` — local path front door that proxies `/cae` (and later other brands) to upstream apps. |
 | **Site** | A brand or CMS surface — live apps under `apps/<slug>/` (e.g. CAE, Dr Jasmine); deferred surfaces (e.g. CMS) are not scaffolded yet. |
 | **Site slug** | Stable string id in code and URLs (`cae`, `dr-jasmine`, `cms`). |
@@ -17,7 +20,7 @@
 | **Native ZWDS public stack** | Live CAE marketing/blog chrome built from `components/home/*` + `BlogLayout` (SiteHeader/SiteFooter), nm-zwds tokens, and `decorative.css` — not the GHL capture runtime. |
 | **Author** | Site-scoped byline profile for a brand’s posts (one per brand for now). Brands do not share Authors. |
 | **Admin** | Per-brand authenticated authoring UI inside a brand app (e.g. `/cae/admin`). CAE Admin authors CAE posts only. |
-| **Bulk import** | CAE Admin flow (`/cae/admin/posts/import`) that creates many Posts from one Markdown document (`===NEW POST===` separators + YAML frontmatter). Per-post hero uploads in UI; `status` / `publishAt` respected. |
+| **Bulk import** | Admin flow (`/cae/admin/posts/import` and `/dr-jasmine/admin/posts/import`, also Dashboard) that creates many Posts from one Markdown document (`===NEW POST===` + YAML frontmatter). Copy/Download template injects **live categories/tags** and asks AIs for plain `.md` + **5–15 min** bodies. Parser strips common AI chat wrappers. Per-post hero uploads in section 3; go-live times in section 4 (Malaysia Time + cadence). Markdown `publishAt` ignored. Logout CSRF needs Astro `security.allowedDomains` behind gateway/Vercel — see [bulk-import-llm-template-and-logout-csrf](sources/bulk-import-llm-template-and-logout-csrf.md). |
 | **CMS** | Future shared authoring platform across brands (`apps/cms` planned later). Not the same as Admin; do not treat CAE Admin as the CMS. |
 | **Media Library** | Deferred CMS UI (`/cms/media`) to upload images and edit `alt` / `title` per site. Distinct from Admin’s direct Storage uploads. |
 | **Media kind** | Planned enum on media rows: `site` (landing/brand) vs `blog` (covers/body). |

@@ -8,6 +8,7 @@
 | Kind | Session notes (implementation) |
 | Related site | [Dr Jasmine](../sites/dr-jasmine.md) |
 | Related prior | [home IA polish](dr-jasmine-home-ia-and-polish.md); CAE immersive story is **not** DJ’s surface |
+| Follow-on | [dr-jasmine-blog-toc-scroll-spy-and-eyebrows](dr-jasmine-blog-toc-scroll-spy-and-eyebrows.md) (TOC spy + section eyebrows) |
 
 ## Takeaways
 

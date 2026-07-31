@@ -1,5 +1,5 @@
 /**
- * @fileoverview JSON-LD builders for public marketing pages (home WebSite + FAQ).
+ * @fileoverview JSON-LD builders for public marketing pages (home, About, FAQ).
  */
 
 import type { JsonLdNode } from "@/data/blog/jsonld";
@@ -235,6 +235,157 @@ export function buildWebSiteJsonLd(input: WebSiteJsonLdInput): JsonLdNode {
   return {
     "@context": "https://schema.org",
     "@graph": graph,
+  };
+}
+
+/**
+ * Arguments for {@link buildAboutJsonLd}.
+ */
+export type AboutJsonLdInput = {
+  /** Current page pathname including Astro base. */
+  pathname: string;
+  /** Physician display name (e.g. Dr Jasmine Chiew, MBBS). */
+  name: string;
+  /** Brand name; defaults to site config. */
+  siteName?: string;
+  /** Page meta description. */
+  description?: string;
+};
+
+/**
+ * Builds Person (physician) + MedicalWebPage JSON-LD for the About route.
+ * Uses honest public fields only — no invented credentials or contact email.
+ *
+ * @param input - Pathname, physician name, and optional SEO overrides
+ * @returns JSON-LD document safe for `SeoHead` `jsonLd`
+ */
+export function buildAboutJsonLd(input: AboutJsonLdInput): JsonLdNode {
+  if (input === null || typeof input !== "object") {
+    throw new TypeError("buildAboutJsonLd requires an input object.");
+  }
+
+  const pathname = nonEmptyString(input.pathname);
+  if (pathname === undefined) {
+    throw new Error("buildAboutJsonLd requires a non-empty pathname.");
+  }
+
+  const physicianName = nonEmptyString(input.name);
+  if (physicianName === undefined) {
+    throw new Error("buildAboutJsonLd requires a non-empty name.");
+  }
+
+  const siteName =
+    nonEmptyString(input.siteName) ?? drJasmineSiteConfig.name;
+  const pageUrl = toCanonicalUrl(pathname);
+  const description = nonEmptyString(input.description);
+  const personId = `${schemaRoot()}/#physician`;
+
+  const organization = buildOrganizationNode(siteName);
+  const website = buildWebSiteNode(siteName);
+  const person = withOptionalFields(
+    {
+      "@type": "Person",
+      "@id": personId,
+      name: physicianName,
+      jobTitle: "Medical doctor",
+      url: pageUrl,
+      worksFor: {
+        "@id": organizationId(),
+      },
+      sameAs: [
+        drJasmineSiteConfig.social.instagram,
+        drJasmineSiteConfig.social.linkedin,
+      ],
+    },
+    {
+      description,
+    },
+  );
+  const webpage = withOptionalFields(
+    {
+      "@type": "MedicalWebPage",
+      "@id": `${pageUrl}#webpage`,
+      url: pageUrl,
+      name: physicianName,
+      isPartOf: {
+        "@id": websiteId(),
+      },
+      about: {
+        "@id": personId,
+      },
+      mainEntity: {
+        "@id": personId,
+      },
+    },
+    {
+      description,
+    },
+  );
+
+  return {
+    "@context": "https://schema.org",
+    "@graph": [organization, website, person, webpage],
+  };
+}
+
+/**
+ * Arguments for {@link buildReelsJsonLd}.
+ */
+export type ReelsJsonLdInput = {
+  /** Current page pathname including Astro base. */
+  pathname: string;
+  /** Brand name; defaults to site config. */
+  siteName?: string;
+  /** Page meta description. */
+  description?: string;
+};
+
+/**
+ * Builds WebPage JSON-LD for the curated Instagram Reels route.
+ *
+ * @param input - Pathname and optional SEO overrides
+ * @returns JSON-LD document safe for `SeoHead` `jsonLd`
+ */
+export function buildReelsJsonLd(input: ReelsJsonLdInput): JsonLdNode {
+  if (input === null || typeof input !== "object") {
+    throw new TypeError("buildReelsJsonLd requires an input object.");
+  }
+
+  const pathname = nonEmptyString(input.pathname);
+  if (pathname === undefined) {
+    throw new Error("buildReelsJsonLd requires a non-empty pathname.");
+  }
+
+  const siteName =
+    nonEmptyString(input.siteName) ?? drJasmineSiteConfig.name;
+  const pageUrl = toCanonicalUrl(pathname);
+  const description = nonEmptyString(input.description);
+  const pageName = `Instagram Reels | ${siteName}`;
+
+  const organization = buildOrganizationNode(siteName);
+  const website = buildWebSiteNode(siteName);
+  const webpage = withOptionalFields(
+    {
+      "@type": "WebPage",
+      "@id": `${pageUrl}#webpage`,
+      url: pageUrl,
+      name: pageName,
+      isPartOf: {
+        "@id": websiteId(),
+      },
+      about: {
+        "@id": organizationId(),
+      },
+      significantLink: drJasmineSiteConfig.social.instagram,
+    },
+    {
+      description,
+    },
+  );
+
+  return {
+    "@context": "https://schema.org",
+    "@graph": [organization, website, webpage],
   };
 }
 

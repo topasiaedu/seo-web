@@ -13,6 +13,7 @@
 
 - Collapsed multi-page Option A marketing IA into a **single GHL-sourced home** plus `/blog` + `/admin`.
 - **Removed** native `/about`, `/faq`, `/programs`, `/workshop` routes.
+- **Superseded (About only):** `/about` restored 2026-07-31 — see [dr-jasmine-about-page](dr-jasmine-about-page.md). `/faq` `/programs` `/workshop` remain omitted.
 - All workshop CTAs → `registerUrl` (`https://doctorjasmine.com/register`); nav label **Join free workshop**; home CTA **Secure My Seat**.
 - Home copy from GHL registration LDP only; FAQ accordion on home; Meet section + Instagram/LinkedIn.
 - Brand tokens/fonts aligned to patient portal: Forest/Ivory/Gold; **DM Serif Display** + **Plus Jakarta Sans**.

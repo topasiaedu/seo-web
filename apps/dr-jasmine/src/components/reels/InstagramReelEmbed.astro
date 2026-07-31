@@ -1,0 +1,52 @@
+---
+/**
+ * @fileoverview Single Instagram official embed blockquote for a curated permalink.
+ */
+interface Props {
+  /** Canonical Instagram Reel/post URL. */
+  permalink: string;
+}
+
+const { permalink } = Astro.props;
+
+if (typeof permalink !== "string" || permalink.trim().length === 0) {
+  throw new Error("InstagramReelEmbed requires a non-empty permalink.");
+}
+
+const href = permalink.trim();
+---
+
+<div class="dj-ig-embed">
+  <blockquote
+    class="instagram-media"
+    data-instgrm-permalink={href}
+    data-instgrm-version="14"
+  >
+    <a href={href} target="_blank" rel="noopener noreferrer">
+      View this post on Instagram
+    </a>
+  </blockquote>
+</div>
+
+<style>
+  .dj-ig-embed {
+    width: 100%;
+    max-width: 20rem;
+    margin-inline: auto;
+    display: flex;
+    justify-content: center;
+    overflow: hidden;
+  }
+
+  .dj-ig-embed :global(.instagram-media) {
+    margin: 0 auto !important;
+    min-width: 0 !important;
+    max-width: 100% !important;
+    width: 100% !important;
+  }
+
+  .dj-ig-embed :global(.instagram-media iframe) {
+    max-width: 100% !important;
+    min-width: 0 !important;
+  }
+</style>
