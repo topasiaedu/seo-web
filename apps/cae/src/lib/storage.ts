@@ -13,8 +13,27 @@ export const MEDIA_BUCKET_ID = "media" as const;
 /** Object-key prefix for CAE Post hero / OG cover images (inside the media bucket). */
 export const CAE_BLOG_COVERS_PREFIX = "cae/blog/covers" as const;
 
+/** Object-key prefix for CAE Xiaohongshu social feature covers. */
+export const CAE_SOCIAL_COVERS_PREFIX = "cae/social/covers" as const;
+
 /** Maximum accepted cover upload size (5 MiB). */
 export const MAX_BLOG_COVER_BYTES = 5 * 1024 * 1024;
+
+/**
+ * Recommended cover aspect ratios for blog cards / heroes.
+ * Cards use 16:10; 16:9 is also fine (cropping uses `object-fit: cover`).
+ */
+export const BLOG_COVER_ASPECT_RATIO_LABEL = "16:9 / 16:10" as const;
+
+/** Human-readable max size for Admin upload hints. */
+export const MAX_BLOG_COVER_SIZE_LABEL = "5 MB" as const;
+
+/**
+ * Short Admin hint for cover uploads (ratio + size).
+ * Shown next to Create and Bulk Import image fields.
+ */
+export const BLOG_COVER_UPLOAD_HINT =
+  `Recommended ratio ${BLOG_COVER_ASPECT_RATIO_LABEL}. Max file size ${MAX_BLOG_COVER_SIZE_LABEL}.` as const;
 
 /**
  * Sanitizes a browser filename for use in a Storage object key.
@@ -90,6 +109,54 @@ export async function uploadBlogCoverImage(
     contentType: imageFile.type,
     cacheControl: "3600",
   });
+
+  if (uploadResult.error !== null) {
+    throw new Error(`Cover upload failed: ${uploadResult.error.message}`);
+  }
+
+  const publicResult = client.storage.from(MEDIA_BUCKET_ID).getPublicUrl(objectPath);
+  const publicUrl = publicResult.data.publicUrl;
+  if (typeof publicUrl !== "string" || publicUrl.trim().length === 0) {
+    throw new Error("Cover upload succeeded but no public URL was returned.");
+  }
+
+  return publicUrl.trim();
+}
+
+/**
+ * Uploads a Xiaohongshu social feature cover to Supabase Storage.
+ *
+ * Object key: `cae/social/covers/{timestamp}-{sanitized-filename}`.
+ *
+ * @param client - Authenticated Supabase client (browser or server).
+ * @param file - Validated image file.
+ * @returns Public HTTPS URL for the uploaded object.
+ */
+export async function uploadSocialCoverImage(
+  client: BlogSupabaseClient,
+  file: File,
+): Promise<string> {
+  if (client === null || typeof client !== "object") {
+    throw new TypeError("uploadSocialCoverImage: client is required");
+  }
+
+  const imageFile = assertBlogCoverImageFile(file);
+  const timestamp = Date.now().toString(10);
+  const sanitizedName = sanitizeStorageFilename(imageFile.name);
+  const objectPath = [
+    CAE_SOCIAL_COVERS_PREFIX,
+    `${timestamp}-${sanitizedName}`,
+  ].join("/");
+
+  const uploadResult = await client.storage.from(MEDIA_BUCKET_ID).upload(
+    objectPath,
+    imageFile,
+    {
+      upsert: false,
+      contentType: imageFile.type,
+      cacheControl: "3600",
+    },
+  );
 
   if (uploadResult.error !== null) {
     throw new Error(`Cover upload failed: ${uploadResult.error.message}`);

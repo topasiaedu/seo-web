@@ -29,6 +29,22 @@ export const DR_JASMINE_BLOG_AUTHORS_PREFIX = "dr-jasmine/blog/authors" as const
 export const MAX_BLOG_COVER_BYTES = 5 * 1024 * 1024;
 
 /**
+ * Recommended cover aspect ratios for blog cards / heroes.
+ * Cards use 16:10; 16:9 is also fine (cropping uses `object-fit: cover`).
+ */
+export const BLOG_COVER_ASPECT_RATIO_LABEL = "16:9 / 16:10" as const;
+
+/** Human-readable max size for Admin upload hints. */
+export const MAX_BLOG_COVER_SIZE_LABEL = "5 MB" as const;
+
+/**
+ * Short Admin hint for cover uploads (ratio + size).
+ * Shown next to Create and Bulk Import image fields.
+ */
+export const BLOG_COVER_UPLOAD_HINT =
+  `Recommended ratio ${BLOG_COVER_ASPECT_RATIO_LABEL}. Max file size ${MAX_BLOG_COVER_SIZE_LABEL}.` as const;
+
+/**
  * Sanitizes a browser filename for use in a Storage object key.
  *
  * @param filename - Original `File.name` from the browser.

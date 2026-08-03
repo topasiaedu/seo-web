@@ -44,6 +44,7 @@ import {
   type MytDateTimeParts,
 } from "../../lib/bulk-import-schedule";
 import { buildBulkImportWriterTemplate } from "../../lib/bulk-import-template";
+import { BLOG_COVER_UPLOAD_HINT } from "../../lib/storage";
 import styles from "./BulkImportForm.module.css";
 
 /** Serializable props for the bulk import island. */
@@ -961,6 +962,9 @@ export function BulkImportForm(props: BulkImportFormProps): JSX.Element {
 
       <section className="admin-card">
         <h2 className="admin-card__title">3. Hero images</h2>
+        <p className={styles.instructions} role="note">
+          {BLOG_COVER_UPLOAD_HINT}
+        </p>
         {rows.length === 0 ? (
           <p className="admin-empty">
             Add Markdown content in section 2 first. Once posts are detected, one

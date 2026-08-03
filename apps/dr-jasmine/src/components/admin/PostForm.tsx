@@ -34,7 +34,10 @@ import {
 } from "react";
 
 import { SLUG_FORMAT_PATTERN, slugifyTitle } from "../../lib/post-slug";
-import { uploadBlogCoverImage } from "../../lib/storage";
+import {
+  BLOG_COVER_UPLOAD_HINT,
+  uploadBlogCoverImage,
+} from "../../lib/storage";
 import { BodyEditor } from "./BodyEditor";
 import { FaqEditor } from "./FaqEditor";
 import { SourcesEditor } from "./SourcesEditor";
@@ -1011,6 +1014,9 @@ export function PostForm(props: PostFormProps): JSX.Element {
               <p className={styles.sectionHint}>
                 Upload to Supabase Storage (`media/dr-jasmine/blog/covers/`) or paste a
                 URL. This image is also used for social / share previews (OG).
+              </p>
+              <p className={styles.sectionHint} role="note">
+                {BLOG_COVER_UPLOAD_HINT}
               </p>
 
               <div className={styles.field}>
