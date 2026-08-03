@@ -1,0 +1,26 @@
+---
+/**
+ * Social Media page intro — title and lede only (platform CTAs live in sections).
+ */
+import { homeSocial } from "@/data/home/social";
+import "@/styles/social/social-hub.css";
+---
+
+<section class="social-hub" aria-labelledby="social-hub-heading">
+  <div class="cae-starfield" aria-hidden="true">
+    <div class="cae-starfield__glow"></div>
+    <div class="cae-starfield__dots"></div>
+    <span class="cae-starfield__twinkle cae-starfield__twinkle--a"></span>
+    <span class="cae-starfield__twinkle cae-starfield__twinkle--c"></span>
+  </div>
+
+  <div class="social-hub__inner social-hub__inner--intro">
+    <header class="social-hub__header">
+      <p class="cae-eyebrow">{homeSocial.eyebrow}</p>
+      <h1 class="social-hub__title" id="social-hub-heading">
+        {homeSocial.heading}
+      </h1>
+      <p class="social-hub__lede">{homeSocial.lede}</p>
+    </header>
+  </div>
+</section>

@@ -1,0 +1,700 @@
+---
+/**
+ * CAE Admin Social page — curated IG/FB embeds + Xiaohongshu cards.
+ * Instagram / Facebook: paste permalink only.
+ * Xiaohongshu: permalink + title + cover (upload or URL).
+ */
+import type { SocialFeaturePlatform } from "@seo/blog";
+import AdminLayout from "../../../layouts/AdminLayout.astro";
+import { caeSiteConfig } from "../../../site-config";
+import { requireLocalsSupabase } from "../../../lib/admin-auth";
+import {
+  createSocialFeature,
+  deleteSocialFeature,
+  listSocialFeaturesForAdmin,
+  MAX_SOCIAL_FEATURES_PER_PLATFORM,
+  parseSocialFeaturePlatform,
+  socialFeaturePlatformLabel,
+  updateSocialFeature,
+  type SocialFeature,
+} from "../../../lib/social-features";
+import { uploadSocialCoverImage } from "../../../lib/storage";
+
+export const prerender = false;
+
+type SocialAdminState = {
+  errorMessage: string | null;
+  successMessage: string | null;
+  createPlatform: SocialFeaturePlatform;
+  createPermalinkDraft: string;
+  createTitleDraft: string;
+  createCoverUrlDraft: string;
+};
+
+const SITE_ID = caeSiteConfig.projectId;
+
+const PLATFORMS: readonly SocialFeaturePlatform[] = [
+  "xiaohongshu",
+  "instagram",
+  "facebook",
+];
+
+/**
+ * Reads and trims a required text field from FormData.
+ *
+ * @param formData - Submitted form payload.
+ * @param key - Field key.
+ * @returns Trimmed non-empty string.
+ */
+function readRequiredText(formData: FormData, key: string): string {
+  const value = formData.get(key);
+  if (typeof value !== "string") {
+    throw new Error(`Missing required field: ${key}`);
+  }
+  const trimmedValue = value.trim();
+  if (trimmedValue.length === 0) {
+    throw new Error(`Field "${key}" cannot be empty.`);
+  }
+  return trimmedValue;
+}
+
+/**
+ * Reads an optional text field from FormData (empty string when absent).
+ *
+ * @param formData - Submitted form payload.
+ * @param key - Field key.
+ * @returns Trimmed string (may be empty).
+ */
+function readOptionalText(formData: FormData, key: string): string {
+  const value = formData.get(key);
+  if (typeof value !== "string") {
+    return "";
+  }
+  return value.trim();
+}
+
+/**
+ * Converts unknown error values into stable user-facing text.
+ *
+ * @param error - Unknown caught value.
+ * @returns User-facing message.
+ */
+function toErrorMessage(error: unknown): string {
+  if (error instanceof Error && error.message.trim().length > 0) {
+    return error.message;
+  }
+  return "Could not update Social features. Please try again.";
+}
+
+/**
+ * Resolves a feature by id.
+ *
+ * @param features - Current feature list.
+ * @param featureId - Candidate feature id.
+ * @returns Matching feature or `undefined`.
+ */
+function findFeatureById(
+  features: readonly SocialFeature[],
+  featureId: string,
+): SocialFeature | undefined {
+  return features.find((feature) => feature.id === featureId);
+}
+
+/**
+ * Short label for confirmations.
+ *
+ * @param feature - Feature row.
+ * @returns Short display string.
+ */
+function featureLabel(feature: SocialFeature): string {
+  if (
+    feature.platform === "xiaohongshu" &&
+    typeof feature.title === "string" &&
+    feature.title.trim().length > 0
+  ) {
+    return feature.title.trim();
+  }
+  try {
+    const parsed = new URL(feature.permalink);
+    const parts = parsed.pathname.split("/").filter((part) => part.length > 0);
+    const code = parts[parts.length - 1];
+    if (typeof code === "string" && code.length > 0) {
+      return code;
+    }
+  } catch {
+    /* fall through */
+  }
+  return feature.permalink;
+}
+
+/**
+ * Resolves XHS cover from optional file upload or pasted URL.
+ *
+ * @param formData - Submitted form.
+ * @param supabase - Authenticated client.
+ * @param existingCover - Existing cover URL when updating.
+ * @returns Cover URL string.
+ */
+async function resolveXiaohongshuCover(
+  formData: FormData,
+  supabase: ReturnType<typeof requireLocalsSupabase>,
+  existingCover: string | null,
+): Promise<string> {
+  const coverFileValue = formData.get("cover_file");
+  const coverFile =
+    coverFileValue instanceof File && coverFileValue.size > 0
+      ? coverFileValue
+      : null;
+  const coverUrlPaste = readOptionalText(formData, "cover_image_url");
+
+  if (coverFile !== null) {
+    return uploadSocialCoverImage(supabase, coverFile);
+  }
+  if (coverUrlPaste.length > 0) {
+    return coverUrlPaste;
+  }
+  if (typeof existingCover === "string" && existingCover.trim().length > 0) {
+    return existingCover.trim();
+  }
+  throw new Error("Xiaohongshu features need a cover image (upload or URL).");
+}
+
+const supabase = requireLocalsSupabase(Astro.locals.supabase);
+let features = await listSocialFeaturesForAdmin(supabase, SITE_ID);
+
+let state: SocialAdminState = {
+  errorMessage: null,
+  successMessage: null,
+  createPlatform: "instagram",
+  createPermalinkDraft: "",
+  createTitleDraft: "",
+  createCoverUrlDraft: "",
+};
+
+if (Astro.request.method === "POST") {
+  const formData = await Astro.request.formData();
+  const actionValue = formData.get("action");
+  const action = typeof actionValue === "string" ? actionValue.trim() : "";
+  const submittedPlatformRaw = readOptionalText(formData, "platform");
+  const submittedPermalink = readOptionalText(formData, "permalink");
+  const submittedTitle = readOptionalText(formData, "title");
+  const submittedCoverUrl = readOptionalText(formData, "cover_image_url");
+
+  try {
+    if (action === "create") {
+      const platform = parseSocialFeaturePlatform(
+        readRequiredText(formData, "platform"),
+      );
+      const permalink = readRequiredText(formData, "permalink");
+      const isPublished = formData.get("is_published") === "on";
+
+      let title: string | undefined;
+      let coverImageUrl: string | undefined;
+      if (platform === "xiaohongshu") {
+        title = readRequiredText(formData, "title");
+        coverImageUrl = await resolveXiaohongshuCover(
+          formData,
+          supabase,
+          null,
+        );
+      }
+
+      const created = await createSocialFeature(supabase, SITE_ID, {
+        platform,
+        permalink,
+        title,
+        coverImageUrl,
+        isPublished,
+      });
+      features = await listSocialFeaturesForAdmin(supabase, SITE_ID);
+      state = {
+        errorMessage: null,
+        successMessage: `Added ${socialFeaturePlatformLabel(created.platform)} item (${featureLabel(created)}).`,
+        createPlatform: platform,
+        createPermalinkDraft: "",
+        createTitleDraft: "",
+        createCoverUrlDraft: "",
+      };
+    } else if (action === "update") {
+      const featureId = readRequiredText(formData, "feature_id");
+      const existing = findFeatureById(features, featureId);
+      if (existing === undefined) {
+        throw new Error("Social feature not found.");
+      }
+
+      const permalink = readRequiredText(formData, "permalink");
+      const isPublished = formData.get("is_published") === "on";
+
+      let title: string | null | undefined;
+      let coverImageUrl: string | null | undefined;
+      if (existing.platform === "xiaohongshu") {
+        title = readRequiredText(formData, "title");
+        coverImageUrl = await resolveXiaohongshuCover(
+          formData,
+          supabase,
+          existing.coverImageUrl,
+        );
+      }
+
+      const updated = await updateSocialFeature(supabase, SITE_ID, featureId, {
+        permalink,
+        title,
+        coverImageUrl,
+        isPublished,
+      });
+      features = await listSocialFeaturesForAdmin(supabase, SITE_ID);
+      state = {
+        errorMessage: null,
+        successMessage: `Updated ${socialFeaturePlatformLabel(updated.platform)} item (${featureLabel(updated)}).`,
+        createPlatform: existing.platform,
+        createPermalinkDraft: "",
+        createTitleDraft: "",
+        createCoverUrlDraft: "",
+      };
+    } else if (action === "delete") {
+      const featureId = readRequiredText(formData, "feature_id");
+      const existing = findFeatureById(features, featureId);
+      if (existing === undefined) {
+        throw new Error("Social feature not found.");
+      }
+
+      await deleteSocialFeature(supabase, SITE_ID, featureId);
+      features = await listSocialFeaturesForAdmin(supabase, SITE_ID);
+      state = {
+        errorMessage: null,
+        successMessage: `Removed ${socialFeaturePlatformLabel(existing.platform)} item (${featureLabel(existing)}).`,
+        createPlatform: existing.platform,
+        createPermalinkDraft: "",
+        createTitleDraft: "",
+        createCoverUrlDraft: "",
+      };
+    } else {
+      throw new Error("Unknown Social action.");
+    }
+  } catch (error) {
+    let createPlatform: SocialFeaturePlatform = "instagram";
+    try {
+      if (submittedPlatformRaw.length > 0) {
+        createPlatform = parseSocialFeaturePlatform(submittedPlatformRaw);
+      }
+    } catch {
+      createPlatform = "instagram";
+    }
+    state = {
+      errorMessage: toErrorMessage(error),
+      successMessage: null,
+      createPlatform,
+      createPermalinkDraft: action === "create" ? submittedPermalink : "",
+      createTitleDraft: action === "create" ? submittedTitle : "",
+      createCoverUrlDraft: action === "create" ? submittedCoverUrl : "",
+    };
+  }
+}
+
+/**
+ * Counts features for a platform.
+ *
+ * @param platform - Platform filter.
+ * @returns Count of features on that platform.
+ */
+function countForPlatform(platform: SocialFeaturePlatform): number {
+  return features.filter((feature) => feature.platform === platform).length;
+}
+
+const createSlotsUsed = countForPlatform(state.createPlatform);
+const createCanAdd = createSlotsUsed < MAX_SOCIAL_FEATURES_PER_PLATFORM;
+---
+
+<AdminLayout title="CAE Admin Social">
+  <section class="admin-page">
+    <header>
+      <h1 class="admin-page__title">Social features</h1>
+      <p class="admin-page__lede">
+        Curate up to {MAX_SOCIAL_FEATURES_PER_PLATFORM} items per platform for
+        <code>/social</code> and the homepage teaser. Instagram and Facebook use
+        official embeds (paste URL only). Xiaohongshu uses a title, cover, and
+        link card.
+      </p>
+    </header>
+
+    {state.errorMessage !== null ? (
+      <p class="admin-message admin-message--error" role="alert">{state.errorMessage}</p>
+    ) : null}
+
+    {state.successMessage !== null ? (
+      <p class="admin-message admin-message--success" role="status">{state.successMessage}</p>
+    ) : null}
+
+    <form
+      method="POST"
+      enctype="multipart/form-data"
+      class="admin-card admin-card--emphasize"
+      data-social-create
+    >
+      <h2 class="admin-card__title">Add featured item</h2>
+      <input type="hidden" name="action" value="create" />
+      <label class="admin-field">
+        <span class="admin-field__label">Platform</span>
+        <select
+          class="admin-input"
+          name="platform"
+          required
+          data-social-platform
+        >
+          {PLATFORMS.map((platform) => (
+            <option
+              value={platform}
+              selected={platform === state.createPlatform}
+            >
+              {socialFeaturePlatformLabel(platform)} ({countForPlatform(platform)} /{" "}
+              {MAX_SOCIAL_FEATURES_PER_PLATFORM})
+            </option>
+          ))}
+        </select>
+      </label>
+      <label class="admin-field">
+        <span class="admin-field__label">Post URL</span>
+        <input
+          class="admin-input"
+          name="permalink"
+          type="url"
+          required
+          placeholder="https://..."
+          value={state.createPermalinkDraft}
+        />
+      </label>
+      <div
+        class="admin-social__xhs"
+        data-social-xhs-fields
+        hidden={state.createPlatform !== "xiaohongshu"}
+      >
+        <label class="admin-field">
+          <span class="admin-field__label">Title</span>
+          <input
+            class="admin-input"
+            name="title"
+            type="text"
+            maxlength="160"
+            value={state.createTitleDraft}
+            data-social-xhs-required
+          />
+        </label>
+        <label class="admin-field">
+          <span class="admin-field__label">Cover image URL</span>
+          <input
+            class="admin-input"
+            name="cover_image_url"
+            type="url"
+            placeholder="https://..."
+            value={state.createCoverUrlDraft}
+          />
+        </label>
+        <label class="admin-field">
+          <span class="admin-field__label">Or upload cover</span>
+          <input class="admin-input" name="cover_file" type="file" accept="image/*" />
+        </label>
+      </div>
+      <label class="admin-field admin-field--checkbox">
+        <input type="checkbox" name="is_published" checked />
+        <span>Published on /social and homepage teaser</span>
+      </label>
+      {!createCanAdd ? (
+        <p class="admin-help">
+          {socialFeaturePlatformLabel(state.createPlatform)} is full. Choose
+          another platform or remove an item below.
+        </p>
+      ) : null}
+      <div class="admin-actions">
+        <button
+          class="admin-btn admin-btn--primary"
+          type="submit"
+          disabled={!createCanAdd}
+        >
+          Add item
+        </button>
+      </div>
+    </form>
+
+    {PLATFORMS.map((platform) => {
+      const platformFeatures = features.filter(
+        (feature) => feature.platform === platform,
+      );
+      const used = platformFeatures.length;
+      return (
+        <div class="admin-social">
+          <h2 class="admin-card__title">
+            {socialFeaturePlatformLabel(platform)}{" "}
+            <span class="admin-help">
+              ({used} / {MAX_SOCIAL_FEATURES_PER_PLATFORM})
+            </span>
+          </h2>
+          {platformFeatures.length === 0 ? (
+            <p class="admin-empty">No {socialFeaturePlatformLabel(platform)} items yet.</p>
+          ) : (
+            <div class="admin-social__list">
+              {platformFeatures.map((feature) => (
+                <article class="admin-card admin-social__card">
+                  {feature.platform === "xiaohongshu" &&
+                  typeof feature.coverImageUrl === "string" &&
+                  feature.coverImageUrl.length > 0 ? (
+                    <img
+                      class="admin-social__thumb"
+                      src={feature.coverImageUrl}
+                      alt=""
+                      width="120"
+                      height="120"
+                      loading="lazy"
+                      decoding="async"
+                    />
+                  ) : null}
+                  <form
+                    method="POST"
+                    enctype="multipart/form-data"
+                    class="admin-social__edit"
+                  >
+                    <input type="hidden" name="action" value="update" />
+                    <input type="hidden" name="feature_id" value={feature.id} />
+                    <label class="admin-field">
+                      <span class="admin-field__label">Post URL</span>
+                      <input
+                        class="admin-input"
+                        name="permalink"
+                        type="url"
+                        required
+                        value={feature.permalink}
+                      />
+                    </label>
+                    {feature.platform === "xiaohongshu" ? (
+                      <>
+                        <label class="admin-field">
+                          <span class="admin-field__label">Title</span>
+                          <input
+                            class="admin-input"
+                            name="title"
+                            type="text"
+                            required
+                            maxlength="160"
+                            value={feature.title ?? ""}
+                          />
+                        </label>
+                        <label class="admin-field">
+                          <span class="admin-field__label">Cover image URL</span>
+                          <input
+                            class="admin-input"
+                            name="cover_image_url"
+                            type="url"
+                            value={feature.coverImageUrl ?? ""}
+                          />
+                        </label>
+                        <label class="admin-field">
+                          <span class="admin-field__label">Replace cover</span>
+                          <input
+                            class="admin-input"
+                            name="cover_file"
+                            type="file"
+                            accept="image/*"
+                          />
+                        </label>
+                      </>
+                    ) : null}
+                    <label class="admin-field admin-field--checkbox">
+                      <input
+                        type="checkbox"
+                        name="is_published"
+                        checked={feature.isPublished}
+                      />
+                      <span>Published</span>
+                    </label>
+                    <p class="admin-help">Sort order: {feature.sortOrder}</p>
+                    <div class="admin-social__actions">
+                      <button class="admin-btn admin-btn--small" type="submit">
+                        Save
+                      </button>
+                    </div>
+                  </form>
+
+                  <form
+                    method="POST"
+                    class="admin-social__delete"
+                    data-social-delete
+                    data-social-label={featureLabel(feature)}
+                  >
+                    <input type="hidden" name="action" value="delete" />
+                    <input type="hidden" name="feature_id" value={feature.id} />
+                    <button
+                      class="admin-btn admin-btn--small admin-btn--danger"
+                      type="submit"
+                    >
+                      Remove
+                    </button>
+                  </form>
+                </article>
+              ))}
+            </div>
+          )}
+        </div>
+      );
+    })}
+  </section>
+
+  <script>
+    /**
+     * Toggles Xiaohongshu-only create fields and required attributes.
+     */
+    function initSocialCreatePlatformToggle(): void {
+      const form = document.querySelector<HTMLFormElement>("form[data-social-create]");
+      const select = document.querySelector<HTMLSelectElement>(
+        "[data-social-platform]",
+      );
+      const xhsFields = document.querySelector<HTMLElement>(
+        "[data-social-xhs-fields]",
+      );
+      if (form === null || select === null || xhsFields === null) {
+        return;
+      }
+
+      /**
+       * Syncs XHS field visibility and submit enablement with the selected platform.
+       */
+      function syncXhsFields(): void {
+        if (select === null || xhsFields === null || form === null) {
+          return;
+        }
+        const isXhs = select.value === "xiaohongshu";
+        xhsFields.hidden = !isXhs;
+        const titleInput = xhsFields.querySelector<HTMLInputElement>(
+          'input[name="title"]',
+        );
+        if (titleInput !== null) {
+          titleInput.required = isXhs;
+        }
+
+        const option = select.selectedOptions[0];
+        const optionText =
+          option !== undefined && typeof option.textContent === "string"
+            ? option.textContent
+            : "";
+        const match = optionText.match(/\((\d+)\s*\/\s*\d+\)/);
+        const used =
+          match !== null && typeof match[1] === "string"
+            ? Number.parseInt(match[1], 10)
+            : 0;
+        const submit = form.querySelector<HTMLButtonElement>(
+          'button[type="submit"]',
+        );
+        if (submit !== null) {
+          submit.disabled = Number.isFinite(used) && used >= 6;
+        }
+      }
+
+      select.addEventListener("change", syncXhsFields);
+      syncXhsFields();
+    }
+
+    /**
+     * Confirms feature removal before the delete form submits.
+     */
+    function initSocialDeleteConfirm(): void {
+      const forms = document.querySelectorAll<HTMLFormElement>(
+        "form[data-social-delete]",
+      );
+
+      for (const form of forms) {
+        form.addEventListener("submit", (event: SubmitEvent) => {
+          const rawLabel = form.dataset.socialLabel;
+          const labelText =
+            typeof rawLabel === "string" && rawLabel.trim().length > 0
+              ? rawLabel.trim()
+              : "this item";
+
+          const confirmed = window.confirm(
+            [
+              "Remove this social feature from the site?",
+              `Item: ${labelText}`,
+              "This cannot be undone.",
+            ].join("\n"),
+          );
+
+          if (!confirmed) {
+            event.preventDefault();
+          }
+        });
+      }
+    }
+
+    initSocialCreatePlatformToggle();
+    initSocialDeleteConfirm();
+  </script>
+</AdminLayout>
+
+<style>
+  .admin-social {
+    display: flex;
+    flex-direction: column;
+    gap: 0.85rem;
+    margin-top: 1.5rem;
+  }
+
+  .admin-social__list {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 0.85rem;
+  }
+
+  @media (min-width: 48rem) {
+    .admin-social__list {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  .admin-social__card {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    height: 100%;
+  }
+
+  .admin-social__thumb {
+    width: 100%;
+    max-height: 10rem;
+    object-fit: cover;
+    border-radius: 0.5rem;
+    border: 1px solid var(--admin-border);
+  }
+
+  .admin-social__edit {
+    display: flex;
+    flex: 1 1 auto;
+    flex-direction: column;
+    gap: 0.65rem;
+  }
+
+  .admin-social__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+
+  .admin-social__delete {
+    margin: 0;
+    padding-top: 0.65rem;
+    border-top: 1px solid var(--admin-border);
+  }
+
+  .admin-social__xhs {
+    display: flex;
+    flex-direction: column;
+    gap: 0.65rem;
+  }
+
+  .admin-field--checkbox {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .admin-field--checkbox input {
+    width: auto;
+  }
+</style>

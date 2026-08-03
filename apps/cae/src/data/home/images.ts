@@ -83,6 +83,7 @@ import testimonialPortrait3 from "../../assets/testimonial-portrait-3.png";
 /** `?url` keeps SVG slots as string paths (Astro otherwise yields SVG components). */
 import instagram from "../../assets/instagram.svg?url";
 import facebook from "../../assets/facebook.svg?url";
+import xiaohongshu from "../../assets/xiaohongshu.svg?url";
 
 /**
  * Typed homepage image map keyed by logical slot names used by content modules
@@ -132,9 +133,11 @@ export const homeImages = {
   testimonialPortrait3,
   instagram,
   facebook,
-  /** Social icon slots used by `cta.ts`. */
+  xiaohongshu,
+  /** Social icon slots used by `cta.ts` and the Social Media hub. */
   socialInstagram: instagram,
   socialFacebook: facebook,
+  socialXiaohongshu: xiaohongshu,
 } as const;
 
 /** Logical slot keys for {@link homeImages}. */

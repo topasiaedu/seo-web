@@ -1,0 +1,168 @@
+/**
+ * Social Media hub — page intro; follow-button styles reused in platform sections.
+ */
+
+.social-hub {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  margin: 0;
+  padding: clamp(3rem, 7vw, 5rem) 0 clamp(1.5rem, 4vw, 2.5rem);
+  color: var(--cae-text);
+  background-color: var(--cae-bg);
+  font-family: var(--cae-font-sans);
+}
+
+.social-hub .cae-starfield {
+  z-index: 0;
+}
+
+.social-hub__inner {
+  position: relative;
+  z-index: 1;
+  box-sizing: border-box;
+  width: 100%;
+  max-width: min(40rem, var(--cae-max-width));
+  margin: 0 auto;
+  padding: 0 clamp(1.25rem, 4vw, 2.5rem);
+}
+
+.social-hub__inner--intro {
+  max-width: min(42rem, var(--cae-max-width));
+}
+
+.social-hub__header {
+  text-align: center;
+  margin-bottom: 0;
+}
+
+.social-hub__header .cae-eyebrow {
+  margin-bottom: 0.5rem;
+}
+
+.social-hub__title {
+  margin: 0;
+  font-family: var(--cae-font-display), var(--cae-font-sans);
+  font-size: clamp(2rem, 5vw, 3.25rem);
+  font-weight: 400;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+  text-transform: uppercase;
+  color: var(--cae-text-bright);
+}
+
+.social-hub__lede {
+  margin: 0.85rem auto 0;
+  max-width: 34rem;
+  font-size: clamp(1rem, 2vw, 1.125rem);
+  line-height: 1.55;
+  color: var(--cae-text-muted);
+}
+
+.social-hub__button {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  grid-template-areas:
+    "icon copy"
+    "icon cta";
+  column-gap: 1rem;
+  row-gap: 0.65rem;
+  align-items: center;
+  box-sizing: border-box;
+  width: 100%;
+  max-width: 40rem;
+  margin-inline: auto;
+  padding: 1.1rem 1.15rem;
+  border-radius: 0.85rem;
+  border: 1px solid var(--cae-border);
+  background: var(--cae-bg-elevated);
+  text-decoration: none;
+  color: inherit;
+  transition:
+    transform 0.25s ease,
+    border-color 0.2s ease,
+    box-shadow 0.25s ease;
+}
+
+.social-hub__button:hover,
+.social-hub__button:focus-visible {
+  transform: translateY(-2px);
+  border-color: var(--cae-gold);
+  box-shadow: 0 14px 28px -16px color-mix(in srgb, var(--cae-gold) 45%, transparent);
+  outline: none;
+}
+
+.social-hub__icon-wrap {
+  grid-area: icon;
+  display: inline-flex;
+  flex-shrink: 0;
+}
+
+.social-hub__icon {
+  display: block;
+  width: 2.75rem;
+  height: 2.75rem;
+  border-radius: 0.65rem;
+  overflow: hidden;
+}
+
+.social-hub__copy {
+  grid-area: copy;
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  min-width: 0;
+}
+
+.social-hub__label {
+  font-family: var(--cae-font-display), var(--cae-font-sans);
+  font-size: clamp(1.15rem, 2.4vw, 1.35rem);
+  font-weight: 400;
+  letter-spacing: -0.01em;
+  line-height: 1.2;
+  text-transform: uppercase;
+  color: var(--cae-text-bright);
+}
+
+.social-hub__short {
+  font-size: 0.8rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--cae-gold);
+}
+
+.social-hub__desc {
+  margin-top: 0.15rem;
+  font-size: 0.95rem;
+  line-height: 1.45;
+  color: var(--cae-text-muted);
+}
+
+.social-hub__cta {
+  grid-area: cta;
+  justify-self: start;
+  display: inline-flex;
+  align-items: center;
+  padding: 0.45rem 0.85rem;
+  border-radius: 0.55rem;
+  border: 1px solid color-mix(in srgb, var(--cae-gold) 55%, transparent);
+  background: color-mix(in srgb, var(--cae-gold) 12%, transparent);
+  color: var(--cae-gold);
+  font-size: 0.8rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+@media (min-width: 640px) {
+  .social-hub__button {
+    grid-template-columns: auto 1fr auto;
+    grid-template-areas: "icon copy cta";
+    align-items: center;
+    padding: 1.25rem 1.35rem;
+  }
+
+  .social-hub__cta {
+    justify-self: end;
+  }
+}

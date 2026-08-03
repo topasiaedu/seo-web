@@ -199,6 +199,59 @@ export type InstagramReelUpdate = {
 };
 
 /**
+ * Supported platforms for `public.social_features`.
+ */
+export type SocialFeaturePlatform =
+  | "instagram"
+  | "facebook"
+  | "xiaohongshu";
+
+/**
+ * Row shape for `public.social_features` (curated hybrid social showcase).
+ */
+export type SocialFeatureRow = {
+  id: string;
+  site_id: string;
+  platform: SocialFeaturePlatform;
+  permalink: string;
+  title: string | null;
+  cover_image_url: string | null;
+  sort_order: number;
+  is_published: boolean;
+  created_at: string;
+  updated_at: string;
+};
+
+/**
+ * Insert payload for `public.social_features`.
+ */
+export type SocialFeatureInsert = {
+  id?: string;
+  site_id: string;
+  platform: SocialFeaturePlatform;
+  permalink: string;
+  title?: string | null;
+  cover_image_url?: string | null;
+  sort_order?: number;
+  is_published?: boolean;
+  created_at?: string;
+  updated_at?: string;
+};
+
+/**
+ * Update payload for `public.social_features`.
+ */
+export type SocialFeatureUpdate = {
+  platform?: SocialFeaturePlatform;
+  permalink?: string;
+  title?: string | null;
+  cover_image_url?: string | null;
+  sort_order?: number;
+  is_published?: boolean;
+  updated_at?: string;
+};
+
+/**
  * Typed Database schema covering blog-related tables only.
  */
 export type Database = {
@@ -241,6 +294,12 @@ export type Database = {
         Row: InstagramReelRow;
         Insert: InstagramReelInsert;
         Update: InstagramReelUpdate;
+        Relationships: [];
+      };
+      social_features: {
+        Row: SocialFeatureRow;
+        Insert: SocialFeatureInsert;
+        Update: SocialFeatureUpdate;
         Relationships: [];
       };
     };

@@ -1,0 +1,114 @@
+---
+/**
+ * Homepage Featured Social band — up to three curated hybrid items.
+ * Slot: after Insights, before Pillars. Caller omits when empty.
+ */
+import InstagramEmbed from "@/components/social/InstagramEmbed.astro";
+import InstagramEmbedScript from "@/components/social/InstagramEmbedScript.astro";
+import FacebookEmbed from "@/components/social/FacebookEmbed.astro";
+import FacebookEmbedScript from "@/components/social/FacebookEmbedScript.astro";
+import XiaohongshuCard from "@/components/social/XiaohongshuCard.astro";
+import {
+  type SocialFeature,
+  socialFeaturePlatformLabel,
+} from "@/lib/social-features";
+import { joinBlogPath } from "@/components/blog/blog-format";
+import "@/styles/home/home-featured-social.css";
+
+interface Props {
+  /** Published features to surface (max 3; caller already limited). */
+  features: readonly SocialFeature[];
+}
+
+const { features } = Astro.props;
+
+if (!Array.isArray(features) || features.length === 0) {
+  throw new Error("HomeFeaturedSocial requires a non-empty features array.");
+}
+
+const displayFeatures = features.filter((feature) => {
+  if (feature.platform !== "xiaohongshu") {
+    return true;
+  }
+  return (
+    typeof feature.title === "string" &&
+    feature.title.trim().length > 0 &&
+    typeof feature.coverImageUrl === "string" &&
+    feature.coverImageUrl.trim().length > 0
+  );
+});
+
+if (displayFeatures.length === 0) {
+  throw new Error("HomeFeaturedSocial requires at least one displayable feature.");
+}
+
+const socialHref = joinBlogPath(import.meta.env.BASE_URL, "social");
+const hasIg = displayFeatures.some((feature) => feature.platform === "instagram");
+const hasFb = displayFeatures.some((feature) => feature.platform === "facebook");
+---
+
+<section
+  class="home-featured-social"
+  aria-labelledby="home-featured-social-heading"
+>
+  <div class="cae-starfield" aria-hidden="true">
+    <div class="cae-starfield__glow"></div>
+    <div class="cae-starfield__dots"></div>
+    <span class="cae-starfield__twinkle cae-starfield__twinkle--a"></span>
+    <span class="cae-starfield__twinkle cae-starfield__twinkle--c"></span>
+  </div>
+
+  <div class="home-featured-social__inner">
+    <header class="home-featured-social__header">
+      <div>
+        <p class="cae-eyebrow">Social</p>
+        <h2
+          class="home-featured-social__title"
+          id="home-featured-social-heading"
+        >
+          Featured on Social
+        </h2>
+        <p class="home-featured-social__lede">
+          Highlights from Instagram and Facebook — watch a few here, then
+          explore more on the Social page.
+        </p>
+      </div>
+      <a class="home-featured-social__all" href={socialHref}>
+        View all social
+      </a>
+    </header>
+
+    <ul class="home-featured-social__grid" aria-label="Featured social posts">
+      {
+        displayFeatures.map((feature) => (
+          <li class="home-featured-social__item">
+            {feature.platform === "xiaohongshu" ? (
+              <XiaohongshuCard
+                permalink={feature.permalink}
+                title={feature.title ?? ""}
+                coverImageUrl={feature.coverImageUrl ?? ""}
+              />
+            ) : feature.platform === "instagram" ? (
+              <div class="home-featured-social__embed">
+                <p class="home-featured-social__platform">
+                  {socialFeaturePlatformLabel("instagram")}
+                </p>
+                <InstagramEmbed permalink={feature.permalink} />
+              </div>
+            ) : (
+              <div class="home-featured-social__embed">
+                <p class="home-featured-social__platform">
+                  {socialFeaturePlatformLabel("facebook")}
+                </p>
+                <FacebookEmbed permalink={feature.permalink} />
+              </div>
+            )}
+          </li>
+        ))
+      }
+    </ul>
+  </div>
+</section>
+
+{hasIg ? <InstagramEmbedScript /> : null}
+{hasFb ? <FacebookEmbedScript /> : null}

@@ -1,0 +1,63 @@
+---
+/**
+ * @fileoverview Facebook official post/video plugin embed for a curated permalink.
+ */
+import { isFacebookVideoPermalink } from "@/lib/social-features";
+
+interface Props {
+  /** Canonical Facebook post / video / reel URL. */
+  permalink: string;
+}
+
+const { permalink } = Astro.props;
+
+if (typeof permalink !== "string" || permalink.trim().length === 0) {
+  throw new Error("FacebookEmbed requires a non-empty permalink.");
+}
+
+const href = permalink.trim();
+const isVideo = isFacebookVideoPermalink(href);
+---
+
+<div class="cae-fb-embed">
+  {
+    isVideo ? (
+      <div
+        class="fb-video"
+        data-href={href}
+        data-allowfullscreen="true"
+        data-show-text="false"
+      >
+        <blockquote cite={href} class="fb-xfbml-parse-ignore">
+          <a href={href} target="_blank" rel="noopener noreferrer">
+            View this video on Facebook
+          </a>
+        </blockquote>
+      </div>
+    ) : (
+      <div class="fb-post" data-href={href} data-show-text="true" data-width="auto">
+        <blockquote cite={href} class="fb-xfbml-parse-ignore">
+          <a href={href} target="_blank" rel="noopener noreferrer">
+            View this post on Facebook
+          </a>
+        </blockquote>
+      </div>
+    )
+  }
+</div>
+
+<style>
+  .cae-fb-embed {
+    width: 100%;
+    max-width: 28rem;
+    margin-inline: auto;
+    display: flex;
+    justify-content: center;
+    overflow: hidden;
+  }
+
+  .cae-fb-embed :global(.fb-post),
+  .cae-fb-embed :global(.fb-video) {
+    width: 100%;
+  }
+</style>

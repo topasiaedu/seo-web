@@ -59,6 +59,10 @@ export const homeNav = {
       label: "MEDIA & PRESS",
       href: assertHomeHref("/media/"),
     },
+    {
+      label: "SOCIAL MEDIA",
+      href: assertHomeHref("/social/"),
+    },
   ] as const satisfies readonly NavLink[],
 } as const;
 

@@ -64,6 +64,7 @@ const pathname = Astro.url.pathname;
 
 const dashboardHref = joinAdminPath(base, "admin");
 const postsHref = joinAdminPath(base, "admin/posts");
+const socialHref = joinAdminPath(base, "admin/social");
 const authorHref = joinAdminPath(base, "admin/author");
 const categoriesHref = joinAdminPath(base, "admin/categories");
 
@@ -74,6 +75,7 @@ const navItems: ReadonlyArray<{
 }> = [
   { href: dashboardHref, label: "Dashboard", exact: true },
   { href: postsHref, label: "Posts", exact: false },
+  { href: socialHref, label: "Social", exact: false },
   { href: authorHref, label: "Author", exact: true },
   { href: categoriesHref, label: "Categories", exact: false },
 ];

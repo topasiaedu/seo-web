@@ -1,0 +1,67 @@
+---
+/**
+ * Document chrome for the CAE Social Media hub — native home stack.
+ */
+import "@/styles/global.css";
+import "@/styles/home/decorative.css";
+import SeoHead from "@/components/seo/SeoHead.astro";
+import PublicThemeBoot from "@/components/site/PublicThemeBoot.astro";
+import { socialMeta, requireMetaString } from "@/data/home/meta";
+import { buildSocialJsonLd } from "@/data/home/jsonld";
+import { toAbsoluteUrl } from "@/lib/site-url";
+import logoAsset from "../assets/logo.png";
+
+interface Props {
+  title: string;
+  description?: string;
+}
+
+const { title, description } = Astro.props;
+const pageTitle = requireMetaString(title, socialMeta.title);
+const metaDescription = requireMetaString(
+  description,
+  socialMeta.description,
+);
+const logoSrc =
+  typeof logoAsset === "object" &&
+  logoAsset !== null &&
+  "src" in logoAsset &&
+  typeof logoAsset.src === "string"
+    ? logoAsset.src
+    : typeof logoAsset === "string"
+      ? logoAsset
+      : "";
+if (logoSrc.length === 0) {
+  throw new Error("SocialLayout: failed to resolve logo asset src.");
+}
+const ogImageUrl = toAbsoluteUrl(logoSrc);
+const jsonLd = buildSocialJsonLd(Astro.url.pathname, ogImageUrl);
+---
+
+<!doctype html>
+<html lang="en" data-theme="dark">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <PublicThemeBoot />
+    <SeoHead
+      title={pageTitle}
+      description={metaDescription}
+      ogType={socialMeta.ogType}
+      siteName={socialMeta.siteName}
+      twitterCard={socialMeta.twitterCard}
+      ogImage={ogImageUrl}
+      jsonLd={jsonLd}
+    />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;600;700&family=Archivo+Black&display=swap"
+      rel="stylesheet"
+    />
+    <title>{pageTitle}</title>
+  </head>
+  <body>
+    <slot />
+  </body>
+</html>

@@ -10,6 +10,10 @@ import HomePage from "../components/HomePage.astro";
 import { requireBlogSupabase } from "@/components/blog/blog-format";
 import { homeMeta, requireMetaString } from "../data/home/meta.ts";
 import { caeSiteConfig } from "@/site-config";
+import {
+  HOME_FEATURED_SOCIAL_LIMIT,
+  listPublishedSocialFeatures,
+} from "@/lib/social-features";
 
 export const prerender = false;
 
@@ -23,13 +27,17 @@ const description = requireMetaString(
 );
 
 const supabase = requireBlogSupabase(Astro.locals.supabase);
-const { posts: recentPosts } = await listPublishedPostsPage(
-  supabase,
-  caeSiteConfig.projectId,
-  { limit: HOME_INSIGHTS_LIMIT, offset: 0 },
-);
+const [{ posts: recentPosts }, featuredSocial] = await Promise.all([
+  listPublishedPostsPage(supabase, caeSiteConfig.projectId, {
+    limit: HOME_INSIGHTS_LIMIT,
+    offset: 0,
+  }),
+  listPublishedSocialFeatures(supabase, caeSiteConfig.projectId, {
+    limit: HOME_FEATURED_SOCIAL_LIMIT,
+  }),
+]);
 ---
 
 <HomeLayout title={title} description={description}>
-  <HomePage recentPosts={recentPosts} />
+  <HomePage recentPosts={recentPosts} featuredSocial={featuredSocial} />
 </HomeLayout>

@@ -1,0 +1,99 @@
+---
+/**
+ * @fileoverview Loads Instagram embed.js and processes `.instagram-media` blockquotes.
+ * Include once per page that renders {@link InstagramEmbed}.
+ */
+---
+
+<script is:inline src="https://www.instagram.com/embed.js" async></script>
+<script>
+  /**
+   * Calls Instagram’s embed processor when available.
+   */
+  function processInstagramEmbeds(): void {
+    if (!("instgrm" in window)) {
+      return;
+    }
+    const candidate: unknown = Reflect.get(window, "instgrm");
+    if (
+      typeof candidate !== "object" ||
+      candidate === null ||
+      !("Embeds" in candidate)
+    ) {
+      return;
+    }
+    const embeds = Reflect.get(candidate, "Embeds");
+    if (
+      typeof embeds !== "object" ||
+      embeds === null ||
+      !("process" in embeds)
+    ) {
+      return;
+    }
+    const processFn = Reflect.get(embeds, "process");
+    if (typeof processFn !== "function") {
+      return;
+    }
+    processFn.call(embeds);
+  }
+
+  /**
+   * Whether Instagram’s embed API has attached to `window`.
+   *
+   * @returns True when `instgrm.Embeds.process` is callable.
+   */
+  function isInstagramEmbedReady(): boolean {
+    if (!("instgrm" in window)) {
+      return false;
+    }
+    const candidate: unknown = Reflect.get(window, "instgrm");
+    if (
+      typeof candidate !== "object" ||
+      candidate === null ||
+      !("Embeds" in candidate)
+    ) {
+      return false;
+    }
+    const embeds = Reflect.get(candidate, "Embeds");
+    if (
+      typeof embeds !== "object" ||
+      embeds === null ||
+      !("process" in embeds)
+    ) {
+      return false;
+    }
+    return typeof Reflect.get(embeds, "process") === "function";
+  }
+
+  /**
+   * Polls briefly until embed.js has attached `instgrm`, then processes.
+   */
+  function whenInstagramReady(): void {
+    processInstagramEmbeds();
+    if (isInstagramEmbedReady()) {
+      return;
+    }
+
+    let attempts = 0;
+    const maxAttempts = 40;
+    const timer = window.setInterval(() => {
+      attempts += 1;
+      processInstagramEmbeds();
+      if (isInstagramEmbedReady() || attempts >= maxAttempts) {
+        window.clearInterval(timer);
+      }
+    }, 250);
+  }
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", whenInstagramReady);
+  } else {
+    whenInstagramReady();
+  }
+
+  window.addEventListener("pageshow", (event: PageTransitionEvent) => {
+    if (event.persisted) {
+      processInstagramEmbeds();
+    }
+  });
+</script>

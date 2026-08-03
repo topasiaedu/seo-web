@@ -1,0 +1,213 @@
+---
+/**
+ * Platform sections on `/social` — each section has its follow button + featured content.
+ * Order: Instagram → Facebook (Xiaohongshu hidden until covers are ready).
+ */
+import { homeSocial } from "@/data/home/social";
+import type { SocialFeature } from "@/lib/social-features";
+import {
+  getHomeImage,
+  isHomeImageKey,
+  type HomeImageAsset,
+  type HomeImageKey,
+} from "@/data/home/images";
+import InstagramEmbed from "./InstagramEmbed.astro";
+import InstagramEmbedScript from "./InstagramEmbedScript.astro";
+import FacebookEmbed from "./FacebookEmbed.astro";
+import FacebookEmbedScript from "./FacebookEmbedScript.astro";
+import XiaohongshuCard from "./XiaohongshuCard.astro";
+import "@/styles/social/social-hub.css";
+import "@/styles/social/social-featured.css";
+
+interface Props {
+  /** Published Xiaohongshu features. */
+  xiaohongshu: readonly SocialFeature[];
+  /** Published Instagram features. */
+  instagram: readonly SocialFeature[];
+  /** Published Facebook features. */
+  facebook: readonly SocialFeature[];
+}
+
+/**
+ * Returns a usable `src` string from an Astro/Vite image import.
+ *
+ * @param asset - Static import from {@link homeImages}
+ * @returns URL string for an `<img src>`
+ */
+function assetSrc(asset: HomeImageAsset): string {
+  if (typeof asset === "string") {
+    return asset;
+  }
+  if (
+    typeof asset === "object" &&
+    asset !== null &&
+    "src" in asset &&
+    typeof asset.src === "string"
+  ) {
+    return asset.src;
+  }
+  throw new Error("SocialFeatured: unsupported home image asset shape.");
+}
+
+/**
+ * Resolves a content `imageKey` to a concrete image URL.
+ *
+ * @param imageKey - Logical slot from content modules
+ * @param fallback - Known {@link HomeImageKey} when the content key is missing
+ * @returns Resolved image URL
+ */
+function resolveImageSrc(imageKey: string, fallback: HomeImageKey): string {
+  if (isHomeImageKey(imageKey)) {
+    return assetSrc(getHomeImage(imageKey));
+  }
+  return assetSrc(getHomeImage(fallback));
+}
+
+/**
+ * Picks a typed fallback icon key for a platform id.
+ *
+ * @param platformId - Platform id from {@link homeSocial}
+ * @returns Matching {@link HomeImageKey}
+ */
+function fallbackIconKey(platformId: string): HomeImageKey {
+  if (platformId === "xiaohongshu") {
+    return "socialXiaohongshu";
+  }
+  if (platformId === "facebook") {
+    return "socialFacebook";
+  }
+  return "socialInstagram";
+}
+
+const { xiaohongshu, instagram, facebook } = Astro.props;
+
+const platforms = homeSocial.platforms
+  .filter((platform) => platform.publicVisible)
+  .map((platform) => ({
+    ...platform,
+    iconSrc: resolveImageSrc(
+      platform.iconImageKey,
+      fallbackIconKey(platform.id),
+    ),
+  }));
+
+const xhsItems = xiaohongshu.filter(
+  (feature) =>
+    typeof feature.title === "string" &&
+    feature.title.trim().length > 0 &&
+    typeof feature.coverImageUrl === "string" &&
+    feature.coverImageUrl.trim().length > 0,
+);
+
+const hasIg = instagram.length > 0;
+const hasFb = facebook.length > 0;
+
+/**
+ * Features for a hub platform id.
+ *
+ * @param platformId - Hub platform id string.
+ * @returns Matching featured list.
+ */
+function featuresForPlatform(platformId: string): readonly SocialFeature[] {
+  if (platformId === "xiaohongshu") {
+    return xhsItems;
+  }
+  if (platformId === "instagram") {
+    return instagram;
+  }
+  if (platformId === "facebook") {
+    return facebook;
+  }
+  return [];
+}
+---
+
+<section class="social-featured" aria-label="Social platforms">
+  <div class="cae-starfield" aria-hidden="true">
+    <div class="cae-starfield__glow"></div>
+    <div class="cae-starfield__dots"></div>
+    <span class="cae-starfield__twinkle cae-starfield__twinkle--a"></span>
+    <span class="cae-starfield__twinkle cae-starfield__twinkle--b"></span>
+  </div>
+
+  <div class="social-featured__inner">
+    {
+      platforms.map((platform) => {
+        const features = featuresForPlatform(platform.id);
+        const sectionId = `social-section-${platform.id}`;
+        return (
+          <div class="social-featured__block" id={sectionId}>
+            <header class="social-featured__header">
+              <p class="cae-eyebrow">{platform.shortLabel}</p>
+              <h2 class="social-featured__title">{platform.label}</h2>
+              <p class="social-featured__lede">{platform.description}</p>
+            </header>
+
+            <a
+              class="social-hub__button social-featured__follow"
+              href={platform.href}
+              target="_blank"
+              rel="noreferrer noopener"
+              title={platform.iconTitle}
+            >
+              <span class="social-hub__icon-wrap" aria-hidden="true">
+                <img
+                  class="social-hub__icon"
+                  src={platform.iconSrc}
+                  alt=""
+                  width="44"
+                  height="44"
+                  loading="lazy"
+                  decoding="async"
+                />
+              </span>
+              <span class="social-hub__copy">
+                <span class="social-hub__label">{platform.label}</span>
+                <span class="social-hub__short">{platform.shortLabel}</span>
+                <span class="social-hub__desc">{platform.description}</span>
+              </span>
+              <span class="social-hub__cta">{platform.ctaLabel}</span>
+            </a>
+
+            {platform.id === "xiaohongshu" && features.length > 0 ? (
+              <ul class="social-featured__grid social-featured__grid--cards">
+                {features.map((feature) => (
+                  <li>
+                    <XiaohongshuCard
+                      permalink={feature.permalink}
+                      title={feature.title ?? ""}
+                      coverImageUrl={feature.coverImageUrl ?? ""}
+                    />
+                  </li>
+                ))}
+              </ul>
+            ) : null}
+
+            {platform.id === "instagram" && features.length > 0 ? (
+              <ul class="social-featured__grid social-featured__grid--embeds">
+                {features.map((feature) => (
+                  <li>
+                    <InstagramEmbed permalink={feature.permalink} />
+                  </li>
+                ))}
+              </ul>
+            ) : null}
+
+            {platform.id === "facebook" && features.length > 0 ? (
+              <ul class="social-featured__grid social-featured__grid--embeds">
+                {features.map((feature) => (
+                  <li>
+                    <FacebookEmbed permalink={feature.permalink} />
+                  </li>
+                ))}
+              </ul>
+            ) : null}
+          </div>
+        );
+      })
+    }
+  </div>
+</section>
+
+{hasIg ? <InstagramEmbedScript /> : null}
+{hasFb ? <FacebookEmbedScript /> : null}

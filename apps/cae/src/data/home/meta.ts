@@ -1,5 +1,5 @@
 /**
- * @fileoverview SEO metadata for CAE marketing pages (home + media).
+ * @fileoverview SEO metadata for CAE marketing pages (home + media + social).
  */
 
 /**
@@ -32,6 +32,21 @@ export const mediaMeta = {
 
 /** Shape of {@link mediaMeta}. */
 export type MediaMeta = typeof mediaMeta;
+
+/**
+ * SEO copy for the Social Media hub route.
+ */
+export const socialMeta = {
+  title: "Social Media - Cae Goh",
+  description:
+    "Follow Cae Goh on Instagram and Facebook for Zi Wei Dou Shu insights and updates.",
+  ogType: "website",
+  siteName: "Cae Goh",
+  twitterCard: "summary_large_image",
+} as const;
+
+/** Shape of {@link socialMeta}. */
+export type SocialMeta = typeof socialMeta;
 
 /**
  * Validates a required non-empty meta string.

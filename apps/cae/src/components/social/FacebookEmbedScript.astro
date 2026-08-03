@@ -1,0 +1,54 @@
+---
+/**
+ * @fileoverview Loads the Facebook JS SDK once and parses XFBML plugins.
+ * Include once per page that renders {@link FacebookEmbed}.
+ */
+---
+
+<div id="fb-root"></div>
+<script is:inline>
+  window.fbAsyncInit = function () {
+    if (typeof FB !== "undefined" && FB.XFBML) {
+      FB.init({
+        xfbml: true,
+        version: "v21.0",
+      });
+    }
+  };
+</script>
+<script
+  is:inline
+  async
+  defer
+  crossorigin="anonymous"
+  src="https://connect.facebook.net/en_US/sdk.js#xfbml=1&version=v21.0"
+></script>
+<script>
+  /**
+   * Re-parses Facebook XFBML when the SDK is available (SPA / bfcache).
+   */
+  function parseFacebookXfbml(): void {
+    if (!("FB" in window)) {
+      return;
+    }
+    const fb: unknown = Reflect.get(window, "FB");
+    if (typeof fb !== "object" || fb === null || !("XFBML" in fb)) {
+      return;
+    }
+    const xfbml = Reflect.get(fb, "XFBML");
+    if (typeof xfbml !== "object" || xfbml === null || !("parse" in xfbml)) {
+      return;
+    }
+    const parseFn = Reflect.get(xfbml, "parse");
+    if (typeof parseFn !== "function") {
+      return;
+    }
+    parseFn.call(xfbml);
+  }
+
+  window.addEventListener("pageshow", (event: PageTransitionEvent) => {
+    if (event.persisted) {
+      parseFacebookXfbml();
+    }
+  });
+</script>

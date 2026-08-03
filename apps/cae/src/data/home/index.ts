@@ -4,8 +4,12 @@
 
 export {
   homeMeta,
+  mediaMeta,
+  socialMeta,
   requireMetaString,
   type HomeMeta,
+  type MediaMeta,
+  type SocialMeta,
 } from "./meta.ts";
 
 export {
@@ -59,6 +63,12 @@ export {
   type HomeCta,
   type SocialLink,
 } from "./cta.ts";
+
+export {
+  homeSocial,
+  type HomeSocial,
+  type SocialPlatform,
+} from "./social.ts";
 
 export {
   getHomeImage,

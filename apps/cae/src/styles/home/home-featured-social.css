@@ -1,0 +1,116 @@
+/**
+ * Homepage Featured Social band — hybrid embeds + XHS cards.
+ */
+
+.home-featured-social {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  margin: 0;
+  padding: clamp(3rem, 7vw, 4.5rem) 0;
+  color: var(--cae-text);
+  background-color: var(--cae-bg-elevated);
+  font-family: var(--cae-font-sans);
+}
+
+html[data-theme="light"] .home-featured-social {
+  background-color: var(--cae-bg);
+}
+
+.home-featured-social .cae-starfield {
+  z-index: 0;
+}
+
+.home-featured-social__inner {
+  position: relative;
+  z-index: 1;
+  box-sizing: border-box;
+  width: 100%;
+  max-width: var(--cae-max-width);
+  margin: 0 auto;
+  padding: 0 clamp(1.25rem, 4vw, 2.5rem);
+}
+
+.home-featured-social__header {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin-bottom: clamp(1.5rem, 4vw, 2.25rem);
+}
+
+@media (min-width: 768px) {
+  .home-featured-social__header {
+    flex-direction: row;
+    align-items: flex-end;
+    justify-content: space-between;
+  }
+}
+
+.home-featured-social__title {
+  margin: 0.35rem 0 0;
+  font-family: var(--cae-font-display), var(--cae-font-sans);
+  font-size: clamp(1.75rem, 4vw, 2.5rem);
+  font-weight: 400;
+  letter-spacing: -0.02em;
+  text-transform: uppercase;
+  color: var(--cae-text-bright);
+}
+
+.home-featured-social__lede {
+  margin: 0.65rem 0 0;
+  max-width: 36rem;
+  font-size: clamp(0.95rem, 2vw, 1.05rem);
+  line-height: 1.55;
+  color: var(--cae-text-muted);
+}
+
+.home-featured-social__all {
+  flex-shrink: 0;
+  font-size: 0.85rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  text-decoration: none;
+  color: var(--cae-gold);
+}
+
+.home-featured-social__all:hover,
+.home-featured-social__all:focus-visible {
+  text-decoration: underline;
+  outline: none;
+}
+
+.home-featured-social__grid {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.25rem;
+}
+
+@media (min-width: 768px) {
+  .home-featured-social__grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    align-items: start;
+  }
+}
+
+.home-featured-social__item {
+  min-width: 0;
+}
+
+.home-featured-social__embed {
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+  align-items: center;
+}
+
+.home-featured-social__platform {
+  margin: 0;
+  font-size: 0.75rem;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--cae-gold);
+}

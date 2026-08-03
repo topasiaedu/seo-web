@@ -1,0 +1,49 @@
+---
+/**
+ * CAE Social Media route — `/cae/social/`.
+ * Native ZWDS chrome with platform buttons + curated hybrid featured posts.
+ */
+import SocialLayout from "../../layouts/SocialLayout.astro";
+import SiteHeader from "../../components/home/SiteHeader.astro";
+import SocialHub from "../../components/social/SocialHub.astro";
+import SocialFeatured from "../../components/social/SocialFeatured.astro";
+import SiteFooter from "../../components/home/SiteFooter.astro";
+import { socialMeta, requireMetaString } from "../../data/home/meta.ts";
+import { requireBlogSupabase } from "@/components/blog/blog-format";
+import { caeSiteConfig } from "@/site-config";
+import { listPublishedSocialFeatures } from "@/lib/social-features";
+
+export const prerender = false;
+
+const title = requireMetaString(socialMeta.title, "Social Media - Cae Goh");
+const description = requireMetaString(
+  socialMeta.description,
+  "Follow Cae Goh on Instagram and Facebook.",
+);
+
+const supabase = requireBlogSupabase(Astro.locals.supabase);
+const [xiaohongshu, instagram, facebook] = await Promise.all([
+  listPublishedSocialFeatures(supabase, caeSiteConfig.projectId, {
+    platform: "xiaohongshu",
+  }),
+  listPublishedSocialFeatures(supabase, caeSiteConfig.projectId, {
+    platform: "instagram",
+  }),
+  listPublishedSocialFeatures(supabase, caeSiteConfig.projectId, {
+    platform: "facebook",
+  }),
+]);
+---
+
+<SocialLayout title={title} description={description}>
+  <main class="cae-home">
+    <SiteHeader />
+    <SocialHub />
+    <SocialFeatured
+      xiaohongshu={xiaohongshu}
+      instagram={instagram}
+      facebook={facebook}
+    />
+    <SiteFooter />
+  </main>
+</SocialLayout>

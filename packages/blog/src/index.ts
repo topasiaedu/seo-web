@@ -27,6 +27,10 @@ export type {
   InstagramReelInsert,
   InstagramReelRow,
   InstagramReelUpdate,
+  SocialFeatureInsert,
+  SocialFeaturePlatform,
+  SocialFeatureRow,
+  SocialFeatureUpdate,
 } from "./database.js";
 
 export { readingTimeMinutesFromMarkdown } from "./reading-time.js";

@@ -5,10 +5,12 @@
  * and decorative language apply consistently without photo-bg overrides.
  */
 import type { BlogPost } from "@seo/blog";
+import type { SocialFeature } from "@/lib/social-features";
 import SiteHeader from "./home/SiteHeader.astro";
 import Hero from "./home/Hero.astro";
 import PressMarquee from "./home/PressMarquee.astro";
 import HomeInsights from "./home/HomeInsights.astro";
+import HomeFeaturedSocial from "./home/HomeFeaturedSocial.astro";
 import Pillars from "./home/Pillars.astro";
 import Platform from "./home/Platform.astro";
 import Testimonials from "./home/Testimonials.astro";
@@ -18,9 +20,15 @@ import SiteFooter from "./home/SiteFooter.astro";
 interface Props {
   /** Newest published Posts for the Blog band (empty hides the section). */
   recentPosts?: readonly BlogPost[];
+  /** Published social features for the homepage teaser (empty hides the section). */
+  featuredSocial?: readonly SocialFeature[];
 }
 
-const { recentPosts = [] } = Astro.props;
+const { recentPosts = [], featuredSocial = [] } = Astro.props;
+
+const displaySocial = featuredSocial.filter(
+  (feature) => feature.platform !== "xiaohongshu",
+);
 ---
 
 <main class="cae-home">
@@ -28,6 +36,9 @@ const { recentPosts = [] } = Astro.props;
   <Hero />
   <PressMarquee />
   <HomeInsights posts={recentPosts} />
+  {displaySocial.length > 0 ? (
+    <HomeFeaturedSocial features={displaySocial} />
+  ) : null}
   <Pillars />
   <Platform />
   <Testimonials />

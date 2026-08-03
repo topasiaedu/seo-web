@@ -2,7 +2,7 @@
  * @fileoverview JSON-LD payloads for CAE marketing pages.
  */
 
-import { homeMeta, mediaMeta } from "./meta";
+import { homeMeta, mediaMeta, socialMeta } from "./meta";
 import {
   getSiteOrigin,
   normalizeBase,
@@ -59,6 +59,7 @@ export function buildHomeJsonLd(
         url: pageUrl,
         logo: ogImageUrl,
         sameAs: [
+          "https://www.rednote.com/user/profile/6a19467f000000000d035c00",
           "https://www.instagram.com/caegoh/",
           "https://www.facebook.com/caegoh",
         ],
@@ -109,6 +110,42 @@ export function buildMediaJsonLd(
     isPartOf: {
       "@type": "WebSite",
       name: mediaMeta.siteName,
+      url: homePath,
+    },
+    about: {
+      "@id": orgId,
+    },
+    primaryImageOfPage: {
+      "@type": "ImageObject",
+      url: ogImageUrl,
+    },
+  };
+}
+
+/**
+ * Builds CollectionPage JSON-LD for the Social Media hub.
+ *
+ * @param pathname - Current page pathname (includes Astro base)
+ * @param ogImageUrl - Absolute Open Graph image URL
+ * @returns JSON-LD document
+ */
+export function buildSocialJsonLd(
+  pathname: string,
+  ogImageUrl: string,
+): JsonLdNode {
+  const pageUrl = toCanonicalUrl(pathname);
+  const homePath = toAbsoluteUrl(normalizeBase(import.meta.env.BASE_URL));
+  const orgId = `${schemaRoot()}/#organization`;
+
+  return {
+    "@context": "https://schema.org",
+    "@type": "CollectionPage",
+    name: socialMeta.title,
+    description: socialMeta.description,
+    url: pageUrl,
+    isPartOf: {
+      "@type": "WebSite",
+      name: socialMeta.siteName,
       url: homePath,
     },
     about: {
