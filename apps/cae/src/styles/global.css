@@ -34,7 +34,7 @@ a {
   color: inherit;
 }
 
-/* Narrow scaffold for plain pages only — home, media, and blog own their layout. */
+/* Narrow scaffold for plain pages only — home, media, about, and blog own their layout. */
 main:not(.cae-home):not(.blog-page) {
   max-width: 40rem;
   margin: 0 auto;

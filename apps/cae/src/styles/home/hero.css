@@ -1,5 +1,5 @@
 /**
- * Hero — full-bleed photographic background with left copy overlay.
+ * Hero — full-bleed video with left copy overlay.
  * Theme-aware scrim keeps text readable in light and dark without
  * turning the whole section into a flat cream/night shell.
  */
@@ -16,23 +16,50 @@
   isolation: isolate;
   overflow: hidden;
   margin: 0;
-  min-height: clamp(32rem, 78vh, 46rem);
-  padding: clamp(4.5rem, 10vw, 7rem) 0 clamp(4rem, 9vw, 6rem);
+  /* Always nearly full screen tall, regardless of content */
+  height: 95vh;
+  min-height: 95vh;
+  padding: clamp(5rem, 12vh, 7.5rem) 0 clamp(4rem, 9vh, 6rem);
   color: var(--hero-text);
   background-color: var(--hero-section-bg);
   font-family: var(--hero-font-sans);
+  box-sizing: border-box;
 }
 
-/* Full-bleed photo — portrait sits on the right like the live GHL hero */
+/* Full-bleed media plane — solid brand fill until video paints */
 .hero__bg {
   position: absolute;
   inset: 0;
   z-index: 0;
+  background-color: var(--hero-section-bg);
+  pointer-events: none;
+}
+
+/* Photo only when video is unavailable (reduced motion / autoplay blocked) */
+.hero--static .hero__bg {
   background-image: var(--hero-bg-image);
   background-size: cover;
-  background-position: 70% top;
+  background-position: center center;
   background-repeat: no-repeat;
-  pointer-events: none;
+}
+
+.hero__video {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  object-fit: cover;
+  /* Prefer upper frame so faces/title cards are not clipped */
+  object-position: center 20%;
+  background-color: transparent;
+}
+
+.hero--static .hero__video {
+  display: none;
 }
 
 /*
@@ -44,22 +71,23 @@
   inset: 0;
   z-index: 0;
   pointer-events: none;
+  /* Bottom-left weight so copy stays clear of video mid-frame */
   background: linear-gradient(
-    90deg,
-    rgba(26, 15, 46, 0.88) 0%,
-    rgba(26, 15, 46, 0.72) 34%,
-    rgba(26, 15, 46, 0.28) 58%,
-    rgba(26, 15, 46, 0.08) 100%
+    180deg,
+    rgba(26, 15, 46, 0.12) 0%,
+    rgba(26, 15, 46, 0.2) 42%,
+    rgba(26, 15, 46, 0.72) 72%,
+    rgba(26, 15, 46, 0.9) 100%
   );
 }
 
 html[data-theme="light"] .hero__scrim {
   background: linear-gradient(
-    90deg,
-    rgba(26, 15, 46, 0.9) 0%,
-    rgba(26, 15, 46, 0.78) 36%,
-    rgba(26, 15, 46, 0.35) 60%,
-    rgba(26, 15, 46, 0.12) 100%
+    180deg,
+    rgba(26, 15, 46, 0.14) 0%,
+    rgba(26, 15, 46, 0.24) 42%,
+    rgba(26, 15, 46, 0.76) 72%,
+    rgba(26, 15, 46, 0.92) 100%
   );
 }
 
@@ -69,51 +97,30 @@ html[data-theme="light"] .hero__scrim {
   box-sizing: border-box;
   width: 100%;
   max-width: var(--cae-max-width);
-  margin: 0 auto;
+  margin: 0;
   padding: 0 var(--hero-gutter);
   display: flex;
-  align-items: center;
-  min-height: inherit;
+  align-items: flex-end;
+  justify-content: flex-start;
+  height: 100%;
+  min-height: 0;
 }
 
 .hero__copy {
   display: flex;
   flex-direction: column;
-  align-items: flex-start;
-  justify-content: center;
-  max-width: 36rem;
+  align-items: stretch;
+  /* Brand sets the column width; tagline + CTAs match it */
+  width: fit-content;
+  max-width: min(100%, 36rem);
   padding: 0;
-}
-
-.hero__eyebrow {
-  margin-bottom: 0.75rem;
-  /* Gold stays readable on the dark photo scrim in both themes */
-  color: var(--cae-gold);
-}
-
-/*
- * CSS slogan pill — left edge matches brand/tagline (PNG had baked-in pad).
- */
-.hero__slogan {
-  display: inline-flex;
-  align-items: center;
-  margin: 0;
-  padding: 0.55rem 1.15rem;
-  border-radius: 999px;
-  border: 1px solid color-mix(in srgb, var(--cae-lavender) 45%, transparent);
-  background: color-mix(in srgb, var(--cae-navy) 72%, rgba(0, 0, 0, 0.35));
-  color: #ffffff;
-  font-family: var(--hero-font-sans);
-  font-size: clamp(0.7rem, 1.4vw, 0.8rem);
-  font-weight: 700;
-  letter-spacing: 0.08em;
-  line-height: 1.2;
-  text-transform: uppercase;
-  white-space: nowrap;
+  padding-bottom: clamp(0.25rem, 1.5vh, 1rem);
 }
 
 .hero__brand {
-  margin: 1rem 0 0;
+  margin: 0;
+  width: max-content;
+  max-width: 100%;
   color: var(--hero-text);
   font-family: var(--hero-font-display);
   font-size: clamp(2.75rem, 8vw, 4.5rem);
@@ -126,35 +133,44 @@ html[data-theme="light"] .hero__scrim {
 }
 
 .hero__tagline {
-  margin: 1.25rem 0 0;
-  max-width: 34rem;
+  /* Stretch to brand width without expanding the column */
+  width: 0;
+  min-width: 100%;
+  box-sizing: border-box;
+  margin: 1rem 0 0;
+  max-width: none;
   color: var(--hero-muted);
   font-family: var(--hero-font-sans);
   font-size: clamp(1rem, 2.2vw, 1.25rem);
   font-weight: 400;
   letter-spacing: 0;
-  line-height: 1.55;
+  line-height: 1.45;
   text-align: left;
   text-shadow: 0 1px 16px rgba(26, 15, 46, 0.5);
 }
 
 .hero__actions {
   display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 0.85rem 1rem;
-  margin-top: 1.75rem;
+  flex-wrap: nowrap;
+  align-items: stretch;
+  gap: 0.65rem;
+  width: 0;
+  min-width: 100%;
+  box-sizing: border-box;
+  margin-top: 1.5rem;
 }
 
 .hero__cta {
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  flex: 1 1 0;
+  min-width: 0;
   width: auto;
-  padding: var(--cae-btn-padding);
+  padding: 0.95rem 0.85rem;
   border-radius: 150px;
   font-family: var(--hero-font-sans);
-  font-size: 0.95rem;
+  font-size: 0.82rem;
   font-weight: 700;
   letter-spacing: var(--cae-btn-tracking);
   line-height: 1;
@@ -215,57 +231,139 @@ html[data-theme="light"] .hero__scrim {
   transform: translateY(-2px);
 }
 
+.hero__sound-wrap {
+  position: absolute;
+  right: clamp(0.85rem, 2.5vw, 1.5rem);
+  bottom: clamp(0.85rem, 2.5vw, 1.5rem);
+  z-index: 2;
+  margin: 0;
+  padding: 0;
+  pointer-events: auto;
+}
+
+.hero__sound {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.45rem;
+  min-height: 2.5rem;
+  margin: 0;
+  padding: 0.55rem 0.95rem;
+  border: 1px solid rgba(255, 255, 255, 0.28);
+  border-radius: 999px;
+  color: #ffffff;
+  background: rgba(26, 15, 46, 0.55);
+  backdrop-filter: blur(8px);
+  font-family: var(--hero-font-sans);
+  font-size: 0.8rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition:
+    background-color 160ms ease,
+    border-color 160ms ease;
+}
+
+.hero__sound:hover,
+.hero__sound:focus-visible {
+  background: rgba(26, 15, 46, 0.78);
+  border-color: rgba(255, 255, 255, 0.5);
+  outline: none;
+}
+
+.hero__sound:focus-visible {
+  box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.55);
+}
+
+.hero__sound-icon {
+  display: block;
+  width: 1rem;
+  height: 1rem;
+  flex-shrink: 0;
+}
+
+.hero__sound-icon.is-hidden {
+  display: none;
+}
+
+.hero__sound-label {
+  line-height: 1;
+}
+
 @media screen and (max-width: 768px) {
   .hero {
-    min-height: clamp(28rem, 85vh, 40rem);
-    padding: 4rem 0 3.5rem;
+    height: 95vh;
+    min-height: 95vh;
+    padding: 4.5rem 0 3.5rem;
   }
 
-  .hero__bg {
-    background-position: 72% top;
+  .hero--static .hero__bg {
+    background-position: center center;
+  }
+
+  .hero__video {
+    object-position: center 18%;
   }
 
   .hero__scrim {
     background: linear-gradient(
       180deg,
-      rgba(26, 15, 46, 0.55) 0%,
-      rgba(26, 15, 46, 0.78) 42%,
-      rgba(26, 15, 46, 0.92) 100%
+      rgba(26, 15, 46, 0.2) 0%,
+      rgba(26, 15, 46, 0.55) 48%,
+      rgba(26, 15, 46, 0.9) 100%
     );
   }
 
   .hero__inner {
     align-items: flex-end;
+    justify-content: flex-start;
   }
 
   .hero__copy {
-    align-items: center;
-    max-width: none;
-    text-align: center;
-    width: 100%;
+    align-items: stretch;
+    width: fit-content;
+    max-width: calc(100% - 3.5rem);
+    text-align: left;
+    padding-right: 0;
   }
 
-  .hero__eyebrow,
   .hero__brand,
   .hero__tagline {
-    text-align: center;
-  }
-
-  .hero__slogan {
-    margin-left: auto;
-    margin-right: auto;
-    white-space: normal;
-    text-align: center;
-    max-width: 22rem;
+    text-align: left;
   }
 
   .hero__actions {
-    justify-content: center;
-    width: 100%;
+    width: 0;
+    min-width: 100%;
   }
 
   .hero__cta {
-    font-size: 0.8rem;
-    padding: 1rem 1.5rem;
+    font-size: 0.75rem;
+    padding: 0.9rem 0.65rem;
+  }
+
+  .hero__sound-label {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+  }
+
+  .hero__sound {
+    width: 2.65rem;
+    height: 2.65rem;
+    padding: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero__sound {
+    transition: none;
   }
 }

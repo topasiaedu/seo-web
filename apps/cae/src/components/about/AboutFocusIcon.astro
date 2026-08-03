@@ -1,0 +1,216 @@
+---
+/**
+ * Clear marketing icons for About destiny domains.
+ * Recognizable marks: money, briefcase, heart, pulse, home, person.
+ */
+interface Props {
+  /** Focus area id from {@link aboutCopy.focusAreas}. */
+  kind: string;
+}
+
+const { kind } = Astro.props;
+
+const known =
+  kind === "wealth" ||
+  kind === "career" ||
+  kind === "relationships" ||
+  kind === "health" ||
+  kind === "family" ||
+  kind === "self"
+    ? kind
+    : "self";
+---
+
+{
+  known === "wealth" ? (
+    <svg
+      class="about-domains__icon"
+      viewBox="0 0 48 48"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      aria-hidden="true"
+    >
+      {/* Stacked coins */}
+      <ellipse
+        cx="24"
+        cy="34"
+        rx="12"
+        ry="4.5"
+        stroke="currentColor"
+        stroke-width="1.7"
+      />
+      <path
+        d="M12 34v-5.5c0-2.5 5.4-4.5 12-4.5s12 2 12 4.5V34"
+        stroke="currentColor"
+        stroke-width="1.7"
+      />
+      <ellipse
+        cx="24"
+        cy="24"
+        rx="12"
+        ry="4.5"
+        stroke="currentColor"
+        stroke-width="1.7"
+      />
+      <path
+        d="M12 24v-5.5c0-2.5 5.4-4.5 12-4.5s12 2 12 4.5V24"
+        stroke="currentColor"
+        stroke-width="1.7"
+      />
+      <ellipse
+        cx="24"
+        cy="14"
+        rx="12"
+        ry="4.5"
+        stroke="currentColor"
+        stroke-width="1.7"
+      />
+    </svg>
+  ) : null
+}
+{
+  known === "career" ? (
+    <svg
+      class="about-domains__icon"
+      viewBox="0 0 48 48"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      aria-hidden="true"
+    >
+      {/* Briefcase */}
+      <rect
+        x="8"
+        y="18"
+        width="32"
+        height="22"
+        rx="3"
+        stroke="currentColor"
+        stroke-width="1.7"
+      />
+      <path
+        d="M18 18v-3.5A3.5 3.5 0 0 1 21.5 11h5A3.5 3.5 0 0 1 30 14.5V18"
+        stroke="currentColor"
+        stroke-width="1.7"
+        stroke-linecap="round"
+      />
+      <path
+        d="M8 26h32"
+        stroke="currentColor"
+        stroke-width="1.7"
+        stroke-linecap="round"
+      />
+      <path
+        d="M22 26v3.5h4V26"
+        stroke="currentColor"
+        stroke-width="1.7"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      />
+    </svg>
+  ) : null
+}
+{
+  known === "relationships" ? (
+    <svg
+      class="about-domains__icon"
+      viewBox="0 0 48 48"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      aria-hidden="true"
+    >
+      {/* Heart */}
+      <path
+        d="M24 40s-14-8.6-14-18.2C10 16 14.2 12 19.2 12c3 0 4.8 1.5 4.8 1.5S25.8 12 28.8 12C33.8 12 38 16 38 21.8 38 31.4 24 40 24 40Z"
+        stroke="currentColor"
+        stroke-width="1.7"
+        stroke-linejoin="round"
+      />
+    </svg>
+  ) : null
+}
+{
+  known === "health" ? (
+    <svg
+      class="about-domains__icon"
+      viewBox="0 0 48 48"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      aria-hidden="true"
+    >
+      {/* Activity / heartbeat line */}
+      <path
+        d="M6 24h9l4-10 6 20 4-10h13"
+        stroke="currentColor"
+        stroke-width="1.7"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      />
+      <circle
+        cx="24"
+        cy="24"
+        r="16.5"
+        stroke="currentColor"
+        stroke-width="1.7"
+        opacity="0.35"
+      />
+    </svg>
+  ) : null
+}
+{
+  known === "family" ? (
+    <svg
+      class="about-domains__icon"
+      viewBox="0 0 48 48"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      aria-hidden="true"
+    >
+      {/* Home */}
+      <path
+        d="M8 22.5 24 10l16 12.5"
+        stroke="currentColor"
+        stroke-width="1.7"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      />
+      <path
+        d="M12 21v15.5A2.5 2.5 0 0 0 14.5 39h19a2.5 2.5 0 0 0 2.5-2.5V21"
+        stroke="currentColor"
+        stroke-width="1.7"
+        stroke-linejoin="round"
+      />
+      <path
+        d="M20 39V28h8v11"
+        stroke="currentColor"
+        stroke-width="1.7"
+        stroke-linejoin="round"
+      />
+    </svg>
+  ) : null
+}
+{
+  known === "self" ? (
+    <svg
+      class="about-domains__icon"
+      viewBox="0 0 48 48"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      aria-hidden="true"
+    >
+      {/* Person / self */}
+      <circle
+        cx="24"
+        cy="15"
+        r="6.5"
+        stroke="currentColor"
+        stroke-width="1.7"
+      />
+      <path
+        d="M10.5 38.5c1.8-7.2 7-11 13.5-11s11.7 3.8 13.5 11"
+        stroke="currentColor"
+        stroke-width="1.7"
+        stroke-linecap="round"
+      />
+    </svg>
+  ) : null
+}

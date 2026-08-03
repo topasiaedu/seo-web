@@ -1,0 +1,615 @@
+---
+/**
+ * About page body: brand-first full-bleed hero plus marketing content sections.
+ * Copy from {@link aboutCopy}; CTAs reuse existing funnel destinations.
+ */
+import { aboutCopy } from "@/data/home/about";
+import {
+  getHomeImage,
+  type HomeImageAsset,
+} from "@/data/home/images";
+import AboutFocusIcon from "@/components/about/AboutFocusIcon.astro";
+import AboutApproachIcon from "@/components/about/AboutApproachIcon.astro";
+import AboutFitIcon from "@/components/about/AboutFitIcon.astro";
+import "@/styles/about/about.css";
+
+/**
+ * Returns a usable `src` string from an Astro/Vite image import.
+ *
+ * @param asset - Static import from {@link getHomeImage}
+ * @returns URL string for CSS `url()` or `<img src>`
+ */
+function assetSrc(asset: HomeImageAsset): string {
+  if (typeof asset === "string") {
+    return asset;
+  }
+  if (
+    typeof asset === "object" &&
+    asset !== null &&
+    "src" in asset &&
+    typeof asset.src === "string"
+  ) {
+    return asset.src;
+  }
+  throw new Error("AboutContent: unsupported home image asset shape.");
+}
+
+/**
+ * Prefixes root-relative paths with Astro `base` (`/cae/`).
+ *
+ * @param href - Absolute URL, hash, or root-relative path
+ * @returns Href safe for this app's base path
+ */
+function resolveHref(href: string): string {
+  if (
+    href.startsWith("https://") ||
+    href.startsWith("http://") ||
+    href.startsWith("#") ||
+    href.startsWith("mailto:")
+  ) {
+    return href;
+  }
+  const base = import.meta.env.BASE_URL;
+  const normalizedBase = base.endsWith("/") ? base : `${base}/`;
+  const pathPart = href.startsWith("/") ? href.slice(1) : href;
+  return `${normalizedBase}${pathPart}`;
+}
+
+const primaryHref = resolveHref(aboutCopy.ctaPrimaryHref);
+const secondaryHref = resolveHref(aboutCopy.ctaSecondaryHref);
+const primaryIsExternal =
+  primaryHref.startsWith("https://") || primaryHref.startsWith("http://");
+const heroBackgroundSrc = assetSrc(getHomeImage("heroBg"));
+---
+
+<article class="about-page">
+  <header
+    class="about-hero"
+    aria-labelledby="about-brand"
+    style={`--about-hero-bg-image: url("${heroBackgroundSrc}");`}
+  >
+    <div class="about-hero__bg" aria-hidden="true"></div>
+    <div class="about-hero__scrim" aria-hidden="true"></div>
+    <div class="about-page__inner about-hero__inner">
+      <div class="about-hero__copy">
+        <p class="cae-eyebrow about-hero__eyebrow">{aboutCopy.heroEyebrow}</p>
+        <p class="about-hero__slogan">{aboutCopy.heroSlogan}</p>
+        <h1 class="about-hero__name" id="about-brand">{aboutCopy.heroName}</h1>
+        <p class="about-hero__role">{aboutCopy.heroRole}</p>
+        <p class="about-hero__support">{aboutCopy.heroSupport}</p>
+        <div class="about-hero__actions">
+          {
+            aboutCopy.ctaPrimaryVisible ? (
+              <a
+                class="about-cta__btn about-cta__btn--primary"
+                href={primaryHref}
+                target={primaryIsExternal ? "_blank" : undefined}
+                rel={primaryIsExternal ? "noreferrer noopener" : undefined}
+              >
+                {aboutCopy.ctaPrimaryLabel}
+              </a>
+            ) : null
+          }
+          <a class="about-cta__btn about-cta__btn--ghost" href={secondaryHref}>
+            {aboutCopy.ctaSecondaryLabel}
+          </a>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <div class="about-page__body">
+    <div class="cae-starfield" aria-hidden="true">
+      <div class="cae-starfield__glow"></div>
+      <div class="cae-starfield__dots"></div>
+      <span class="cae-starfield__twinkle cae-starfield__twinkle--a"></span>
+      <span class="cae-starfield__twinkle cae-starfield__twinkle--c"></span>
+    </div>
+
+    <section
+      class="about-section about-section--intro"
+      aria-labelledby="about-intro-heading"
+    >
+      <div class="about-page__inner">
+        <header class="about-origin__header">
+          <p class="cae-eyebrow about-section__eyebrow">{aboutCopy.introEyebrow}</p>
+          <h2 class="about-section__heading" id="about-intro-heading">
+            {aboutCopy.introHeading}
+          </h2>
+          <p class="about-section__lede">{aboutCopy.introLede}</p>
+        </header>
+
+        <ol class="about-origin" data-about-origin>
+          {
+            aboutCopy.introSteps.map((step, index) => {
+              const open = index === 0;
+              const stepNo = String(index + 1).padStart(2, "0");
+              return (
+                <li
+                  class="about-origin__step"
+                  data-origin-step={step.id}
+                  data-open={open ? "true" : "false"}
+                >
+                  <button
+                    type="button"
+                    class="about-origin__trigger"
+                    aria-expanded={open ? "true" : "false"}
+                    aria-controls={`about-origin-panel-${step.id}`}
+                    data-origin-trigger={step.id}
+                  >
+                    <span class="about-origin__node" aria-hidden="true">
+                      <span class="about-origin__dot"></span>
+                    </span>
+                    <span class="about-origin__index">{stepNo}</span>
+                    <span class="about-origin__title">{step.title}</span>
+                    <span class="about-origin__chevron" aria-hidden="true"></span>
+                  </button>
+                  <div
+                    class="about-origin__panel"
+                    id={`about-origin-panel-${step.id}`}
+                    data-origin-panel={step.id}
+                    hidden={!open}
+                  >
+                    <p class="about-origin__body">{step.body}</p>
+                  </div>
+                </li>
+              );
+            })
+          }
+        </ol>
+      </div>
+    </section>
+
+  <section
+    class="about-section about-section--domains"
+    aria-labelledby="about-method-heading"
+  >
+    <div class="about-page__inner">
+      <header class="about-domains__header">
+        <p class="cae-eyebrow about-section__eyebrow">Six destiny domains</p>
+        <h2 class="about-section__heading" id="about-method-heading">
+          {aboutCopy.methodHeading}
+        </h2>
+        <p class="about-section__lede">{aboutCopy.methodLede}</p>
+      </header>
+
+      <ol class="about-domains">
+        {
+          aboutCopy.focusAreas.map((area, index) => {
+            const step = String(index + 1).padStart(2, "0");
+            const isFlip = index % 2 === 1;
+            return (
+              <li
+                class:list={[
+                  "about-domains__lane",
+                  `about-domains__lane--${area.id}`,
+                  isFlip ? "about-domains__lane--flip" : null,
+                ]}
+                style={`--domain-i: ${index};`}
+              >
+                <span class="about-domains__index" aria-hidden="true">
+                  {step}
+                </span>
+                <span class="about-domains__badge">
+                  <AboutFocusIcon kind={area.id} />
+                </span>
+                <div class="about-domains__copy">
+                  <h3 class="about-domains__title">{area.label}</h3>
+                  <p class="about-domains__outcome">{area.outcome}</p>
+                </div>
+              </li>
+            );
+          })
+        }
+      </ol>
+    </div>
+  </section>
+
+  <section
+    class="about-section about-section--difference"
+    aria-labelledby="about-difference-heading"
+  >
+    <div class="about-page__inner">
+      <header class="about-diff__header">
+        <p class="cae-eyebrow about-section__eyebrow">The CAE difference</p>
+        <h2 class="about-section__heading" id="about-difference-heading">
+          {aboutCopy.differenceHeading}
+        </h2>
+        <p class="about-section__lede">{aboutCopy.differenceLede}</p>
+      </header>
+
+      <div class="about-diff">
+        <article
+          class="about-diff__side about-diff__side--traditional"
+          aria-labelledby="about-diff-traditional"
+        >
+          <h3 class="about-diff__label" id="about-diff-traditional">
+            {aboutCopy.differenceTraditional.label}
+          </h3>
+          <p class="about-diff__side-lede">
+            {aboutCopy.differenceTraditional.lede}
+          </p>
+          <ul class="about-diff__points">
+            {
+              aboutCopy.differenceTraditional.points.map((point) => (
+                <li class="about-diff__point">
+                  <span class="about-diff__mark about-diff__mark--no" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <path
+                        d="M7 7l10 10M17 7 7 17"
+                        stroke="currentColor"
+                        stroke-width="1.8"
+                        stroke-linecap="round"
+                      />
+                    </svg>
+                  </span>
+                  <span>{point.label}</span>
+                </li>
+              ))
+            }
+          </ul>
+        </article>
+
+        <div class="about-diff__vs" aria-hidden="true">
+          <span class="about-diff__vs-line"></span>
+          <span class="about-diff__vs-badge">VS</span>
+          <span class="about-diff__vs-line"></span>
+        </div>
+
+        <article
+          class="about-diff__side about-diff__side--cae"
+          aria-labelledby="about-diff-cae"
+        >
+          <h3 class="about-diff__label" id="about-diff-cae">
+            {aboutCopy.differenceCae.label}
+          </h3>
+          <p class="about-diff__side-lede">{aboutCopy.differenceCae.lede}</p>
+          <ul class="about-diff__points">
+            {
+              aboutCopy.differenceCae.points.map((point) => (
+                <li class="about-diff__point">
+                  <span class="about-diff__mark about-diff__mark--yes" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <path
+                        d="m6.5 12.5 3.5 3.5 7.5-8"
+                        stroke="currentColor"
+                        stroke-width="1.8"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                      />
+                    </svg>
+                  </span>
+                  <span>{point.label}</span>
+                </li>
+              ))
+            }
+          </ul>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <section
+    class="about-section about-section--approach"
+    aria-labelledby="about-approach-heading"
+  >
+    <div class="about-page__inner">
+      <header class="about-rail__header">
+        <p class="cae-eyebrow about-section__eyebrow">The process</p>
+        <h2 class="about-section__heading" id="about-approach-heading">
+          {aboutCopy.approachHeading}
+        </h2>
+        <p class="about-section__lede">{aboutCopy.approachLede}</p>
+      </header>
+
+      <ol class="about-rail">
+        {
+          aboutCopy.approachSteps.map((step, index) => {
+            const stepNo = String(index + 1).padStart(2, "0");
+            const isLast = index === aboutCopy.approachSteps.length - 1;
+            return (
+              <li class={`about-rail__step about-rail__step--${step.id}`}>
+                <div class="about-rail__node">
+                  <span class="about-rail__badge">
+                    <AboutApproachIcon kind={step.id} />
+                  </span>
+                  {
+                    isLast ? null : (
+                      <span class="about-rail__connector" aria-hidden="true">
+                        <span class="about-rail__connector-line"></span>
+                        <span class="about-rail__connector-arrow"></span>
+                      </span>
+                    )
+                  }
+                </div>
+                <p class="about-rail__index" aria-hidden="true">
+                  {stepNo}
+                </p>
+                <h3 class="about-rail__title">{step.title}</h3>
+                <p class="about-rail__body">{step.body}</p>
+              </li>
+            );
+          })
+        }
+      </ol>
+    </div>
+  </section>
+
+  <section
+    class="about-section about-section--belief"
+    aria-labelledby="about-belief-heading"
+  >
+    <div class="about-page__inner">
+      <header class="about-belief__header">
+        <p class="cae-eyebrow about-section__eyebrow">Philosophy</p>
+        <h2 class="about-section__heading" id="about-belief-heading">
+          {aboutCopy.beliefHeading}
+        </h2>
+      </header>
+
+      <figure class="about-belief__manifesto">
+        <p class="about-belief__setup">{aboutCopy.beliefSetup}</p>
+        <blockquote class="about-belief__quote">
+          <p>{aboutCopy.beliefQuote}</p>
+        </blockquote>
+        <p class="about-belief__closer">{aboutCopy.beliefCloser}</p>
+      </figure>
+
+      <ul class="about-belief__pillars">
+        {
+          aboutCopy.beliefPillars.map((pillar) => (
+            <li class={`about-belief__pillar about-belief__pillar--${pillar.id}`}>
+              <h3 class="about-belief__pillar-title">{pillar.title}</h3>
+              <p class="about-belief__pillar-body">{pillar.body}</p>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </section>
+
+  <section
+    class="about-section about-section--fit"
+    aria-labelledby="about-fit-heading"
+  >
+    <div class="about-page__inner">
+      <header class="about-fit__header">
+        <p class="cae-eyebrow about-section__eyebrow">Ideal clients</p>
+        <h2 class="about-section__heading" id="about-fit-heading">
+          {aboutCopy.fitHeading}
+        </h2>
+        <p class="about-section__lede">{aboutCopy.fitLede}</p>
+      </header>
+
+      <div class="about-fit-switch" data-fit-switch>
+        <div
+          class="about-fit-switch__nav"
+          role="tablist"
+          aria-label="Audience types"
+        >
+          {
+            aboutCopy.fitItems.map((item, index) => {
+              const selected = index === 0;
+              return (
+                <button
+                  type="button"
+                  class="about-fit-switch__tab"
+                  role="tab"
+                  id={`about-fit-tab-${item.id}`}
+                  aria-selected={selected ? "true" : "false"}
+                  aria-controls={`about-fit-panel-${item.id}`}
+                  tabindex={selected ? 0 : -1}
+                  data-fit-tab={item.id}
+                >
+                  <span class="about-fit-switch__tab-icon" aria-hidden="true">
+                    <AboutFitIcon kind={item.id} />
+                  </span>
+                  <span class="about-fit-switch__tab-label">{item.title}</span>
+                </button>
+              );
+            })
+          }
+        </div>
+
+        <div class="about-fit-switch__stage">
+          {
+            aboutCopy.fitItems.map((item, index) => {
+              const selected = index === 0;
+              return (
+                <article
+                  class="about-fit-switch__panel"
+                  role="tabpanel"
+                  id={`about-fit-panel-${item.id}`}
+                  aria-labelledby={`about-fit-tab-${item.id}`}
+                  data-fit-panel={item.id}
+                  hidden={!selected}
+                >
+                  <span class="about-fit-switch__badge" aria-hidden="true">
+                    <AboutFitIcon kind={item.id} />
+                  </span>
+                  <h3 class="about-fit-switch__title">{item.title}</h3>
+                  <p class="about-fit-switch__body">{item.label}</p>
+                </article>
+              );
+            })
+          }
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <script>
+    /**
+     * Wires the About origin timeline accordion.
+     */
+    function initAboutOrigin(): void {
+      const root = document.querySelector("[data-about-origin]");
+      if (!(root instanceof HTMLElement)) {
+        return;
+      }
+
+      const steps = Array.from(
+        root.querySelectorAll<HTMLElement>("[data-origin-step]"),
+      );
+      const triggers = Array.from(
+        root.querySelectorAll<HTMLButtonElement>("[data-origin-trigger]"),
+      );
+
+      if (steps.length === 0 || triggers.length === 0) {
+        return;
+      }
+
+      /**
+       * Opens one timeline step and closes the others.
+       *
+       * @param id - Intro step id
+       */
+      function openStep(id: string): void {
+        for (const step of steps) {
+          const isOpen = step.dataset.originStep === id;
+          step.dataset.open = isOpen ? "true" : "false";
+          const panel = step.querySelector<HTMLElement>("[data-origin-panel]");
+          const trigger = step.querySelector<HTMLButtonElement>(
+            "[data-origin-trigger]",
+          );
+          if (panel instanceof HTMLElement) {
+            panel.hidden = !isOpen;
+          }
+          if (trigger instanceof HTMLButtonElement) {
+            trigger.setAttribute("aria-expanded", isOpen ? "true" : "false");
+          }
+        }
+      }
+
+      for (const trigger of triggers) {
+        trigger.addEventListener("click", () => {
+          const id = trigger.dataset.originTrigger;
+          if (typeof id === "string" && id.length > 0) {
+            openStep(id);
+          }
+        });
+      }
+    }
+
+    /**
+     * Wires the About audience switcher (tabs + desktop hover preview).
+     */
+    function initAboutFitSwitch(): void {
+      const root = document.querySelector("[data-fit-switch]");
+      if (!(root instanceof HTMLElement)) {
+        return;
+      }
+
+      const tabs = Array.from(
+        root.querySelectorAll<HTMLButtonElement>("[data-fit-tab]"),
+      );
+      const panels = Array.from(
+        root.querySelectorAll<HTMLElement>("[data-fit-panel]"),
+      );
+
+      if (tabs.length === 0 || panels.length === 0) {
+        return;
+      }
+
+      /**
+       * Activates one audience tab/panel pair by id.
+       *
+       * @param id - Fit item id
+       */
+      function activate(id: string): void {
+        for (const tab of tabs) {
+          const isActive = tab.dataset.fitTab === id;
+          tab.setAttribute("aria-selected", isActive ? "true" : "false");
+          tab.tabIndex = isActive ? 0 : -1;
+        }
+        for (const panel of panels) {
+          const isActive = panel.dataset.fitPanel === id;
+          panel.hidden = !isActive;
+        }
+      }
+
+      for (const tab of tabs) {
+        tab.addEventListener("click", () => {
+          const id = tab.dataset.fitTab;
+          if (typeof id === "string" && id.length > 0) {
+            activate(id);
+          }
+        });
+
+        tab.addEventListener("mouseenter", () => {
+          if (window.matchMedia("(hover: hover) and (pointer: fine)").matches) {
+            const id = tab.dataset.fitTab;
+            if (typeof id === "string" && id.length > 0) {
+              activate(id);
+            }
+          }
+        });
+
+        tab.addEventListener("keydown", (event: KeyboardEvent) => {
+          const currentIndex = tabs.indexOf(tab);
+          if (currentIndex < 0) {
+            return;
+          }
+
+          let nextIndex = currentIndex;
+          if (event.key === "ArrowDown" || event.key === "ArrowRight") {
+            nextIndex = (currentIndex + 1) % tabs.length;
+          } else if (event.key === "ArrowUp" || event.key === "ArrowLeft") {
+            nextIndex = (currentIndex - 1 + tabs.length) % tabs.length;
+          } else if (event.key === "Home") {
+            nextIndex = 0;
+          } else if (event.key === "End") {
+            nextIndex = tabs.length - 1;
+          } else {
+            return;
+          }
+
+          event.preventDefault();
+          const nextTab = tabs[nextIndex];
+          if (!(nextTab instanceof HTMLButtonElement)) {
+            return;
+          }
+          const nextId = nextTab.dataset.fitTab;
+          if (typeof nextId !== "string" || nextId.length === 0) {
+            return;
+          }
+          activate(nextId);
+          nextTab.focus();
+        });
+      }
+    }
+
+    initAboutOrigin();
+    initAboutFitSwitch();
+  </script>
+
+  <section
+    class="about-section about-section--cta"
+    aria-labelledby="about-cta-heading"
+  >
+    <div class="about-page__inner">
+      <h2 class="about-section__heading" id="about-cta-heading">
+        {aboutCopy.ctaHeading}
+      </h2>
+      <p class="about-section__lede">{aboutCopy.ctaLede}</p>
+      <div class="about-cta__actions">
+        {
+          aboutCopy.ctaPrimaryVisible ? (
+            <a
+              class="about-cta__btn about-cta__btn--primary"
+              href={primaryHref}
+              target={primaryIsExternal ? "_blank" : undefined}
+              rel={primaryIsExternal ? "noreferrer noopener" : undefined}
+            >
+              {aboutCopy.ctaPrimaryLabel}
+            </a>
+          ) : null
+        }
+        <a class="about-cta__btn about-cta__btn--ghost" href={secondaryHref}>
+          {aboutCopy.ctaSecondaryLabel}
+        </a>
+      </div>
+    </div>
+  </section>
+  </div>
+</article>

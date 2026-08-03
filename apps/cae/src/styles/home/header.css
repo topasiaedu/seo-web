@@ -8,11 +8,15 @@
   --header-text: var(--cae-text);
   --header-accent: var(--cae-gold);
   --header-border: transparent;
+  --header-gutter: clamp(1.25rem, 4vw, 2.5rem);
 
   position: sticky;
   top: 0;
+  left: 0;
   z-index: 40;
   width: 100%;
+  max-width: none;
+  box-sizing: border-box;
   background: var(--header-bg);
   border-bottom: 1px solid transparent;
   font-family: var(--cae-font-sans);
@@ -47,9 +51,11 @@ html[data-theme="light"] .site-header.is-open {
   align-items: center;
   justify-content: space-between;
   gap: 1.5rem;
-  max-width: var(--cae-max-width);
-  margin: 0 auto;
-  padding: 1.25rem clamp(1.25rem, 4vw, 2.5rem);
+  width: 100%;
+  max-width: none;
+  margin: 0;
+  padding: 1.25rem var(--header-gutter);
+  box-sizing: border-box;
 }
 
 .site-header__brand {

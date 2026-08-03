@@ -3,14 +3,29 @@
  */
 
 export {
+  aboutMeta,
   homeMeta,
   mediaMeta,
   socialMeta,
   requireMetaString,
+  type AboutMeta,
   type HomeMeta,
   type MediaMeta,
   type SocialMeta,
 } from "./meta.ts";
+
+export {
+  aboutCopy,
+  type AboutApproachStep,
+  type AboutBeliefPillar,
+  type AboutCopy,
+  type AboutDifferencePoint,
+  type AboutDifferenceSide,
+  type AboutFitItem,
+  type AboutFocusArea,
+  type AboutIntroStep,
+  type AboutPageCopy,
+} from "./about.ts";
 
 export {
   assertHomeHref,
@@ -24,6 +39,14 @@ export {
   homeHero,
   type HomeHero,
 } from "./hero.ts";
+
+export {
+  buildHeroVideoSrc,
+  HERO_VIDEO_OBJECT_PATH,
+  homeHeroVideo,
+  type HeroVideoSrc,
+  type HomeHeroVideo,
+} from "./hero-video.ts";
 
 export {
   homePress,

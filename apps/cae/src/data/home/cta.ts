@@ -64,8 +64,14 @@ export const homeCta = {
     ctaHref: assertHomeHref("https://caegoh.com/home-page-4444"),
   },
   footer: {
-    copyright: "Copyrights 2022 | CaeGoh™ | Terms & Conditions",
+    /** Short line under the logo in the site footer. */
+    tagline: "Zi Wei Dou Shu consulting for clarity, timing, and destiny.",
+    /** Visible copyright mark (year kept current in the footer component). */
+    copyrightName: "CaeGoh™",
+    termsLabel: "Terms & Conditions",
     termsHref: assertHomeHref("https://caegoh.com/"),
+    exploreHeading: "Explore",
+    connectHeading: "Connect",
   },
 } as const;
 

@@ -1,9 +1,13 @@
 ---
 /**
- * Hero — full-bleed portrait background with left copy overlay.
- * Slogan is a CSS pill (aligned with brand text); primary CTA owns its gradient.
+ * Hero — full-bleed muted video background with left copy overlay.
+ * Still photo is only used when video cannot play (reduced motion / autoplay block).
  */
 import { homeHero } from "@/data/home/hero";
+import {
+  buildHeroVideoSrc,
+  homeHeroVideo,
+} from "@/data/home/hero-video";
 import {
   getHomeImage,
   type HomeImageAsset,
@@ -14,7 +18,7 @@ import "@/styles/home/hero.css";
  * Returns a usable `src` string from an Astro/Vite image import.
  *
  * @param asset - Static import from {@link homeImages}
- * @returns URL string for an `<img src>` or CSS `url()`
+ * @returns URL string for CSS `url()` fallback
  */
 function assetSrc(asset: HomeImageAsset): string {
   if (typeof asset === "string") {
@@ -52,24 +56,51 @@ function resolveHref(href: string): string {
   return `${normalizedBase}${path}`;
 }
 
+/**
+ * Resolves the public MP4 URL from env, with a known fallback.
+ *
+ * @returns Absolute HTTPS video URL
+ */
+function resolveVideoSrc(): string {
+  const fromEnv =
+    typeof import.meta.env.PUBLIC_SUPABASE_URL === "string"
+      ? import.meta.env.PUBLIC_SUPABASE_URL.trim()
+      : "";
+  if (fromEnv.length > 0) {
+    return buildHeroVideoSrc(fromEnv);
+  }
+  return homeHeroVideo.fallbackSrc;
+}
+
 const backgroundSrc = assetSrc(getHomeImage("heroBg"));
+const videoSrc = resolveVideoSrc();
 const ctaHref = resolveHref(homeHero.ctaHref);
 ---
 
 <section
   class="hero"
   aria-labelledby="hero-brand"
+  data-hero
   style={`--hero-bg-image: url("${backgroundSrc}");`}
 >
-  <div class="hero__bg" aria-hidden="true"></div>
+  <div class="hero__bg" aria-hidden="true">
+    <video
+      class="hero__video"
+      data-hero-video-el
+      src={videoSrc}
+      autoplay
+      muted
+      loop
+      playsinline
+      preload="auto"
+      aria-label={homeHeroVideo.videoLabel}
+    >
+    </video>
+  </div>
   <div class="hero__scrim" aria-hidden="true"></div>
 
   <div class="hero__inner">
     <div class="hero__copy">
-      <p class="cae-eyebrow hero__eyebrow">Zi Wei Dou Shu · Purple Star</p>
-      <p class="hero__slogan" title={homeHero.sloganTitle}>
-        {homeHero.sloganLabel}
-      </p>
       <h1 class="hero__brand" id="hero-brand">{homeHero.brand}</h1>
       <p class="hero__tagline">{homeHero.tagline}</p>
       <div class="hero__actions">
@@ -82,4 +113,146 @@ const ctaHref = resolveHref(homeHero.ctaHref);
       </div>
     </div>
   </div>
+
+  <div class="hero__sound-wrap">
+    <button
+      type="button"
+      class="hero__sound"
+      data-hero-video-sound
+      aria-pressed="false"
+      aria-label={homeHeroVideo.unmuteLabel}
+      data-unmute-label={homeHeroVideo.unmuteLabel}
+      data-mute-label={homeHeroVideo.muteLabel}
+    >
+      <svg
+        class="hero__sound-icon"
+        viewBox="0 0 24 24"
+        aria-hidden="true"
+        focusable="false"
+        data-icon-muted
+      >
+        <path
+          fill="currentColor"
+          d="M4.34 2.93 2.93 4.34 7.59 9H4v6h4l5 5V13.41l4.66 4.66 1.41-1.41L4.34 2.93zM14 3.76v3.87l2 2V7.76c1.25.74 2 2.08 2 3.49 0 .53-.1 1.04-.28 1.51l1.56 1.56c.46-.93.72-1.97.72-3.07 0-2.48-1.51-4.63-3.7-5.49zM9 9.41 12.59 13H9V9.41z"
+        ></path>
+      </svg>
+      <svg
+        class="hero__sound-icon is-hidden"
+        viewBox="0 0 24 24"
+        aria-hidden="true"
+        focusable="false"
+        data-icon-unmuted
+      >
+        <path
+          fill="currentColor"
+          d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"
+        ></path>
+      </svg>
+      <span class="hero__sound-label" data-hero-video-sound-label>
+        {homeHeroVideo.unmuteLabel}
+      </span>
+    </button>
+  </div>
 </section>
+
+<script>
+  /**
+   * Muted autoplay for the hero video, with reduced-motion fallback and unmute.
+   *
+   * @param root - Hero section root (`[data-hero]`)
+   */
+  function initHeroVideo(root: HTMLElement): void {
+    const videoEl = root.querySelector("[data-hero-video-el]");
+    if (!(videoEl instanceof HTMLVideoElement)) {
+      return;
+    }
+    const media: HTMLVideoElement = videoEl;
+
+    const soundBtn = root.querySelector("[data-hero-video-sound]");
+    const labelEl = root.querySelector("[data-hero-video-sound-label]");
+    const iconMuted = root.querySelector("[data-icon-muted]");
+    const iconUnmuted = root.querySelector("[data-icon-unmuted]");
+
+    const unmuteLabel =
+      soundBtn instanceof HTMLElement
+        ? soundBtn.dataset.unmuteLabel ?? "Unmute video"
+        : "Unmute video";
+    const muteLabel =
+      soundBtn instanceof HTMLElement
+        ? soundBtn.dataset.muteLabel ?? "Mute video"
+        : "Mute video";
+
+    const reduceMotion = window.matchMedia(
+      "(prefers-reduced-motion: reduce)",
+    ).matches;
+
+    /**
+     * Syncs control labels/icons with the current muted state.
+     */
+    function syncSoundUi(): void {
+      const muted = media.muted;
+      if (soundBtn instanceof HTMLButtonElement) {
+        soundBtn.setAttribute("aria-pressed", muted ? "false" : "true");
+        soundBtn.setAttribute(
+          "aria-label",
+          muted ? unmuteLabel : muteLabel,
+        );
+      }
+      if (labelEl instanceof HTMLElement) {
+        labelEl.textContent = muted ? unmuteLabel : muteLabel;
+      }
+      if (iconMuted instanceof SVGElement) {
+        iconMuted.classList.toggle("is-hidden", !muted);
+      }
+      if (iconUnmuted instanceof SVGElement) {
+        iconUnmuted.classList.toggle("is-hidden", muted);
+      }
+    }
+
+    if (reduceMotion) {
+      media.removeAttribute("autoplay");
+      media.pause();
+      media.removeAttribute("src");
+      media.load();
+      if (soundBtn instanceof HTMLElement) {
+        soundBtn.hidden = true;
+      }
+      root.classList.add("hero--static");
+      return;
+    }
+
+    media.muted = true;
+    media.playsInline = true;
+
+    const playAttempt = media.play();
+    if (playAttempt !== undefined) {
+      playAttempt.catch(() => {
+        root.classList.add("hero--static");
+        if (soundBtn instanceof HTMLElement) {
+          soundBtn.hidden = true;
+        }
+      });
+    }
+
+    if (soundBtn instanceof HTMLButtonElement) {
+      soundBtn.addEventListener("click", () => {
+        media.muted = !media.muted;
+        if (!media.muted && media.paused) {
+          void media.play().catch(() => {
+            /* ignore */
+          });
+        }
+        syncSoundUi();
+      });
+    }
+
+    syncSoundUi();
+  }
+
+  const roots = document.querySelectorAll("[data-hero]");
+  for (const root of roots) {
+    if (root instanceof HTMLElement) {
+      initHeroVideo(root);
+    }
+  }
+</script>

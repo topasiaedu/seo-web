@@ -1,5 +1,5 @@
 /**
- * @fileoverview SEO metadata for CAE marketing pages (home + media + social).
+ * @fileoverview SEO metadata for CAE marketing pages (home + media + social + about).
  */
 
 /**
@@ -47,6 +47,22 @@ export const socialMeta = {
 
 /** Shape of {@link socialMeta}. */
 export type SocialMeta = typeof socialMeta;
+
+/**
+ * SEO copy for the About route.
+ * Keep title/description aligned with the About page narrative in `./about.ts`.
+ */
+export const aboutMeta = {
+  title: "About Cae Goh | Purple Star Astrology & Life Strategy",
+  description:
+    "Meet Cae Goh, Purple Star Astrology (Zi Wei Dou Shu) strategist helping business owners and entrepreneurs make clearer decisions across wealth, career, and relationships.",
+  ogType: "website",
+  siteName: "Cae Goh",
+  twitterCard: "summary_large_image",
+} as const;
+
+/** Shape of {@link aboutMeta}. */
+export type AboutMeta = typeof aboutMeta;
 
 /**
  * Validates a required non-empty meta string.

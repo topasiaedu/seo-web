@@ -1,17 +1,184 @@
 ---
 /**
- * Site footer with copyright line from homepage CTA content.
+ * Site footer — brand, explore nav, social, and legal line.
  * Always-deep night shell in both themes.
  */
 import { homeCta } from "@/data/home/cta";
+import { homeNav } from "@/data/home/nav";
+import {
+  getHomeImage,
+  isHomeImageKey,
+  type HomeImageAsset,
+  type HomeImageKey,
+} from "@/data/home/images";
 import "@/styles/home/footer.css";
 
-const { copyright } = homeCta.footer;
+/**
+ * Returns a usable `src` string from an Astro/Vite image import.
+ *
+ * @param asset - Static import from {@link homeImages}
+ * @returns URL string for an `<img src>`
+ */
+function assetSrc(asset: HomeImageAsset): string {
+  if (typeof asset === "string") {
+    return asset;
+  }
+  if (
+    typeof asset === "object" &&
+    asset !== null &&
+    "src" in asset &&
+    typeof asset.src === "string"
+  ) {
+    return asset.src;
+  }
+  throw new Error("SiteFooter: unsupported home image asset shape.");
+}
+
+/**
+ * Prefixes root-relative paths with Astro `base` (`/cae/`).
+ *
+ * @param href - Absolute URL, hash, or root-relative path
+ * @returns Href safe for this app's base path
+ */
+function resolveHref(href: string): string {
+  if (
+    href.startsWith("https://") ||
+    href.startsWith("http://") ||
+    href.startsWith("#") ||
+    href.startsWith("mailto:")
+  ) {
+    return href;
+  }
+  const base = import.meta.env.BASE_URL;
+  const normalizedBase = base.endsWith("/") ? base : `${base}/`;
+  const path = href.startsWith("/") ? href.slice(1) : href;
+  return `${normalizedBase}${path}`;
+}
+
+/**
+ * Resolves a content `imageKey` to a concrete image URL.
+ *
+ * @param imageKey - Logical slot from content modules
+ * @param fallback - Known {@link HomeImageKey} when the content key is missing
+ * @returns Resolved image URL
+ */
+function resolveImageSrc(imageKey: string, fallback: HomeImageKey): string {
+  if (isHomeImageKey(imageKey)) {
+    return assetSrc(getHomeImage(imageKey));
+  }
+  return assetSrc(getHomeImage(fallback));
+}
+
+const { footer } = homeCta;
+const year = new Date().getFullYear();
+const logoKey: HomeImageKey = isHomeImageKey(homeNav.logoImageKey)
+  ? homeNav.logoImageKey
+  : "logo";
+const logoSrc = assetSrc(getHomeImage(logoKey));
+const homeHref = resolveHref(homeNav.homeHref);
+const termsHref = resolveHref(footer.termsHref);
+
+const navLinks = homeNav.links.map((link) => ({
+  label: link.label,
+  href: resolveHref(link.href),
+}));
+
+const socialLinks = homeCta.social.map((link) => {
+  const fallback: HomeImageKey =
+    link.id === "facebook" ? "socialFacebook" : "socialInstagram";
+  return {
+    id: link.id,
+    label: link.label,
+    href: link.href,
+    iconTitle: link.iconTitle,
+    iconAlt: link.iconAlt,
+    iconSrc: resolveImageSrc(link.iconImageKey, fallback),
+  };
+});
 ---
 
 <footer class="cae-footer">
   <div class="cae-footer__stars" aria-hidden="true"></div>
+  <div class="cae-footer__glow" aria-hidden="true"></div>
+
   <div class="cae-footer__inner">
-    <p class="cae-footer__copy">{copyright}</p>
+    <div class="cae-footer__top">
+      <div class="cae-footer__brand">
+        <a
+          class="cae-footer__logo-link"
+          href={homeHref}
+          aria-label={homeNav.logoTitle}
+        >
+          <img
+            class="cae-footer__logo"
+            src={logoSrc}
+            alt={homeNav.logoAlt}
+            title={homeNav.logoTitle}
+            width="120"
+            height="36"
+            loading="lazy"
+            decoding="async"
+          />
+        </a>
+        <p class="cae-footer__tagline">{footer.tagline}</p>
+      </div>
+
+      <nav class="cae-footer__nav" aria-label="Footer">
+        <p class="cae-footer__heading">{footer.exploreHeading}</p>
+        <ul class="cae-footer__nav-list">
+          {
+            navLinks.map((link) => (
+              <li>
+                <a class="cae-footer__nav-link" href={link.href}>
+                  {link.label}
+                </a>
+              </li>
+            ))
+          }
+        </ul>
+      </nav>
+
+      <div class="cae-footer__connect">
+        <p class="cae-footer__heading">{footer.connectHeading}</p>
+        <ul class="cae-footer__social-list">
+          {
+            socialLinks.map((link) => (
+              <li>
+                <a
+                  class="cae-footer__social-link"
+                  href={link.href}
+                  target="_blank"
+                  rel="noreferrer noopener"
+                  aria-label={link.label}
+                  title={link.iconTitle}
+                >
+                  <img
+                    class="cae-footer__social-icon"
+                    src={link.iconSrc}
+                    alt={link.iconAlt}
+                    width="28"
+                    height="28"
+                    loading="lazy"
+                    decoding="async"
+                  />
+                  <span class="cae-footer__social-label">{link.label}</span>
+                </a>
+              </li>
+            ))
+          }
+        </ul>
+      </div>
+    </div>
+
+    <div class="cae-footer__rule" aria-hidden="true"></div>
+
+    <div class="cae-footer__bottom">
+      <p class="cae-footer__copy">
+        © {year} {footer.copyrightName}
+      </p>
+      <a class="cae-footer__terms" href={termsHref}>
+        {footer.termsLabel}
+      </a>
+    </div>
   </div>
 </footer>

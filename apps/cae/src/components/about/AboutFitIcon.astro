@@ -1,0 +1,140 @@
+---
+/**
+ * Audience icons for the About "Who this is for" spotlight strip.
+ */
+interface Props {
+  /** Fit item id from {@link aboutCopy.fitItems}. */
+  kind: string;
+}
+
+const { kind } = Astro.props;
+
+const known =
+  kind === "founders" ||
+  kind === "entrepreneurs" ||
+  kind === "high-performers" ||
+  kind === "decision-makers"
+    ? kind
+    : "decision-makers";
+---
+
+{
+  known === "founders" ? (
+    <svg
+      class="about-fit__icon"
+      viewBox="0 0 48 48"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      aria-hidden="true"
+    >
+      {/* Briefcase — business owners */}
+      <rect
+        x="8"
+        y="18"
+        width="32"
+        height="22"
+        rx="3"
+        stroke="currentColor"
+        stroke-width="1.7"
+      />
+      <path
+        d="M18 18v-3.5A3.5 3.5 0 0 1 21.5 11h5A3.5 3.5 0 0 1 30 14.5V18"
+        stroke="currentColor"
+        stroke-width="1.7"
+        stroke-linecap="round"
+      />
+      <path
+        d="M8 26h32"
+        stroke="currentColor"
+        stroke-width="1.7"
+        stroke-linecap="round"
+      />
+    </svg>
+  ) : null
+}
+{
+  known === "entrepreneurs" ? (
+    <svg
+      class="about-fit__icon"
+      viewBox="0 0 48 48"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      aria-hidden="true"
+    >
+      {/* Rocket — entrepreneurs */}
+      <path
+        d="M24 8c6 4.5 9.5 11 10 19.5-4.5.8-8.2 1-10 1s-5.5-.2-10-1C14.5 19 18 12.5 24 8Z"
+        stroke="currentColor"
+        stroke-width="1.7"
+        stroke-linejoin="round"
+      />
+      <path
+        d="M18.5 28.5 14 38l7-2.5M29.5 28.5 34 38l-7-2.5"
+        stroke="currentColor"
+        stroke-width="1.7"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      />
+      <circle cx="24" cy="18" r="2.4" fill="currentColor" />
+      <path
+        d="M24 28.5V36"
+        stroke="currentColor"
+        stroke-width="1.7"
+        stroke-linecap="round"
+      />
+    </svg>
+  ) : null
+}
+{
+  known === "high-performers" ? (
+    <svg
+      class="about-fit__icon"
+      viewBox="0 0 48 48"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      aria-hidden="true"
+    >
+      {/* Trophy — high performers */}
+      <path
+        d="M16 12h16v8.5c0 5.5-3.5 9-8 9s-8-3.5-8-9V12Z"
+        stroke="currentColor"
+        stroke-width="1.7"
+        stroke-linejoin="round"
+      />
+      <path
+        d="M16 15H11.5A3.5 3.5 0 0 0 8 18.5C8 22 11 24 16 24M32 15h4.5A3.5 3.5 0 0 1 40 18.5C40 22 37 24 32 24"
+        stroke="currentColor"
+        stroke-width="1.7"
+        stroke-linecap="round"
+      />
+      <path
+        d="M24 29.5V34M18 38h12M20 34h8"
+        stroke="currentColor"
+        stroke-width="1.7"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      />
+    </svg>
+  ) : null
+}
+{
+  known === "decision-makers" ? (
+    <svg
+      class="about-fit__icon"
+      viewBox="0 0 48 48"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      aria-hidden="true"
+    >
+      {/* Compass — decision makers */}
+      <circle cx="24" cy="24" r="15.5" stroke="currentColor" stroke-width="1.7" />
+      <path
+        d="m24 12 4.5 12.5L24 36l-4.5-11.5L24 12Z"
+        stroke="currentColor"
+        stroke-width="1.7"
+        stroke-linejoin="round"
+      />
+      <circle cx="24" cy="24" r="2.2" fill="currentColor" />
+    </svg>
+  ) : null
+}

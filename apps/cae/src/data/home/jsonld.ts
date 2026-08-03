@@ -2,7 +2,8 @@
  * @fileoverview JSON-LD payloads for CAE marketing pages.
  */
 
-import { homeMeta, mediaMeta, socialMeta } from "./meta";
+import { aboutMeta, homeMeta, mediaMeta, socialMeta } from "./meta";
+import { aboutCopy } from "./about";
 import {
   getSiteOrigin,
   normalizeBase,
@@ -150,6 +151,56 @@ export function buildSocialJsonLd(
     },
     about: {
       "@id": orgId,
+    },
+    primaryImageOfPage: {
+      "@type": "ImageObject",
+      url: ogImageUrl,
+    },
+  };
+}
+
+/**
+ * Builds AboutPage JSON-LD with Person as main entity.
+ *
+ * @param pathname - Current page pathname (includes Astro base)
+ * @param ogImageUrl - Absolute Open Graph image URL
+ * @returns JSON-LD document
+ */
+export function buildAboutJsonLd(
+  pathname: string,
+  ogImageUrl: string,
+): JsonLdNode {
+  const pageUrl = toCanonicalUrl(pathname);
+  const homePath = toAbsoluteUrl(normalizeBase(import.meta.env.BASE_URL));
+  const root = schemaRoot();
+  const orgId = `${root}/#organization`;
+  const personId = `${root}/#person`;
+
+  return {
+    "@context": "https://schema.org",
+    "@type": "AboutPage",
+    name: aboutMeta.title,
+    description: aboutMeta.description,
+    url: pageUrl,
+    isPartOf: {
+      "@type": "WebSite",
+      name: aboutMeta.siteName,
+      url: homePath,
+    },
+    mainEntity: {
+      "@type": "Person",
+      "@id": personId,
+      name: "Cae Goh",
+      jobTitle: aboutCopy.heroRole,
+      description: aboutMeta.description,
+      url: pageUrl,
+      image: ogImageUrl,
+      worksFor: { "@id": orgId },
+      sameAs: [
+        "https://www.rednote.com/user/profile/6a19467f000000000d035c00",
+        "https://www.instagram.com/caegoh/",
+        "https://www.facebook.com/caegoh",
+      ],
     },
     primaryImageOfPage: {
       "@type": "ImageObject",

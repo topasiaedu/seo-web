@@ -1,0 +1,89 @@
+---
+/**
+ * Step icons for the About process rail (decode / match / decide).
+ */
+interface Props {
+  /** Approach step id from {@link aboutCopy.approachSteps}. */
+  kind: string;
+}
+
+const { kind } = Astro.props;
+
+const known =
+  kind === "decode" || kind === "match" || kind === "decide" ? kind : "decode";
+---
+
+{
+  known === "decode" ? (
+    <svg
+      class="about-rail__icon"
+      viewBox="0 0 48 48"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      aria-hidden="true"
+    >
+      {/* Chart / blueprint grid */}
+      <rect
+        x="9"
+        y="9"
+        width="30"
+        height="30"
+        rx="3"
+        stroke="currentColor"
+        stroke-width="1.7"
+      />
+      <path
+        d="M9 19h30M9 29h30M19 9v30M29 9v30"
+        stroke="currentColor"
+        stroke-width="1.7"
+        opacity="0.45"
+      />
+      <circle cx="24" cy="24" r="3.2" fill="currentColor" />
+      <circle cx="14.5" cy="14.5" r="2" fill="currentColor" opacity="0.7" />
+      <circle cx="33.5" cy="33.5" r="2" fill="currentColor" opacity="0.7" />
+    </svg>
+  ) : null
+}
+{
+  known === "match" ? (
+    <svg
+      class="about-rail__icon"
+      viewBox="0 0 48 48"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      aria-hidden="true"
+    >
+      {/* Target */}
+      <circle cx="24" cy="24" r="15.5" stroke="currentColor" stroke-width="1.7" />
+      <circle cx="24" cy="24" r="9.5" stroke="currentColor" stroke-width="1.7" />
+      <circle cx="24" cy="24" r="3.2" fill="currentColor" />
+      <path
+        d="M24 8.5V14M24 34v5.5M8.5 24H14M34 24h5.5"
+        stroke="currentColor"
+        stroke-width="1.7"
+        stroke-linecap="round"
+      />
+    </svg>
+  ) : null
+}
+{
+  known === "decide" ? (
+    <svg
+      class="about-rail__icon"
+      viewBox="0 0 48 48"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      aria-hidden="true"
+    >
+      {/* Compass / direction */}
+      <circle cx="24" cy="24" r="15.5" stroke="currentColor" stroke-width="1.7" />
+      <path
+        d="m24 12 4.5 12.5L24 36l-4.5-11.5L24 12Z"
+        stroke="currentColor"
+        stroke-width="1.7"
+        stroke-linejoin="round"
+      />
+      <circle cx="24" cy="24" r="2.2" fill="currentColor" />
+    </svg>
+  ) : null
+}

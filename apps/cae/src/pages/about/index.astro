@@ -1,0 +1,30 @@
+---
+/**
+ * CAE About route — `/cae/about/`.
+ * Native ZWDS chrome matching Media / Social (SiteHeader + content + footer).
+ */
+import AboutLayout from "../../layouts/AboutLayout.astro";
+import SiteHeader from "../../components/home/SiteHeader.astro";
+import AboutContent from "../../components/about/AboutContent.astro";
+import SiteFooter from "../../components/home/SiteFooter.astro";
+import { aboutMeta, requireMetaString } from "../../data/home/meta.ts";
+
+export const prerender = true;
+
+const title = requireMetaString(
+  aboutMeta.title,
+  "About Cae Goh | Purple Star Astrology & Life Strategy",
+);
+const description = requireMetaString(
+  aboutMeta.description,
+  "Meet Cae Goh, Purple Star Astrology (Zi Wei Dou Shu) strategist helping business owners and entrepreneurs make clearer decisions.",
+);
+---
+
+<AboutLayout title={title} description={description}>
+  <main class="cae-home">
+    <SiteHeader />
+    <AboutContent />
+    <SiteFooter />
+  </main>
+</AboutLayout>
