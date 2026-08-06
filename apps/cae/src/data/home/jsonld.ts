@@ -2,8 +2,9 @@
  * @fileoverview JSON-LD payloads for CAE marketing pages.
  */
 
-import { aboutMeta, homeMeta, mediaMeta, socialMeta } from "./meta";
+import { aboutMeta, homeMeta, mediaMeta, socialMeta, ziWeiDouShuMeta } from "./meta";
 import { aboutCopy } from "./about";
+import { ziWeiDouShuCopy } from "./zi-wei-dou-shu";
 import {
   getSiteOrigin,
   normalizeBase,
@@ -206,6 +207,67 @@ export function buildAboutJsonLd(
       "@type": "ImageObject",
       url: ogImageUrl,
     },
+  };
+}
+
+/**
+ * Builds WebPage + FAQPage JSON-LD for the Zi Wei Dou Shu explainer.
+ *
+ * @param pathname - Current page pathname (includes Astro base)
+ * @param ogImageUrl - Absolute Open Graph image URL
+ * @returns JSON-LD `@graph` document
+ */
+export function buildZiWeiDouShuJsonLd(
+  pathname: string,
+  ogImageUrl: string,
+): JsonLdNode {
+  const pageUrl = toCanonicalUrl(pathname);
+  const homePath = toAbsoluteUrl(normalizeBase(import.meta.env.BASE_URL));
+  const root = schemaRoot();
+  const orgId = `${root}/#organization`;
+  const faqEntities = ziWeiDouShuCopy.faqItems.map((item) => ({
+    "@type": "Question",
+    name: item.question,
+    acceptedAnswer: {
+      "@type": "Answer",
+      text: item.answer,
+    },
+  }));
+
+  return {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "WebPage",
+        "@id": `${pageUrl}#webpage`,
+        name: ziWeiDouShuMeta.title,
+        description: ziWeiDouShuMeta.description,
+        url: pageUrl,
+        isPartOf: {
+          "@type": "WebSite",
+          name: ziWeiDouShuMeta.siteName,
+          url: homePath,
+        },
+        about: {
+          "@type": "Thing",
+          name: "Zi Wei Dou Shu",
+          alternateName: ["Purple Star Astrology", "紫微斗數"],
+          description:
+            "Chinese natal astrology system using twelve palaces and named stars.",
+        },
+        primaryImageOfPage: {
+          "@type": "ImageObject",
+          url: ogImageUrl,
+        },
+        publisher: { "@id": orgId },
+        inLanguage: "en",
+      },
+      {
+        "@type": "FAQPage",
+        "@id": `${pageUrl}#faq`,
+        mainEntity: faqEntities,
+      },
+    ],
   };
 }
 

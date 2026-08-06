@@ -7,11 +7,13 @@ export {
   homeMeta,
   mediaMeta,
   socialMeta,
+  ziWeiDouShuMeta,
   requireMetaString,
   type AboutMeta,
   type HomeMeta,
   type MediaMeta,
   type SocialMeta,
+  type ZiWeiDouShuMeta,
 } from "./meta.ts";
 
 export {
@@ -26,6 +28,17 @@ export {
   type AboutIntroStep,
   type AboutPageCopy,
 } from "./about.ts";
+
+export {
+  ziWeiDouShuCopy,
+  type ZiWeiDouShuCopy,
+  type ZiWeiDouShuPageCopy,
+  type ZwdsComparePoint,
+  type ZwdsFaqItem,
+  type ZwdsMajorStar,
+  type ZwdsPalace,
+  type ZwdsProcessStep,
+} from "./zi-wei-dou-shu.ts";
 
 export {
   assertHomeHref,

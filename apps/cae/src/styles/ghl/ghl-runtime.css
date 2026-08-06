@@ -8,10 +8,10 @@
 @import "../brand-gradient.css";
 
 :root {
-  --headlinefont: "Archivo Black", "Impact", sans-serif;
-  --contentfont: "Hanken Grotesk", "Segoe UI", sans-serif;
-  --hanken-grotesk: "Hanken Grotesk";
-  --archivo-black: "Archivo Black";
+  --headlinefont: "Syne", "Segoe UI", sans-serif;
+  --contentfont: "Sora", "Segoe UI", sans-serif;
+  --hanken-grotesk: "Sora";
+  --archivo-black: "Syne";
 }
 
 html,

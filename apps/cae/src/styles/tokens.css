@@ -1,12 +1,13 @@
 /**
- * CAE brand design tokens — nm-zwds (“Purple Star Astrology”) palette.
+ * CAE brand design tokens — nm-zwds (“Purple Star Astrology”) palette,
+ * evolved toward a celestial fantasy / sci-fi interface.
  *
  * Source of truth:
  *   docs/references/nm-zwds-design-theme-color-scheme.md
  *
- * Public marketing stays dark-first (purple night shell). Cream / navy are for
- * light bands only (press, pillars, cards). Typography v1: Hanken + Archivo
- * (no Inter swap). Hex only — do not copy nm-zwds app source into this repo.
+ * Public marketing stays dark-first (cosmic night shell). Cream / navy are for
+ * light bands only (press, pillars, cards). Typography: Syne + Sora + Orbitron.
+ * Hex only — do not copy nm-zwds app source into this repo.
  *
  * Open decision default B: shell → #2D1B4E / #1A0F2E family.
  */
@@ -14,13 +15,14 @@
 :root {
   /* -------------------------------------------------------------------------
    * Surfaces (nm-zwds surface-dark / darkSecondary / darkElevated)
+   * Deepened slightly for cosmic void atmosphere
    * ------------------------------------------------------------------------- */
-  --cae-bg: #2d1b4e;
-  --cae-bg-deep: #1a0f2e;
+  --cae-bg: #24143f;
+  --cae-bg-deep: #12081f;
   --cae-bg-elevated: #3d2860;
-  --cae-bg-header: #3d2860;
+  --cae-bg-header: #2a1848;
   --cae-surface: #3d2860;
-  --cae-surface-soft: #1a0f2e;
+  --cae-surface-soft: #12081f;
   /* Brand purple (#6B5B95) at ~28% — soft panel fill on dark shell */
   --cae-surface-panel: rgba(107, 91, 149, 0.28);
 
@@ -36,7 +38,7 @@
   --cae-text-muted-gray: #c4c4c4;
 
   /* -------------------------------------------------------------------------
-   * Accents — brand purple scale + gold star
+   * Accents — brand purple scale + gold star + holographic cyan
    *   purple: #6B5B95 · deep: #4A3F6B · light: #9B8FB5
    * ------------------------------------------------------------------------- */
   --cae-lavender: #9b8fb5;
@@ -49,6 +51,10 @@
   --cae-cta-light: #f6f0e8;
   --cae-cta-border: #ffffff;
   --cae-star: #d4b896;
+  /* Sci-fi HUD / constellation accent (secondary to gold) */
+  --cae-holo: #6ec8e0;
+  --cae-holo-dim: #3a8fa8;
+  --cae-nebula: #8b1167;
 
   /* -------------------------------------------------------------------------
    * Named brand roles (explicit aliases for later waves / Admin parity)
@@ -59,6 +65,18 @@
   --cae-gold-dark: #d4af7b;
   --cae-coral: #c84c5c;
   --cae-coral-dark: #d97c6e;
+
+  /* -------------------------------------------------------------------------
+   * Four Transformations (四化 / Si Hua) — authoritative chart UI mapping:
+   *   Lu green · Quan blue · Ke yellow · Ji red
+   * ji-edge / ji-text support readable accents on both shells.
+   * ------------------------------------------------------------------------- */
+  --cae-sihua-lu: #3dab6e;
+  --cae-sihua-quan: #3d8bff;
+  --cae-sihua-ke: #e8c53a;
+  --cae-sihua-ji: #d91744;
+  --cae-sihua-ji-edge: #f0456a;
+  --cae-sihua-ji-text: #ffe8ee;
 
   /* -------------------------------------------------------------------------
    * Brand gradient — 5 stops (indigo → purple → magenta → red → orange)
@@ -86,6 +104,7 @@
   --cae-border-soft: rgba(155, 143, 181, 0.45);
   --cae-border-header: rgba(255, 255, 255, 0.1);
   --cae-border-offerings: #4a3f6b;
+  --cae-border-holo: color-mix(in srgb, var(--cae-holo) 40%, transparent);
 
   /* -------------------------------------------------------------------------
    * Press band — light cream strip on dark marketing pages
@@ -105,9 +124,10 @@
   --cae-btn-padding: 20px 40px;
   --cae-btn-tracking: 2px;
 
-  /* Typography — v1 keeps Hanken / Archivo (no Inter) */
-  --cae-font-sans: "Hanken Grotesk", "Segoe UI", sans-serif;
-  --cae-font-display: "Archivo Black", "Impact", sans-serif;
+  /* Typography — celestial fantasy / sci-fi stack */
+  --cae-font-sans: "Sora", "Segoe UI", sans-serif;
+  --cae-font-display: "Syne", "Segoe UI", sans-serif;
+  --cae-font-tech: "Orbitron", "Sora", sans-serif;
 
   /* Layout */
   --cae-max-width: 72rem;
@@ -120,12 +140,12 @@
  */
 html[data-theme="dark"] {
   color-scheme: dark;
-  --cae-bg: #2d1b4e;
-  --cae-bg-deep: #1a0f2e;
+  --cae-bg: #24143f;
+  --cae-bg-deep: #12081f;
   --cae-bg-elevated: #3d2860;
-  --cae-bg-header: #3d2860;
+  --cae-bg-header: #2a1848;
   --cae-surface: #3d2860;
-  --cae-surface-soft: #1a0f2e;
+  --cae-surface-soft: #12081f;
   --cae-surface-panel: rgba(107, 91, 149, 0.28);
   --cae-text: #f6f0e8;
   --cae-text-bright: #ffffff;
@@ -144,11 +164,21 @@ html[data-theme="dark"] {
   --cae-cta-light: #f6f0e8;
   --cae-cta-border: #ffffff;
   --cae-star: #d4b896;
+  --cae-holo: #6ec8e0;
+  --cae-holo-dim: #3a8fa8;
+  --cae-nebula: #8b1167;
+  --cae-sihua-lu: #3dab6e;
+  --cae-sihua-quan: #3d8bff;
+  --cae-sihua-ke: #e8c53a;
+  --cae-sihua-ji: #d91744;
+  --cae-sihua-ji-edge: #f0456a;
+  --cae-sihua-ji-text: #ffe8ee;
   --cae-border: rgba(107, 91, 149, 0.45);
   --cae-border-strong: #4a3f6b;
   --cae-border-soft: rgba(155, 143, 181, 0.45);
   --cae-border-header: rgba(255, 255, 255, 0.1);
   --cae-border-offerings: #4a3f6b;
+  --cae-border-holo: color-mix(in srgb, var(--cae-holo) 40%, transparent);
   --cae-press-bg: #f6f0e8;
   --cae-press-text: #1a1e3f;
   --cae-press-rule: #6b5b95;
@@ -187,11 +217,22 @@ html[data-theme="light"] {
   --cae-cta-light: #ffffff;
   --cae-cta-border: #4a3f6b;
   --cae-star: #d4af7b;
+  --cae-holo: #1f7a92;
+  --cae-holo-dim: #156578;
+  --cae-nebula: #8b1167;
   --cae-border: rgba(107, 91, 149, 0.32);
   --cae-border-strong: #4a3f6b;
   --cae-border-soft: rgba(107, 91, 149, 0.28);
   --cae-border-header: rgba(107, 91, 149, 0.28);
   --cae-border-offerings: #6b5b95;
+  --cae-border-holo: color-mix(in srgb, var(--cae-holo) 35%, transparent);
+  /* Sihua: deepen Quan/Ke/Ji for contrast on cream shells */
+  --cae-sihua-lu: #2f8f5b;
+  --cae-sihua-quan: #2b6fd6;
+  --cae-sihua-ke: #b8960f;
+  --cae-sihua-ji: #c4123a;
+  --cae-sihua-ji-edge: #d91744;
+  --cae-sihua-ji-text: #fff0f3;
   /* Light bands become elevated white on cream page */
   --cae-press-bg: #ffffff;
   --cae-press-text: #1a1e3f;

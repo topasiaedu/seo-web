@@ -1,5 +1,6 @@
 /**
- * @fileoverview SEO metadata for CAE marketing pages (home + media + social + about).
+ * @fileoverview SEO metadata for CAE marketing pages
+ * (home + media + social + about + zi-wei-dou-shu).
  */
 
 /**
@@ -63,6 +64,21 @@ export const aboutMeta = {
 
 /** Shape of {@link aboutMeta}. */
 export type AboutMeta = typeof aboutMeta;
+
+/**
+ * SEO copy for the Zi Wei Dou Shu explainer route.
+ */
+export const ziWeiDouShuMeta = {
+  title: "What Is Zi Wei Dou Shu? | Purple Star Astrology | Cae Goh",
+  description:
+    "Learn Zi Wei Dou Shu (Purple Star Astrology): twelve life palaces, the Emperor Star, Four Transformations, and how Cae Goh turns the chart into decision strategy.",
+  ogType: "website",
+  siteName: "Cae Goh",
+  twitterCard: "summary_large_image",
+} as const;
+
+/** Shape of {@link ziWeiDouShuMeta}. */
+export type ZiWeiDouShuMeta = typeof ziWeiDouShuMeta;
 
 /**
  * Validates a required non-empty meta string.

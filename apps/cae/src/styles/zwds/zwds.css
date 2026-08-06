@@ -1,0 +1,2130 @@
+/**
+ * Zi Wei Dou Shu explainer — fantasy / sci-fi celestial interface.
+ * Full-bleed cosmic hero, holographic panels, palace-ring motif.
+ */
+
+.zwds-page {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  margin: 0;
+  color: var(--cae-text);
+  background-color: var(--cae-bg);
+  font-family: var(--cae-font-sans);
+}
+
+.zwds-page__inner {
+  position: relative;
+  z-index: 1;
+  box-sizing: border-box;
+  width: 100%;
+  max-width: var(--cae-max-width);
+  margin: 0 auto;
+  padding: 0 clamp(1.25rem, 4vw, 2.5rem);
+}
+
+.zwds-page__body {
+  position: relative;
+  isolation: isolate;
+  padding-bottom: clamp(3rem, 8vw, 5rem);
+}
+
+.zwds-page__body > .cae-starfield {
+  z-index: 0;
+  opacity: 0.65;
+}
+
+/* ── Hero ─────────────────────────────────────────────────────────────── */
+
+.zwds-hero {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  margin: 0;
+  min-height: clamp(28rem, 78vh, 44rem);
+  padding: clamp(5rem, 12vw, 8rem) 0 clamp(3.5rem, 9vw, 6rem);
+  color: var(--cae-text-bright);
+  /* Single seamless cosmic plane — no nested panel tones */
+  background-color: #12081f;
+  background-image:
+    radial-gradient(
+      ellipse 80% 60% at 70% 40%,
+      color-mix(in srgb, var(--cae-holo) 14%, transparent),
+      transparent 55%
+    ),
+    radial-gradient(
+      ellipse 70% 50% at 20% 80%,
+      color-mix(in srgb, var(--cae-brand-gradient-stop-3) 28%, transparent),
+      transparent 60%
+    );
+}
+
+.zwds-hero__cosmos {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+}
+
+.zwds-hero__nebula {
+  inset: -10% -20% auto -10%;
+  height: 85%;
+  background:
+    radial-gradient(
+      ellipse 50% 45% at 65% 30%,
+      color-mix(in srgb, var(--cae-holo) 28%, transparent),
+      transparent 70%
+    ),
+    radial-gradient(
+      ellipse 55% 50% at 30% 20%,
+      color-mix(in srgb, var(--cae-purple) 50%, transparent),
+      transparent 70%
+    );
+  opacity: 1;
+  animation: zwds-nebula-drift 18s ease-in-out infinite alternate;
+}
+
+.zwds-hero__aurora {
+  position: absolute;
+  inset: auto 0 0 0;
+  height: 40%;
+  background: linear-gradient(
+    0deg,
+    #12081f 0%,
+    color-mix(in srgb, #12081f 55%, transparent) 45%,
+    transparent 100%
+  );
+  pointer-events: none;
+}
+
+.zwds-hero__aurora::before {
+  content: "";
+  position: absolute;
+  /* Soft horizon glow — below the copy, fully feathered */
+  inset: auto 0 22%;
+  height: 2px;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    color-mix(in srgb, var(--cae-holo) 35%, transparent) 25%,
+    color-mix(in srgb, var(--cae-gold) 40%, transparent) 50%,
+    color-mix(in srgb, var(--cae-brand-gradient-stop-4) 30%, transparent) 75%,
+    transparent 100%
+  );
+  filter: blur(2px);
+  opacity: 0.4;
+  animation: zwds-aurora-sweep 8s ease-in-out infinite;
+}
+
+.zwds-hero__inner {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  /* Centered copy column; gutters from .zwds-page__inner */
+  max-width: 42rem;
+  margin-left: auto;
+  margin-right: auto;
+  min-height: inherit;
+  justify-content: center;
+  padding-top: 0.5rem;
+  padding-bottom: 0.75rem;
+  /* No scrim, veil, or panel — seamless hero field only */
+  background: none;
+  border-radius: 0;
+  box-shadow: none;
+}
+
+.zwds-hero__inner::before,
+.zwds-hero__inner::after {
+  content: none;
+  display: none;
+}
+
+.zwds-hero .zwds-hero__eyebrow {
+  margin-bottom: 1rem;
+  /* Locked bright cyan — hero is always a dark plane */
+  color: #9ee4f5;
+  text-shadow:
+    0 0 18px color-mix(in srgb, #6ec8e0 55%, transparent),
+    0 1px 10px rgba(0, 0, 0, 0.65);
+}
+
+.zwds-hero__title {
+  margin: 0 0 1.25rem;
+  font-family: var(--cae-font-display);
+  font-size: clamp(2.4rem, 7vw, 4.25rem);
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  line-height: 1.05;
+  /* Mostly solid white for readability; light gold tip only */
+  background: linear-gradient(
+    180deg,
+    #ffffff 0%,
+    #ffffff 62%,
+    #f0e4c8 100%
+  );
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  filter: drop-shadow(0 2px 14px rgba(0, 0, 0, 0.7))
+    drop-shadow(0 0 28px rgba(0, 0, 0, 0.45));
+}
+
+.zwds-hero__support {
+  margin: 0 auto;
+  max-width: 32rem;
+  font-size: clamp(1.05rem, 2.2vw, 1.25rem);
+  line-height: 1.55;
+  /* Locked cream — do not use theme tokens (light theme would go dark) */
+  color: #f3ebe0;
+  text-shadow:
+    0 1px 14px rgba(0, 0, 0, 0.75),
+    0 0 24px rgba(0, 0, 0, 0.4);
+}
+
+/* Palace ring — sci-fi chart HUD */
+
+.zwds-palace-ring {
+  position: absolute;
+  top: 50%;
+  right: -4%;
+  width: min(58vw, 26rem);
+  height: min(58vw, 26rem);
+  transform: translateY(-50%);
+  /* Stay decorative behind centered hero copy */
+  opacity: 0.4;
+  z-index: 0;
+}
+
+.zwds-palace-ring__svg {
+  width: 100%;
+  height: 100%;
+  animation: zwds-ring-spin 64s linear infinite;
+}
+
+.zwds-palace-ring__orbit {
+  stroke: color-mix(in srgb, var(--cae-holo) 55%, transparent);
+  stroke-width: 1;
+  stroke-dasharray: 4 6;
+}
+
+.zwds-palace-ring__orbit--inner {
+  stroke: color-mix(in srgb, var(--cae-gold) 45%, transparent);
+  stroke-dasharray: 2 8;
+  animation: zwds-ring-spin-reverse 42s linear infinite;
+  transform-origin: 200px 200px;
+}
+
+.zwds-palace-ring__core {
+  fill: color-mix(in srgb, var(--cae-gold) 35%, transparent);
+  stroke: var(--cae-gold);
+  stroke-width: 1.5;
+  filter: drop-shadow(0 0 12px color-mix(in srgb, var(--cae-gold) 70%, transparent));
+}
+
+.zwds-palace-ring__node {
+  fill: var(--cae-holo);
+  filter: drop-shadow(0 0 4px var(--cae-holo));
+}
+
+.zwds-palace-ring__spoke {
+  stroke: color-mix(in srgb, var(--cae-lavender) 28%, transparent);
+  stroke-width: 0.75;
+}
+
+@media (max-width: 720px) {
+  .zwds-palace-ring {
+    top: 18%;
+    right: -18%;
+    width: min(70vw, 18rem);
+    height: min(70vw, 18rem);
+    opacity: 0.45;
+    transform: none;
+  }
+
+  .zwds-hero__inner {
+    min-height: auto;
+  }
+}
+
+/* ── Sections ─────────────────────────────────────────────────────────── */
+
+.zwds-section {
+  position: relative;
+  z-index: 1;
+  padding: clamp(2.75rem, 6vw, 4.5rem) 0;
+  text-align: center;
+}
+
+.zwds-section--holo {
+  background: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--cae-holo) 4%, transparent) 0%,
+    transparent 40%,
+    color-mix(in srgb, var(--cae-purple) 8%, transparent) 100%
+  );
+}
+
+.zwds-section__heading {
+  margin: 0.5rem auto 1rem;
+  font-family: var(--cae-font-display);
+  font-size: clamp(1.75rem, 4vw, 2.65rem);
+  font-weight: 700;
+  letter-spacing: -0.015em;
+  line-height: 1.15;
+  color: var(--cae-text-bright);
+  text-align: center;
+}
+
+.zwds-section__lede {
+  margin: 0 auto 1.75rem;
+  max-width: 40rem;
+  font-size: clamp(1.05rem, 2vw, 1.2rem);
+  line-height: 1.55;
+  color: var(--cae-text-muted-alt);
+  text-align: center;
+}
+
+.zwds-prose {
+  display: flex;
+  flex-direction: column;
+  gap: 1.1rem;
+  max-width: 42rem;
+  margin-left: auto;
+  margin-right: auto;
+  text-align: center;
+}
+
+.zwds-prose p {
+  margin: 0;
+  font-size: 1.05rem;
+  line-height: 1.7;
+  color: var(--cae-text-soft);
+}
+
+/* Meaning — two-column name copy + holographic chart */
+
+.zwds-meaning {
+  display: grid;
+  grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.95fr);
+  gap: clamp(1.75rem, 4vw, 3.25rem);
+  align-items: center;
+}
+
+.zwds-meaning__copy {
+  text-align: center;
+}
+
+.zwds-meaning__copy .zwds-section__lede,
+.zwds-meaning__copy .zwds-prose {
+  max-width: none;
+}
+
+.zwds-meaning__visual {
+  position: relative;
+  margin: 0;
+  justify-self: center;
+  width: min(100%, 28rem);
+}
+
+.zwds-meaning__frame {
+  position: relative;
+  border-radius: 1.15rem;
+  padding: 0.35rem;
+  background:
+    radial-gradient(
+      ellipse 70% 55% at 50% 42%,
+      color-mix(in srgb, var(--cae-holo) 22%, transparent) 0%,
+      transparent 68%
+    ),
+    radial-gradient(
+      ellipse 80% 70% at 50% 55%,
+      color-mix(in srgb, var(--cae-purple) 28%, transparent) 0%,
+      transparent 72%
+    );
+  box-shadow:
+    0 0 48px -12px color-mix(in srgb, var(--cae-holo) 35%, transparent),
+    0 24px 60px -28px rgba(8, 4, 20, 0.75);
+}
+
+.zwds-meaning__frame::before {
+  content: "";
+  position: absolute;
+  inset: -8% -6%;
+  z-index: 0;
+  border-radius: inherit;
+  background: radial-gradient(
+    ellipse 75% 65% at 50% 48%,
+    color-mix(in srgb, var(--cae-purple) 20%, transparent) 0%,
+    transparent 70%
+  );
+  pointer-events: none;
+}
+
+.zwds-meaning__image {
+  position: relative;
+  z-index: 1;
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: 0.65rem;
+  /* Soft edge fade so the cosmic art blends into the section atmosphere */
+  -webkit-mask-image: radial-gradient(
+    ellipse 92% 88% at 50% 48%,
+    #000 58%,
+    transparent 100%
+  );
+  mask-image: radial-gradient(
+    ellipse 92% 88% at 50% 48%,
+    #000 58%,
+    transparent 100%
+  );
+  filter: drop-shadow(0 0 28px color-mix(in srgb, var(--cae-purple) 40%, transparent));
+}
+
+html[data-theme="light"] .zwds-meaning__frame {
+  background:
+    radial-gradient(
+      ellipse 70% 55% at 50% 42%,
+      color-mix(in srgb, var(--cae-holo) 16%, transparent) 0%,
+      transparent 68%
+    ),
+    radial-gradient(
+      ellipse 80% 70% at 50% 55%,
+      color-mix(in srgb, var(--cae-purple) 14%, transparent) 0%,
+      transparent 72%
+    );
+  box-shadow:
+    0 0 40px -14px color-mix(in srgb, var(--cae-purple) 28%, transparent),
+    0 18px 42px -24px rgba(26, 30, 63, 0.28);
+}
+
+html[data-theme="light"] .zwds-meaning__image {
+  filter: drop-shadow(0 12px 28px rgba(26, 30, 63, 0.18));
+}
+
+/* Process steps */
+
+.zwds-process {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.zwds-process__item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 1.35rem 1.4rem;
+  text-align: center;
+}
+
+.zwds-process__index {
+  color: var(--cae-holo);
+}
+
+.zwds-process__title {
+  margin: 0;
+  font-family: var(--cae-font-display);
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--cae-text-bright);
+}
+
+.zwds-process__body {
+  margin: 0;
+  font-size: 0.98rem;
+  line-height: 1.55;
+  color: var(--cae-text-muted-alt);
+}
+
+/* Palaces — celestial chart interface */
+
+.zwds-section--palaces {
+  overflow: hidden;
+}
+
+.zwds-chart {
+  position: relative;
+  margin-top: 0.5rem;
+}
+
+.zwds-chart__atmosphere {
+  position: absolute;
+  z-index: 0;
+  inset: -8% 5% auto;
+  height: min(72vw, 28rem);
+  pointer-events: none;
+  background:
+    radial-gradient(
+      ellipse 55% 50% at 50% 48%,
+      color-mix(in srgb, var(--cae-holo) 16%, transparent) 0%,
+      transparent 68%
+    ),
+    radial-gradient(
+      ellipse 45% 40% at 50% 52%,
+      color-mix(in srgb, var(--cae-gold) 12%, transparent) 0%,
+      transparent 70%
+    ),
+    radial-gradient(
+      ellipse 70% 60% at 50% 55%,
+      color-mix(in srgb, var(--cae-purple) 22%, transparent) 0%,
+      transparent 75%
+    );
+  filter: blur(2px);
+  animation: zwds-nebula-drift 20s ease-in-out infinite alternate;
+}
+
+/**
+ * Desktop: chart + domain readout side-by-side so both share one viewport.
+ * Mobile: stacks (see max-width breakpoints below).
+ */
+.zwds-chart__layout {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  grid-template-columns: minmax(0, 34rem) minmax(13.5rem, 1fr);
+  gap: 1.5rem 2rem;
+  align-items: center;
+}
+
+.zwds-chart__stage {
+  position: relative;
+  z-index: 1;
+  width: min(100%, 34rem);
+  aspect-ratio: 1;
+  margin: 0;
+  justify-self: center;
+}
+
+.zwds-chart__rings {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+.zwds-chart__orbit {
+  stroke-width: 1;
+  fill: none;
+}
+
+.zwds-chart__orbit--outer {
+  stroke: color-mix(in srgb, var(--cae-holo) 42%, transparent);
+  stroke-dasharray: 3 7;
+  animation: zwds-ring-spin 90s linear infinite;
+  transform-origin: 200px 200px;
+}
+
+.zwds-chart__orbit--mid {
+  stroke: color-mix(in srgb, var(--cae-gold) 38%, transparent);
+  stroke-dasharray: 1 9;
+  animation: zwds-ring-spin-reverse 70s linear infinite;
+  transform-origin: 200px 200px;
+}
+
+.zwds-chart__orbit--inner {
+  stroke: color-mix(in srgb, var(--cae-lavender) 35%, transparent);
+  stroke-dasharray: 2 5;
+}
+
+.zwds-chart__spoke {
+  stroke: color-mix(in srgb, var(--cae-lavender) 22%, transparent);
+  stroke-width: 0.75;
+}
+
+.zwds-chart__star-dot {
+  fill: color-mix(in srgb, var(--cae-holo) 70%, transparent);
+}
+
+.zwds-chart__hub {
+  position: absolute;
+  z-index: 2;
+  left: 50%;
+  top: 50%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.15rem;
+  width: clamp(4.5rem, 18%, 5.75rem);
+  height: clamp(4.5rem, 18%, 5.75rem);
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  border: 1px solid color-mix(in srgb, var(--cae-gold) 55%, transparent);
+  background:
+    radial-gradient(
+      circle at 40% 35%,
+      color-mix(in srgb, var(--cae-gold) 28%, transparent) 0%,
+      color-mix(in srgb, var(--cae-purple) 35%, var(--cae-bg-deep)) 70%,
+      color-mix(in srgb, var(--cae-bg-deep) 90%, transparent) 100%
+    );
+  box-shadow:
+    0 0 0 1px color-mix(in srgb, var(--cae-holo) 18%, transparent),
+    0 0 32px -4px color-mix(in srgb, var(--cae-gold) 45%, transparent),
+    inset 0 0 18px color-mix(in srgb, var(--cae-holo) 12%, transparent);
+  pointer-events: none;
+}
+
+.zwds-chart__hub-glyph {
+  font-family: var(--cae-font-display);
+  font-size: clamp(1rem, 3vw, 1.25rem);
+  font-weight: 700;
+  line-height: 1.1;
+  letter-spacing: 0.04em;
+  color: var(--cae-gold);
+  text-shadow: 0 0 16px color-mix(in srgb, var(--cae-gold) 55%, transparent);
+}
+
+.zwds-chart__hub-label {
+  font-family: var(--cae-font-tech);
+  font-size: 0.55rem;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: color-mix(in srgb, var(--cae-holo) 85%, var(--cae-text-bright));
+}
+
+.zwds-chart__node {
+  --zwds-node-angle: calc(var(--i) * 30deg - 90deg);
+  --zwds-node-radius: 39%;
+  position: absolute;
+  z-index: 3;
+  left: calc(50% + cos(var(--zwds-node-angle)) * var(--zwds-node-radius));
+  top: calc(50% + sin(var(--zwds-node-angle)) * var(--zwds-node-radius));
+  width: clamp(4.4rem, 15.5%, 5.35rem);
+  margin: 0;
+  transform: translate(-50%, -50%);
+  cursor: pointer;
+}
+
+.zwds-chart__input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.zwds-chart__node-face {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.12rem;
+  padding: 0.55rem 0.35rem 0.6rem;
+  text-align: center;
+  border-radius: 0.85rem;
+  border: 1px solid color-mix(in srgb, var(--cae-border-holo) 80%, transparent);
+  background:
+    linear-gradient(
+      165deg,
+      color-mix(in srgb, var(--cae-holo) 10%, transparent) 0%,
+      color-mix(in srgb, var(--cae-bg-elevated) 55%, transparent) 45%,
+      color-mix(in srgb, var(--cae-bg-deep) 70%, transparent) 100%
+    );
+  box-shadow:
+    0 0 0 1px color-mix(in srgb, var(--cae-purple) 20%, transparent),
+    0 8px 22px -14px rgba(8, 4, 20, 0.85);
+  transition:
+    border-color 0.22s ease,
+    box-shadow 0.22s ease,
+    background 0.22s ease,
+    transform 0.22s ease;
+}
+
+.zwds-chart__node:hover .zwds-chart__node-face,
+.zwds-chart__node:focus-within .zwds-chart__node-face {
+  border-color: color-mix(in srgb, var(--cae-holo) 65%, transparent);
+  box-shadow:
+    0 0 0 1px color-mix(in srgb, var(--cae-holo) 30%, transparent),
+    0 0 24px -6px color-mix(in srgb, var(--cae-holo) 50%, transparent);
+  transform: scale(1.04);
+}
+
+.zwds-chart__input:checked + .zwds-chart__node-face {
+  border-color: color-mix(in srgb, var(--cae-gold) 70%, transparent);
+  background:
+    linear-gradient(
+      165deg,
+      color-mix(in srgb, var(--cae-gold) 18%, transparent) 0%,
+      color-mix(in srgb, var(--cae-purple) 35%, var(--cae-bg-deep)) 50%,
+      color-mix(in srgb, var(--cae-bg-deep) 80%, transparent) 100%
+    );
+  box-shadow:
+    0 0 0 1px color-mix(in srgb, var(--cae-gold) 35%, transparent),
+    0 0 28px -4px color-mix(in srgb, var(--cae-gold) 55%, transparent),
+    0 0 18px -2px color-mix(in srgb, var(--cae-holo) 35%, transparent);
+  transform: scale(1.06);
+}
+
+.zwds-chart__input:focus-visible + .zwds-chart__node-face {
+  outline: 2px solid var(--cae-holo);
+  outline-offset: 3px;
+}
+
+.zwds-chart__node-index {
+  color: var(--cae-gold);
+  font-size: 0.55rem;
+  letter-spacing: 0.14em;
+}
+
+.zwds-chart__node-chinese {
+  font-size: clamp(0.78rem, 2.2vw, 0.92rem);
+  font-weight: 600;
+  line-height: 1.15;
+  letter-spacing: 0.04em;
+  color: var(--cae-holo);
+}
+
+.zwds-chart__input:checked + .zwds-chart__node-face .zwds-chart__node-chinese {
+  color: var(--cae-gold);
+  text-shadow: 0 0 12px color-mix(in srgb, var(--cae-gold) 40%, transparent);
+}
+
+.zwds-chart__node-label {
+  font-family: var(--cae-font-display);
+  font-size: clamp(0.62rem, 1.7vw, 0.72rem);
+  font-weight: 700;
+  line-height: 1.2;
+  color: var(--cae-text-bright);
+}
+
+.zwds-chart__side {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+  justify-content: center;
+  min-width: 0;
+  max-width: 22rem;
+}
+
+.zwds-chart__hint {
+  margin: 0;
+  text-align: left;
+  color: var(--cae-text-muted);
+  opacity: 0.85;
+}
+
+.zwds-chart__readout {
+  width: 100%;
+  min-height: 6.5rem;
+}
+
+.zwds-chart__panel {
+  display: none;
+  grid-template-columns: auto 1fr;
+  grid-template-rows: auto auto;
+  column-gap: 1rem;
+  row-gap: 0.55rem;
+  align-items: start;
+  padding: 1.25rem 1.4rem;
+  border-radius: 0.85rem;
+  border: 1px solid color-mix(in srgb, var(--cae-gold) 35%, var(--cae-border-holo));
+  background:
+    linear-gradient(
+      135deg,
+      color-mix(in srgb, var(--cae-holo) 8%, transparent) 0%,
+      color-mix(in srgb, var(--cae-bg-elevated) 45%, transparent) 40%,
+      color-mix(in srgb, var(--cae-purple) 18%, transparent) 100%
+    ),
+    color-mix(in srgb, var(--cae-bg-deep) 55%, transparent);
+  box-shadow:
+    inset 0 1px 0 color-mix(in srgb, var(--cae-holo) 16%, transparent),
+    0 16px 40px -24px rgba(8, 4, 20, 0.75);
+}
+
+.zwds-chart__panel-index {
+  grid-row: 1 / span 2;
+  align-self: center;
+  color: var(--cae-gold);
+  font-size: 0.85rem;
+}
+
+.zwds-chart__panel-titles {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.45rem 0.75rem;
+}
+
+.zwds-chart__panel-chinese {
+  font-size: 1.25rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  color: var(--cae-holo);
+}
+
+.zwds-chart__panel-label {
+  margin: 0;
+  font-family: var(--cae-font-display);
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: var(--cae-text-bright);
+}
+
+.zwds-chart__panel-domain {
+  grid-column: 2;
+  margin: 0;
+  max-width: 28rem;
+  font-size: 1rem;
+  line-height: 1.55;
+  color: var(--cae-text-muted-alt);
+}
+
+html[data-theme="light"] .zwds-chart__atmosphere {
+  background:
+    radial-gradient(
+      ellipse 55% 50% at 50% 48%,
+      color-mix(in srgb, var(--cae-holo) 12%, transparent) 0%,
+      transparent 68%
+    ),
+    radial-gradient(
+      ellipse 70% 60% at 50% 55%,
+      color-mix(in srgb, var(--cae-purple) 12%, transparent) 0%,
+      transparent 75%
+    );
+}
+
+html[data-theme="light"] .zwds-chart__node-face {
+  background:
+    linear-gradient(
+      165deg,
+      color-mix(in srgb, var(--cae-holo) 8%, #ffffff) 0%,
+      color-mix(in srgb, var(--cae-surface) 40%, #ffffff) 100%
+    );
+  box-shadow:
+    0 0 0 1px color-mix(in srgb, var(--cae-purple) 16%, transparent),
+    0 10px 24px -16px rgba(26, 30, 63, 0.28);
+}
+
+html[data-theme="light"] .zwds-chart__input:checked + .zwds-chart__node-face {
+  background:
+    linear-gradient(
+      165deg,
+      color-mix(in srgb, var(--cae-gold) 16%, #ffffff) 0%,
+      color-mix(in srgb, var(--cae-purple) 12%, #ffffff) 100%
+    );
+}
+
+html[data-theme="light"] .zwds-chart__hub {
+  background:
+    radial-gradient(
+      circle at 40% 35%,
+      color-mix(in srgb, var(--cae-gold) 22%, #ffffff) 0%,
+      color-mix(in srgb, var(--cae-purple) 18%, #f6f0e8) 100%
+    );
+  box-shadow:
+    0 0 0 1px color-mix(in srgb, var(--cae-holo) 22%, transparent),
+    0 0 28px -6px color-mix(in srgb, var(--cae-gold) 40%, transparent);
+}
+
+html[data-theme="light"] .zwds-chart__panel {
+  background:
+    linear-gradient(
+      135deg,
+      color-mix(in srgb, var(--cae-holo) 6%, #ffffff) 0%,
+      color-mix(in srgb, var(--cae-purple) 8%, #ffffff) 100%
+    );
+  box-shadow:
+    inset 0 1px 0 color-mix(in srgb, var(--cae-holo) 12%, transparent),
+    0 14px 32px -22px rgba(26, 30, 63, 0.22);
+}
+
+html[data-theme="light"] .zwds-chart__panel-label,
+html[data-theme="light"] .zwds-chart__node-label {
+  color: var(--cae-text-bright);
+}
+
+/* Stars — two imperial constellation courts */
+
+.zwds-section--stars {
+  overflow: hidden;
+}
+
+.zwds-courts {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: clamp(1.5rem, 3.5vw, 2.25rem);
+  margin-top: 0.35rem;
+  align-items: stretch;
+}
+
+.zwds-court {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+  padding: 1.35rem 1.35rem 1.4rem;
+  border-radius: 1rem;
+  border: 1px solid color-mix(in srgb, var(--cae-border-holo) 85%, transparent);
+  background:
+    linear-gradient(
+      165deg,
+      color-mix(in srgb, var(--cae-holo) 8%, transparent) 0%,
+      color-mix(in srgb, var(--cae-bg-elevated) 40%, transparent) 42%,
+      color-mix(in srgb, var(--cae-purple) 16%, transparent) 100%
+    ),
+    color-mix(in srgb, var(--cae-bg-deep) 50%, transparent);
+  box-shadow:
+    inset 0 1px 0 color-mix(in srgb, var(--cae-holo) 14%, transparent),
+    0 18px 42px -28px rgba(8, 4, 20, 0.8);
+  overflow: hidden;
+}
+
+.zwds-court::before {
+  content: "";
+  position: absolute;
+  z-index: 0;
+  inset: -20% -10% auto;
+  height: 55%;
+  pointer-events: none;
+  opacity: 0.9;
+  filter: blur(2px);
+}
+
+.zwds-court--ziwei-series::before {
+  background:
+    radial-gradient(
+      ellipse 60% 50% at 30% 40%,
+      color-mix(in srgb, var(--cae-gold) 22%, transparent) 0%,
+      transparent 70%
+    ),
+    radial-gradient(
+      ellipse 50% 45% at 70% 20%,
+      color-mix(in srgb, var(--cae-holo) 12%, transparent) 0%,
+      transparent 65%
+    );
+}
+
+.zwds-court--tianfu-series::before {
+  background:
+    radial-gradient(
+      ellipse 60% 50% at 70% 35%,
+      color-mix(in srgb, var(--cae-holo) 20%, transparent) 0%,
+      transparent 70%
+    ),
+    radial-gradient(
+      ellipse 45% 40% at 25% 15%,
+      color-mix(in srgb, var(--cae-gold) 12%, transparent) 0%,
+      transparent 65%
+    );
+}
+
+.zwds-court__header,
+.zwds-court__sky,
+.zwds-court__hint,
+.zwds-court__readout {
+  position: relative;
+  z-index: 1;
+}
+
+.zwds-court__eyebrow {
+  margin: 0 0 0.45rem;
+  color: var(--cae-holo);
+}
+
+.zwds-court--ziwei-series .zwds-court__eyebrow {
+  color: color-mix(in srgb, var(--cae-gold) 75%, var(--cae-holo));
+}
+
+.zwds-court__title {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.4rem 0.75rem;
+  margin: 0 0 0.45rem;
+}
+
+.zwds-court__chinese {
+  font-family: var(--cae-font-display);
+  font-size: clamp(1.15rem, 2.4vw, 1.4rem);
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: var(--cae-gold);
+  text-shadow: 0 0 18px color-mix(in srgb, var(--cae-gold) 35%, transparent);
+}
+
+.zwds-court--tianfu-series .zwds-court__chinese {
+  color: var(--cae-holo);
+  text-shadow: 0 0 18px color-mix(in srgb, var(--cae-holo) 40%, transparent);
+}
+
+.zwds-court__heading {
+  font-family: var(--cae-font-display);
+  font-size: clamp(1.05rem, 2.2vw, 1.25rem);
+  font-weight: 700;
+  color: var(--cae-text-bright);
+}
+
+.zwds-court__lede {
+  margin: 0;
+  max-width: 28rem;
+  font-size: 0.95rem;
+  line-height: 1.5;
+  color: var(--cae-text-muted-alt);
+}
+
+/**
+ * Constellation sky — luminous chips in an explicit gap grid.
+ * Northern (6): 3×2 when courts share a row; 6-wide only when a court is full-width.
+ * Southern (8): always 4×2. minmax(0, 1fr) + min-width: 0 prevents label overflow.
+ *
+ * Fit check (side-by-side court ~28–32rem content):
+ *   3 cols × ~5rem chips + 2 × 0.75rem gaps ≤ ~17rem ✓
+ *   4 cols × ~4.75rem chips + 3 × 0.7rem gaps ≤ ~22rem ✓
+ */
+.zwds-court__sky {
+  --zwds-star-count: 3;
+  --zwds-star-col-gap: 0.75rem;
+  --zwds-star-row-gap: 1rem;
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(var(--zwds-star-count), minmax(0, 1fr));
+  column-gap: var(--zwds-star-col-gap);
+  row-gap: var(--zwds-star-row-gap);
+  min-height: 11.5rem;
+  padding: 0.85rem 0.35rem 0.5rem;
+  align-content: center;
+  justify-items: center;
+}
+
+/* Southern court: two constellation rows so eight chips stay readable */
+.zwds-court--tianfu-series .zwds-court__sky {
+  --zwds-star-count: 4;
+  --zwds-star-col-gap: 0.7rem;
+  --zwds-star-row-gap: 1.1rem;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  min-height: 13.5rem;
+}
+
+.zwds-court__constellation {
+  position: absolute;
+  inset: 18% 4% 30%;
+  width: auto;
+  height: auto;
+  pointer-events: none;
+  opacity: 0.55;
+}
+
+.zwds-court__path {
+  stroke: color-mix(in srgb, var(--cae-holo) 45%, transparent);
+  stroke-width: 1.25;
+  stroke-dasharray: 3 7;
+  fill: none;
+  filter: drop-shadow(0 0 4px color-mix(in srgb, var(--cae-holo) 40%, transparent));
+}
+
+.zwds-court--ziwei-series .zwds-court__path {
+  stroke: color-mix(in srgb, var(--cae-gold) 50%, transparent);
+  filter: drop-shadow(0 0 4px color-mix(in srgb, var(--cae-gold) 35%, transparent));
+}
+
+.zwds-court__node {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  justify-content: center;
+  /* Allow grid tracks to shrink below label intrinsic width */
+  min-width: 0;
+  width: 100%;
+  margin: 0;
+  cursor: pointer;
+}
+
+/**
+ * Gentle vertical wave (SVG is first child of sky, so nodes start at nth-child 2).
+ * Kept shallow so multi-row layouts do not collide across the row-gap.
+ */
+.zwds-court__node:nth-child(3n + 2) {
+  transform: translateY(0.35rem);
+}
+
+.zwds-court__node:nth-child(3n + 3) {
+  transform: translateY(-0.3rem);
+}
+
+.zwds-court__node:nth-child(3n + 4) {
+  transform: translateY(0.4rem);
+}
+
+.zwds-court__input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.zwds-court__chip {
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.18rem;
+  width: 100%;
+  max-width: 5rem;
+  padding: 0.5rem 0.28rem 0.55rem;
+  text-align: center;
+  border-radius: 0.75rem;
+  border: 1px solid color-mix(in srgb, var(--cae-border-holo) 75%, transparent);
+  background:
+    linear-gradient(
+      180deg,
+      color-mix(in srgb, var(--cae-holo) 12%, transparent) 0%,
+      color-mix(in srgb, var(--cae-bg-deep) 65%, transparent) 100%
+    );
+  box-shadow: 0 8px 20px -14px rgba(8, 4, 20, 0.85);
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease,
+    background 0.2s ease,
+    transform 0.2s ease;
+}
+
+.zwds-court__dot {
+  width: 0.45rem;
+  height: 0.45rem;
+  border-radius: 50%;
+  background: var(--cae-holo);
+  box-shadow:
+    0 0 8px color-mix(in srgb, var(--cae-holo) 75%, transparent),
+    0 0 16px color-mix(in srgb, var(--cae-holo) 35%, transparent);
+}
+
+.zwds-court--ziwei-series .zwds-court__dot {
+  background: var(--cae-gold);
+  box-shadow:
+    0 0 8px color-mix(in srgb, var(--cae-gold) 70%, transparent),
+    0 0 16px color-mix(in srgb, var(--cae-gold) 30%, transparent);
+}
+
+.zwds-court__chip-chinese {
+  font-size: clamp(0.78rem, 1.6vw, 0.92rem);
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  line-height: 1.15;
+  color: var(--cae-holo);
+}
+
+.zwds-court--ziwei-series .zwds-court__chip-chinese {
+  color: color-mix(in srgb, var(--cae-gold) 80%, var(--cae-text-bright));
+}
+
+.zwds-court__chip-label {
+  font-family: var(--cae-font-display);
+  font-size: clamp(0.55rem, 1.2vw, 0.65rem);
+  font-weight: 700;
+  line-height: 1.2;
+  color: var(--cae-text-bright);
+  /* Show short English name only on wider chips when possible */
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+  max-width: 100%;
+}
+
+.zwds-court__node:hover .zwds-court__chip,
+.zwds-court__node:focus-within .zwds-court__chip {
+  border-color: color-mix(in srgb, var(--cae-holo) 60%, transparent);
+  box-shadow:
+    0 0 0 1px color-mix(in srgb, var(--cae-holo) 28%, transparent),
+    0 0 22px -6px color-mix(in srgb, var(--cae-holo) 45%, transparent);
+  transform: translateY(-2px);
+}
+
+.zwds-court__input:checked + .zwds-court__chip {
+  border-color: color-mix(in srgb, var(--cae-gold) 65%, transparent);
+  background:
+    linear-gradient(
+      180deg,
+      color-mix(in srgb, var(--cae-gold) 16%, transparent) 0%,
+      color-mix(in srgb, var(--cae-purple) 28%, var(--cae-bg-deep)) 100%
+    );
+  box-shadow:
+    0 0 0 1px color-mix(in srgb, var(--cae-gold) 30%, transparent),
+    0 0 26px -4px color-mix(in srgb, var(--cae-gold) 50%, transparent);
+  transform: translateY(-2px);
+}
+
+.zwds-court--tianfu-series .zwds-court__input:checked + .zwds-court__chip {
+  border-color: color-mix(in srgb, var(--cae-holo) 70%, transparent);
+  background:
+    linear-gradient(
+      180deg,
+      color-mix(in srgb, var(--cae-holo) 18%, transparent) 0%,
+      color-mix(in srgb, var(--cae-purple) 28%, var(--cae-bg-deep)) 100%
+    );
+  box-shadow:
+    0 0 0 1px color-mix(in srgb, var(--cae-holo) 32%, transparent),
+    0 0 26px -4px color-mix(in srgb, var(--cae-holo) 48%, transparent);
+}
+
+.zwds-court__input:focus-visible + .zwds-court__chip {
+  outline: 2px solid var(--cae-holo);
+  outline-offset: 3px;
+}
+
+.zwds-court__input:checked + .zwds-court__chip .zwds-court__dot {
+  background: var(--cae-gold);
+  box-shadow:
+    0 0 10px color-mix(in srgb, var(--cae-gold) 80%, transparent),
+    0 0 18px color-mix(in srgb, var(--cae-holo) 40%, transparent);
+}
+
+.zwds-court__hint {
+  margin: 0;
+  color: var(--cae-text-muted);
+  opacity: 0.85;
+}
+
+.zwds-court__readout {
+  min-height: 5.25rem;
+}
+
+.zwds-court__panel {
+  display: none;
+  grid-template-columns: auto 1fr;
+  grid-template-rows: auto auto;
+  column-gap: 0.85rem;
+  row-gap: 0.35rem;
+  align-items: baseline;
+  padding: 1rem 1.15rem;
+  border-radius: 0.75rem;
+  border: 1px solid color-mix(in srgb, var(--cae-gold) 30%, var(--cae-border-holo));
+  background:
+    linear-gradient(
+      135deg,
+      color-mix(in srgb, var(--cae-holo) 7%, transparent) 0%,
+      color-mix(in srgb, var(--cae-bg-elevated) 40%, transparent) 100%
+    );
+  box-shadow: inset 0 1px 0 color-mix(in srgb, var(--cae-holo) 12%, transparent);
+}
+
+.zwds-court__panel-chinese {
+  grid-row: 1 / span 2;
+  align-self: center;
+  font-size: 1.35rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  color: var(--cae-gold);
+}
+
+.zwds-court--tianfu-series .zwds-court__panel-chinese {
+  color: var(--cae-holo);
+}
+
+.zwds-court__panel-label {
+  margin: 0;
+  font-family: var(--cae-font-display);
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--cae-text-bright);
+}
+
+.zwds-court__panel-essence {
+  grid-column: 2;
+  margin: 0;
+  font-size: 0.92rem;
+  line-height: 1.5;
+  color: var(--cae-text-muted-alt);
+}
+
+html[data-theme="light"] .zwds-court {
+  background:
+    linear-gradient(
+      165deg,
+      color-mix(in srgb, var(--cae-holo) 6%, #ffffff) 0%,
+      color-mix(in srgb, var(--cae-purple) 8%, #ffffff) 100%
+    );
+  box-shadow:
+    inset 0 1px 0 color-mix(in srgb, var(--cae-holo) 10%, transparent),
+    0 14px 32px -24px rgba(26, 30, 63, 0.22);
+}
+
+html[data-theme="light"] .zwds-court__chip {
+  background:
+    linear-gradient(
+      180deg,
+      color-mix(in srgb, var(--cae-holo) 8%, #ffffff) 0%,
+      color-mix(in srgb, var(--cae-surface) 35%, #ffffff) 100%
+    );
+  box-shadow: 0 8px 18px -14px rgba(26, 30, 63, 0.25);
+}
+
+html[data-theme="light"] .zwds-court__input:checked + .zwds-court__chip {
+  background:
+    linear-gradient(
+      180deg,
+      color-mix(in srgb, var(--cae-gold) 14%, #ffffff) 0%,
+      color-mix(in srgb, var(--cae-purple) 10%, #ffffff) 100%
+    );
+}
+
+html[data-theme="light"] .zwds-court__panel {
+  background:
+    linear-gradient(
+      135deg,
+      color-mix(in srgb, var(--cae-holo) 5%, #ffffff) 0%,
+      color-mix(in srgb, var(--cae-purple) 6%, #ffffff) 100%
+    );
+}
+
+/* Four transformations — color-coded activation seals */
+
+.zwds-section--transforms {
+  overflow: hidden;
+}
+
+.zwds-transforms {
+  --zwds-sihua: var(--cae-holo);
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 0.85rem;
+  margin: 0 0 1.85rem;
+}
+
+/**
+ * Subtle energy conduit linking Lu → Quan → Ke → Ji on wide viewports.
+ */
+.zwds-transforms__flow {
+  position: absolute;
+  z-index: 0;
+  left: 6%;
+  right: 6%;
+  top: 1.15rem;
+  height: 2px;
+  pointer-events: none;
+  background: linear-gradient(
+    90deg,
+    var(--cae-sihua-lu) 0%,
+    var(--cae-sihua-quan) 33%,
+    var(--cae-sihua-ke) 66%,
+    var(--cae-sihua-ji) 100%
+  );
+  opacity: 0.35;
+  filter: blur(0.5px);
+  mask-image: linear-gradient(
+    90deg,
+    transparent 0%,
+    #000 8%,
+    #000 92%,
+    transparent 100%
+  );
+}
+
+.zwds-transforms__seal {
+  --zwds-sihua: var(--cae-holo);
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 1.35rem 0.85rem 1.2rem;
+  text-align: center;
+  overflow: hidden;
+  border-radius: 0.85rem;
+  border: 1px solid color-mix(in srgb, var(--zwds-sihua) 55%, transparent);
+  background:
+    radial-gradient(
+      ellipse 80% 55% at 50% 0%,
+      color-mix(in srgb, var(--zwds-sihua) 22%, transparent) 0%,
+      transparent 70%
+    ),
+    linear-gradient(
+      165deg,
+      color-mix(in srgb, var(--zwds-sihua) 10%, transparent) 0%,
+      color-mix(in srgb, var(--cae-bg-elevated) 40%, transparent) 45%,
+      color-mix(in srgb, var(--cae-bg-deep) 70%, transparent) 100%
+    );
+  box-shadow:
+    inset 0 1px 0 color-mix(in srgb, var(--zwds-sihua) 28%, transparent),
+    0 0 28px -10px color-mix(in srgb, var(--zwds-sihua) 45%, transparent),
+    0 14px 32px -22px rgba(8, 4, 20, 0.75);
+  transition:
+    border-color 0.22s ease,
+    box-shadow 0.22s ease,
+    transform 0.22s ease;
+}
+
+.zwds-transforms__seal:hover {
+  border-color: color-mix(in srgb, var(--zwds-sihua) 80%, transparent);
+  box-shadow:
+    inset 0 1px 0 color-mix(in srgb, var(--zwds-sihua) 40%, transparent),
+    0 0 36px -6px color-mix(in srgb, var(--zwds-sihua) 55%, transparent),
+    0 16px 36px -20px rgba(8, 4, 20, 0.8);
+  transform: translateY(-3px);
+}
+
+.zwds-transforms__seal--lu {
+  --zwds-sihua: var(--cae-sihua-lu);
+}
+
+.zwds-transforms__seal--quan {
+  --zwds-sihua: var(--cae-sihua-quan);
+}
+
+.zwds-transforms__seal--ke {
+  --zwds-sihua: var(--cae-sihua-ke);
+}
+
+.zwds-transforms__seal--ji {
+  --zwds-sihua: var(--cae-sihua-ji);
+}
+
+.zwds-transforms__beam {
+  position: absolute;
+  top: 0;
+  left: 18%;
+  right: 18%;
+  height: 3px;
+  border-radius: 0 0 2px 2px;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    var(--zwds-sihua) 30%,
+    color-mix(in srgb, var(--zwds-sihua) 80%, #ffffff) 50%,
+    var(--zwds-sihua) 70%,
+    transparent 100%
+  );
+  box-shadow: 0 0 12px color-mix(in srgb, var(--zwds-sihua) 70%, transparent);
+}
+
+.zwds-transforms__index {
+  position: relative;
+  z-index: 1;
+  margin-top: 0.35rem;
+  color: color-mix(in srgb, var(--zwds-sihua) 85%, var(--cae-text-bright));
+  font-size: 0.58rem;
+  letter-spacing: 0.16em;
+}
+
+.zwds-transforms__glyph {
+  position: relative;
+  z-index: 1;
+  font-family: var(--cae-font-display);
+  font-size: clamp(1.35rem, 2.8vw, 1.65rem);
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  line-height: 1.2;
+  color: var(--zwds-sihua);
+  text-shadow: 0 0 20px color-mix(in srgb, var(--zwds-sihua) 45%, transparent);
+}
+
+.zwds-transforms__name {
+  position: relative;
+  z-index: 1;
+  font-family: var(--cae-font-display);
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--cae-text-bright);
+}
+
+.zwds-transforms__meaning {
+  position: relative;
+  z-index: 1;
+  font-size: 0.82rem;
+  line-height: 1.4;
+  color: var(--cae-text-muted-alt);
+}
+
+.zwds-transforms__pulse {
+  position: absolute;
+  z-index: 0;
+  left: 50%;
+  bottom: -20%;
+  width: 70%;
+  height: 55%;
+  transform: translateX(-50%);
+  pointer-events: none;
+  background: radial-gradient(
+    ellipse at center,
+    color-mix(in srgb, var(--zwds-sihua) 28%, transparent) 0%,
+    transparent 70%
+  );
+  opacity: 0.55;
+  animation: zwds-sihua-pulse 4.5s ease-in-out infinite;
+  animation-delay: calc(var(--i) * 0.55s);
+}
+
+html[data-theme="light"] .zwds-transforms__seal {
+  background:
+    radial-gradient(
+      ellipse 80% 55% at 50% 0%,
+      color-mix(in srgb, var(--zwds-sihua) 16%, transparent) 0%,
+      transparent 70%
+    ),
+    linear-gradient(
+      165deg,
+      color-mix(in srgb, var(--zwds-sihua) 8%, #ffffff) 0%,
+      color-mix(in srgb, var(--cae-surface) 40%, #ffffff) 100%
+    );
+  box-shadow:
+    inset 0 1px 0 color-mix(in srgb, var(--zwds-sihua) 22%, transparent),
+    0 0 24px -12px color-mix(in srgb, var(--zwds-sihua) 35%, transparent),
+    0 12px 28px -20px rgba(26, 30, 63, 0.22);
+}
+
+html[data-theme="light"] .zwds-transforms__name {
+  color: var(--cae-text-bright);
+}
+
+/* Compare table */
+
+.zwds-compare {
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+  text-align: left;
+}
+
+.zwds-compare__head,
+.zwds-compare__row {
+  display: grid;
+  grid-template-columns: 0.8fr 1.2fr 1.2fr;
+  gap: 0.75rem;
+  padding: 1rem 1.15rem;
+}
+
+.zwds-compare__head {
+  padding-bottom: 0.35rem;
+  text-align: center;
+}
+
+.zwds-compare__head .zwds-compare__cell {
+  font-family: var(--cae-font-tech);
+  font-size: 0.68rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--cae-holo);
+}
+
+.zwds-compare__aspect {
+  font-family: var(--cae-font-display);
+  font-weight: 700;
+  color: var(--cae-gold);
+  text-align: center;
+}
+
+.zwds-compare__cell {
+  font-size: 0.95rem;
+  line-height: 1.45;
+  color: var(--cae-text-soft);
+  text-align: center;
+}
+
+/* FAQ */
+
+.zwds-faq {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  max-width: 44rem;
+  margin-left: auto;
+  margin-right: auto;
+  text-align: left;
+}
+
+.zwds-faq__item {
+  padding: 0;
+  overflow: hidden;
+}
+
+.zwds-faq__question {
+  cursor: pointer;
+  list-style: none;
+  padding: 1.15rem 1.35rem;
+  font-family: var(--cae-font-display);
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--cae-text-bright);
+  text-align: center;
+}
+
+.zwds-faq__question::-webkit-details-marker {
+  display: none;
+}
+
+.zwds-faq__answer {
+  margin: 0;
+  padding: 0 1.35rem 1.25rem;
+  font-size: 0.98rem;
+  line-height: 1.6;
+  color: var(--cae-text-muted-alt);
+  text-align: center;
+}
+
+/* CTA */
+
+.zwds-cta {
+  position: relative;
+  z-index: 1;
+  margin-top: clamp(1.5rem, 4vw, 2.5rem);
+  padding: clamp(3rem, 7vw, 4.5rem) 0;
+  overflow: hidden;
+  background:
+    linear-gradient(
+      135deg,
+      color-mix(in srgb, var(--cae-brand-gradient-stop-2) 80%, transparent) 0%,
+      color-mix(in srgb, var(--cae-bg-deep) 90%, transparent) 50%,
+      color-mix(in srgb, var(--cae-brand-gradient-stop-3) 40%, transparent) 100%
+    );
+  border-top: 1px solid color-mix(in srgb, var(--cae-holo) 30%, transparent);
+  border-bottom: 1px solid color-mix(in srgb, var(--cae-gold) 25%, transparent);
+}
+
+.zwds-cta__glow {
+  position: absolute;
+  inset: -30% 20% auto;
+  height: 70%;
+  background: radial-gradient(
+    ellipse at center,
+    color-mix(in srgb, var(--cae-holo) 22%, transparent),
+    transparent 65%
+  );
+  pointer-events: none;
+  animation: zwds-nebula-drift 14s ease-in-out infinite alternate;
+}
+
+.zwds-cta__inner {
+  position: relative;
+  z-index: 1;
+  text-align: center;
+}
+
+.zwds-cta__heading {
+  margin: 0 0 0.85rem;
+  font-family: var(--cae-font-display);
+  font-size: clamp(1.75rem, 4vw, 2.5rem);
+  font-weight: 800;
+  color: var(--cae-text-bright);
+}
+
+.zwds-cta__lede {
+  margin: 0 auto 1.75rem;
+  max-width: 36rem;
+  font-size: 1.05rem;
+  line-height: 1.55;
+  color: var(--cae-lavender-bright);
+}
+
+.zwds-cta__actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.85rem;
+}
+
+.zwds-cta__btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.95rem 1.6rem;
+  font-family: var(--cae-font-tech);
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-decoration: none;
+  text-transform: uppercase;
+  border-radius: 0.35rem;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+}
+
+.zwds-cta__btn:hover {
+  transform: translateY(-2px);
+}
+
+.zwds-cta__btn--primary {
+  color: #0a0614;
+  background: linear-gradient(135deg, var(--cae-holo), var(--cae-gold));
+  box-shadow: 0 0 24px -4px color-mix(in srgb, var(--cae-holo) 55%, transparent);
+}
+
+.zwds-cta__btn--secondary {
+  color: var(--cae-text-bright);
+  background: color-mix(in srgb, var(--cae-purple) 55%, transparent);
+  border: 1px solid color-mix(in srgb, var(--cae-holo) 45%, transparent);
+}
+
+.zwds-cta__btn--ghost {
+  color: var(--cae-lavender-bright);
+  background: transparent;
+  border: 1px solid color-mix(in srgb, var(--cae-lavender) 40%, transparent);
+}
+
+/* Light theme tweaks */
+
+html[data-theme="light"] .zwds-hero {
+  background-color: #12081f;
+  background-image:
+    radial-gradient(
+      ellipse 80% 60% at 70% 40%,
+      color-mix(in srgb, var(--cae-holo) 14%, transparent),
+      transparent 55%
+    ),
+    radial-gradient(
+      ellipse 70% 50% at 20% 80%,
+      color-mix(in srgb, var(--cae-brand-gradient-stop-3) 28%, transparent),
+      transparent 60%
+    );
+}
+
+/* Hero copy stays bright on the dark plane in both themes */
+html[data-theme="light"] .zwds-hero .zwds-hero__eyebrow {
+  color: #9ee4f5;
+}
+
+html[data-theme="light"] .zwds-hero__title {
+  background: linear-gradient(
+    180deg,
+    #ffffff 0%,
+    #ffffff 62%,
+    #f0e4c8 100%
+  );
+  -webkit-background-clip: text;
+  background-clip: text;
+}
+
+html[data-theme="light"] .zwds-hero__support {
+  color: #f3ebe0;
+}
+
+html[data-theme="light"] .zwds-section__heading,
+html[data-theme="light"] .zwds-process__title,
+html[data-theme="light"] .zwds-chart__panel-label,
+html[data-theme="light"] .zwds-chart__node-label,
+html[data-theme="light"] .zwds-court__heading,
+html[data-theme="light"] .zwds-court__panel-label,
+html[data-theme="light"] .zwds-court__chip-label,
+html[data-theme="light"] .zwds-faq__question,
+html[data-theme="light"] .zwds-cta__heading {
+  color: var(--cae-text-bright);
+}
+
+html[data-theme="light"] .zwds-section--holo {
+  background: color-mix(in srgb, var(--cae-purple) 6%, transparent);
+}
+
+html[data-theme="light"] .zwds-cta {
+  background: linear-gradient(
+    135deg,
+    var(--cae-navy) 0%,
+    color-mix(in srgb, var(--cae-purple-deep) 80%, #1a0f2e) 100%
+  );
+}
+
+/* Motion */
+
+@keyframes zwds-nebula-drift {
+  0% {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+
+  100% {
+    transform: translate3d(-3%, 2%, 0) scale(1.06);
+  }
+}
+
+@keyframes zwds-aurora-sweep {
+  0%,
+  100% {
+    opacity: 0.4;
+    transform: translateX(-8%);
+  }
+
+  50% {
+    opacity: 0.85;
+    transform: translateX(8%);
+  }
+}
+
+@keyframes zwds-ring-spin {
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes zwds-ring-spin-reverse {
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(-360deg);
+  }
+}
+
+@keyframes zwds-sihua-pulse {
+  0%,
+  100% {
+    opacity: 0.35;
+    transform: translateX(-50%) scale(0.92);
+  }
+
+  50% {
+    opacity: 0.7;
+    transform: translateX(-50%) scale(1.08);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .zwds-hero__nebula,
+  .zwds-hero__aurora::before,
+  .zwds-palace-ring__svg,
+  .zwds-palace-ring__orbit--inner,
+  .zwds-chart__atmosphere,
+  .zwds-chart__orbit--outer,
+  .zwds-chart__orbit--mid,
+  .zwds-cta__glow,
+  .zwds-transforms__pulse {
+    animation: none;
+  }
+
+  .zwds-chart__node:hover .zwds-chart__node-face,
+  .zwds-chart__node:focus-within .zwds-chart__node-face,
+  .zwds-chart__input:checked + .zwds-chart__node-face {
+    transform: none;
+  }
+
+  .zwds-court__node:nth-child(3n + 2),
+  .zwds-court__node:nth-child(3n + 3),
+  .zwds-court__node:nth-child(3n + 4) {
+    transform: none;
+  }
+
+  .zwds-court__node:hover .zwds-court__chip,
+  .zwds-court__node:focus-within .zwds-court__chip,
+  .zwds-court__input:checked + .zwds-court__chip {
+    transform: none;
+  }
+
+  .zwds-transforms__seal:hover {
+    transform: none;
+  }
+}
+
+/* Responsive */
+
+/**
+ * Side-by-side courts (~half of 72rem) cannot fit six 5rem chips with gaps.
+ * Default sky is 3×2 (northern) / 4×2 (southern). Stack courts by 1100px so
+ * a full-width northern row can use the 6-star constellation arc.
+ *
+ * Side-by-side fit (~30rem court content): 3×5rem + 2×0.75rem = 16.5rem ✓
+ * Stacked full-width (≥42rem): 6×5rem + 5×0.85rem = 34.25rem ✓
+ */
+@media (max-width: 1100px) {
+  .zwds-courts {
+    grid-template-columns: 1fr;
+  }
+
+  .zwds-court--ziwei-series .zwds-court__sky {
+    --zwds-star-count: 6;
+    --zwds-star-col-gap: 0.85rem;
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+    min-height: 10rem;
+  }
+
+  .zwds-court--ziwei-series .zwds-court__constellation {
+    opacity: 0.7;
+  }
+
+  .zwds-court--tianfu-series .zwds-court__sky {
+    --zwds-star-col-gap: 0.85rem;
+  }
+}
+
+/* Multi-row northern (side-by-side desktop): hide single-arc path */
+@media (min-width: 1101px) {
+  .zwds-court--ziwei-series .zwds-court__constellation {
+    display: none;
+  }
+
+  .zwds-court--tianfu-series .zwds-court__sky {
+    --zwds-star-col-gap: 0.85rem;
+  }
+}
+
+@media (max-width: 900px) {
+  .zwds-meaning {
+    grid-template-columns: 1fr;
+    gap: 2rem;
+  }
+
+  .zwds-meaning__visual {
+    order: 1;
+    width: min(100%, 22rem);
+  }
+
+  .zwds-meaning__copy {
+    order: 0;
+  }
+
+  .zwds-chart__layout {
+    grid-template-columns: 1fr;
+    gap: 1.25rem;
+    align-items: stretch;
+  }
+
+  .zwds-chart__stage {
+    width: min(100%, 34rem);
+    justify-self: center;
+  }
+
+  .zwds-chart__side {
+    max-width: none;
+    width: min(100%, 34rem);
+    justify-self: center;
+  }
+
+  .zwds-transforms {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .zwds-transforms__flow {
+    display: none;
+  }
+
+  /* Narrow stacked: wrap northern to 3×2 before chips collide again */
+  .zwds-court--ziwei-series .zwds-court__sky {
+    --zwds-star-count: 3;
+    --zwds-star-col-gap: 0.75rem;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    min-height: 11.5rem;
+  }
+
+  .zwds-court--ziwei-series .zwds-court__constellation {
+    display: none;
+  }
+
+  .zwds-compare__head,
+  .zwds-compare__row {
+    grid-template-columns: 1fr;
+    gap: 0.35rem;
+  }
+
+  .zwds-compare__head {
+    display: none;
+  }
+
+  .zwds-compare__row .zwds-compare__cell:nth-child(2)::before {
+    content: "ZWDS · ";
+    font-family: var(--cae-font-tech);
+    font-size: 0.65rem;
+    letter-spacing: 0.1em;
+    color: var(--cae-holo);
+  }
+
+  .zwds-compare__row .zwds-compare__cell:nth-child(3)::before {
+    content: "BaZi · ";
+    font-family: var(--cae-font-tech);
+    font-size: 0.65rem;
+    letter-spacing: 0.1em;
+    color: var(--cae-gold);
+  }
+}
+
+/**
+ * Mobile orbit list — same celestial language without crushing 12 nodes
+ * into an unreadably small ring.
+ */
+@media (max-width: 720px) {
+  .zwds-chart__atmosphere {
+    inset: -2% 0 auto;
+    height: 12rem;
+    opacity: 0.7;
+  }
+
+  .zwds-chart__stage {
+    display: flex;
+    flex-direction: column;
+    gap: 0.55rem;
+    width: 100%;
+    aspect-ratio: auto;
+    padding-left: 1.35rem;
+  }
+
+  .zwds-chart__rings {
+    display: none;
+  }
+
+  .zwds-chart__hub {
+    position: relative;
+    left: auto;
+    top: auto;
+    width: 4.25rem;
+    height: 4.25rem;
+    margin: 0 0 0.65rem;
+    transform: none;
+    align-self: flex-start;
+  }
+
+  .zwds-chart__stage::before {
+    content: "";
+    position: absolute;
+    left: 0.35rem;
+    top: 5.25rem;
+    bottom: 0.5rem;
+    width: 1px;
+    background: linear-gradient(
+      180deg,
+      color-mix(in srgb, var(--cae-gold) 55%, transparent) 0%,
+      color-mix(in srgb, var(--cae-holo) 40%, transparent) 50%,
+      color-mix(in srgb, var(--cae-lavender) 25%, transparent) 100%
+    );
+    pointer-events: none;
+  }
+
+  .zwds-chart__node {
+    position: relative;
+    left: auto;
+    top: auto;
+    width: 100%;
+    transform: none;
+  }
+
+  .zwds-chart__node::before {
+    content: "";
+    position: absolute;
+    left: -1.05rem;
+    top: 50%;
+    width: 0.55rem;
+    height: 0.55rem;
+    border-radius: 50%;
+    transform: translateY(-50%);
+    background: var(--cae-holo);
+    box-shadow: 0 0 8px color-mix(in srgb, var(--cae-holo) 70%, transparent);
+    pointer-events: none;
+  }
+
+  .zwds-chart__node:has(.zwds-chart__input:checked)::before {
+    background: var(--cae-gold);
+    box-shadow: 0 0 10px color-mix(in srgb, var(--cae-gold) 70%, transparent);
+  }
+
+  .zwds-chart__node-face {
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: flex-start;
+    align-items: baseline;
+    gap: 0.35rem 0.65rem;
+    padding: 0.85rem 1rem;
+    border-radius: 0.65rem;
+  }
+
+  .zwds-chart__node:hover .zwds-chart__node-face,
+  .zwds-chart__node:focus-within .zwds-chart__node-face,
+  .zwds-chart__input:checked + .zwds-chart__node-face {
+    transform: none;
+  }
+
+  .zwds-chart__node-index {
+    font-size: 0.6rem;
+  }
+
+  .zwds-chart__node-chinese {
+    font-size: 1rem;
+  }
+
+  .zwds-chart__node-label {
+    font-size: 0.95rem;
+  }
+
+  .zwds-chart__readout {
+    width: 100%;
+  }
+
+  .zwds-chart__side {
+    max-width: none;
+    width: 100%;
+  }
+
+  .zwds-chart__panel {
+    grid-template-columns: auto 1fr;
+  }
+
+  .zwds-chart__hint {
+    text-align: left;
+  }
+}
+
+@media (max-width: 560px) {
+  .zwds-process,
+  .zwds-transforms {
+    grid-template-columns: 1fr;
+  }
+
+  .zwds-court__sky,
+  .zwds-court--tianfu-series .zwds-court__sky {
+    --zwds-star-count: 3;
+    --zwds-star-col-gap: 0.65rem;
+    --zwds-star-row-gap: 0.85rem;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    min-height: 0;
+  }
+
+  .zwds-court__node:nth-child(3n + 2),
+  .zwds-court__node:nth-child(3n + 3),
+  .zwds-court__node:nth-child(3n + 4) {
+    transform: none;
+  }
+
+  .zwds-court__constellation {
+    display: none;
+  }
+
+  .zwds-court__chip {
+    max-width: none;
+  }
+
+  .zwds-court__panel {
+    grid-template-columns: 1fr;
+  }
+
+  .zwds-court__panel-chinese {
+    grid-row: auto;
+  }
+
+  .zwds-court__panel-essence {
+    grid-column: 1;
+  }
+
+  .zwds-chart__panel {
+    grid-template-columns: 1fr;
+  }
+
+  .zwds-chart__panel-index {
+    grid-row: auto;
+  }
+
+  .zwds-chart__panel-domain {
+    grid-column: 1;
+  }
+}

@@ -1,0 +1,845 @@
+---
+/**
+ * Zi Wei Dou Shu explainer page body — cosmic fantasy / sci-fi chrome.
+ * Copy from {@link ziWeiDouShuCopy}; CTAs reuse existing funnel destinations.
+ */
+import type { ImageMetadata } from "astro";
+import { ziWeiDouShuCopy } from "@/data/home/zi-wei-dou-shu";
+import purpleStarChartAsset from "@/assets/zwds-purple-star-chart.png";
+import "@/styles/zwds/zwds.css";
+
+/** Static image import shape used by Vite/Astro asset modules. */
+type ZwdsImageAsset = ImageMetadata | string;
+
+/**
+ * Returns a usable `src` string from an Astro/Vite image import.
+ *
+ * @param asset - Static import from `src/assets`
+ * @returns URL string for an `<img src>`
+ */
+function assetSrc(asset: ZwdsImageAsset): string {
+  if (typeof asset === "string") {
+    return asset;
+  }
+  if (
+    typeof asset === "object" &&
+    asset !== null &&
+    "src" in asset &&
+    typeof asset.src === "string"
+  ) {
+    return asset.src;
+  }
+  throw new Error("ZwdsContent: unsupported image asset shape.");
+}
+
+/**
+ * Prefixes root-relative paths with Astro `base` (`/cae/`).
+ *
+ * @param href - Absolute URL, hash, or root-relative path
+ * @returns Href safe for this app's base path
+ */
+function resolveHref(href: string): string {
+  if (
+    href.startsWith("https://") ||
+    href.startsWith("http://") ||
+    href.startsWith("#") ||
+    href.startsWith("mailto:")
+  ) {
+    return href;
+  }
+  const base = import.meta.env.BASE_URL;
+  const normalizedBase = base.endsWith("/") ? base : `${base}/`;
+  const pathPart = href.startsWith("/") ? href.slice(1) : href;
+  return `${normalizedBase}${pathPart}`;
+}
+
+const primaryHref = resolveHref(ziWeiDouShuCopy.ctaPrimaryHref);
+const secondaryHref = resolveHref(ziWeiDouShuCopy.ctaSecondaryHref);
+const tertiaryHref = resolveHref(ziWeiDouShuCopy.ctaTertiaryHref);
+const primaryIsExternal =
+  primaryHref.startsWith("https://") || primaryHref.startsWith("http://");
+const purpleStarChartSrc = assetSrc(purpleStarChartAsset);
+const purpleStarChartWidth =
+  typeof purpleStarChartAsset === "object" ? purpleStarChartAsset.width : 1024;
+const purpleStarChartHeight =
+  typeof purpleStarChartAsset === "object" ? purpleStarChartAsset.height : 1536;
+
+/**
+ * CSS :has() rules mapping each palace radio to its detail panel.
+ * Generated from copy data so palace ids stay in one source of truth.
+ */
+const palacePanelVisibilityCss = ziWeiDouShuCopy.palaces
+  .map(
+    (palace) =>
+      `.zwds-chart:has(input[value="${palace.id}"]:checked) .zwds-chart__panel[data-palace="${palace.id}"]{display:grid}`,
+  )
+  .join("\n");
+
+/** Lookup map for major stars by id (series courts resolve from this). */
+const majorStarsById = new Map(
+  ziWeiDouShuCopy.majorStars.map((star) => [star.id, star]),
+);
+
+/**
+ * Resolves ordered major stars for a series from id list.
+ *
+ * @param starIds - Series star ids from copy data
+ * @returns Matching major-star objects in series order
+ */
+function resolveSeriesStars(
+  starIds: readonly string[],
+): readonly (typeof ziWeiDouShuCopy.majorStars)[number][] {
+  const resolved: (typeof ziWeiDouShuCopy.majorStars)[number][] = [];
+  for (const starId of starIds) {
+    const star = majorStarsById.get(starId);
+    if (star) {
+      resolved.push(star);
+    }
+  }
+  return resolved;
+}
+
+/**
+ * CSS :has() rules mapping each star radio to its court detail panel.
+ */
+const starPanelVisibilityCss = ziWeiDouShuCopy.starSeries
+  .flatMap((series) =>
+    series.starIds.map(
+      (starId) =>
+        `.zwds-court[data-series="${series.id}"]:has(input[value="${starId}"]:checked) .zwds-court__panel[data-star="${starId}"]{display:grid}`,
+    ),
+  )
+  .join("\n");
+---
+
+<article class="zwds-page">
+  <!-- Full-bleed cosmic hero -->
+  <header class="zwds-hero" aria-labelledby="zwds-hero-title">
+    <div class="zwds-hero__cosmos" aria-hidden="true">
+      <div class="cae-starfield">
+        <div class="cae-starfield__glow zwds-hero__nebula"></div>
+        <div class="cae-starfield__dots"></div>
+        <span class="cae-starfield__twinkle cae-starfield__twinkle--a"></span>
+        <span class="cae-starfield__twinkle cae-starfield__twinkle--b"></span>
+        <span class="cae-starfield__twinkle cae-starfield__twinkle--c"></span>
+      </div>
+      <div class="zwds-hero__aurora"></div>
+      <div class="zwds-palace-ring" aria-hidden="true">
+        <svg class="zwds-palace-ring__svg" viewBox="0 0 400 400" fill="none">
+          <circle class="zwds-palace-ring__orbit" cx="200" cy="200" r="168" />
+          <circle class="zwds-palace-ring__orbit zwds-palace-ring__orbit--inner" cx="200" cy="200" r="118" />
+          <circle class="zwds-palace-ring__core" cx="200" cy="200" r="28" />
+          {
+            Array.from({ length: 12 }).map((_, i) => {
+              const angle = (i * 30 - 90) * (Math.PI / 180);
+              const x = 200 + Math.cos(angle) * 168;
+              const y = 200 + Math.sin(angle) * 168;
+              return (
+                <circle
+                  class="zwds-palace-ring__node"
+                  cx={x}
+                  cy={y}
+                  r="4"
+                />
+              );
+            })
+          }
+          {
+            Array.from({ length: 12 }).map((_, i) => {
+              const angle = (i * 30 - 90) * (Math.PI / 180);
+              const x2 = 200 + Math.cos(angle) * 168;
+              const y2 = 200 + Math.sin(angle) * 168;
+              return (
+                <line
+                  class="zwds-palace-ring__spoke"
+                  x1="200"
+                  y1="200"
+                  x2={x2}
+                  y2={y2}
+                />
+              );
+            })
+          }
+        </svg>
+      </div>
+    </div>
+    <div class="zwds-page__inner zwds-hero__inner">
+      <p class="cae-eyebrow zwds-hero__eyebrow cae-tech-label">
+        {ziWeiDouShuCopy.heroEyebrow}
+      </p>
+      <h1 class="zwds-hero__title" id="zwds-hero-title">
+        {ziWeiDouShuCopy.heroTitle}
+      </h1>
+      <p class="zwds-hero__support">{ziWeiDouShuCopy.heroSupport}</p>
+    </div>
+  </header>
+
+  <div class="zwds-page__body">
+    <div class="cae-starfield" aria-hidden="true">
+      <div class="cae-starfield__glow"></div>
+      <div class="cae-starfield__dots"></div>
+    </div>
+
+    <!-- Meaning -->
+    <section class="zwds-section zwds-section--meaning" aria-labelledby="zwds-meaning-heading">
+      <div class="zwds-page__inner">
+        <div class="zwds-meaning">
+          <div class="zwds-meaning__copy">
+            <p class="cae-eyebrow cae-tech-label">{ziWeiDouShuCopy.meaningEyebrow}</p>
+            <h2 class="zwds-section__heading" id="zwds-meaning-heading">
+              {ziWeiDouShuCopy.meaningHeading}
+            </h2>
+            <p class="zwds-section__lede">{ziWeiDouShuCopy.meaningLede}</p>
+            <div class="zwds-prose">
+              {
+                ziWeiDouShuCopy.meaningBody.map((paragraph) => (
+                  <p>{paragraph}</p>
+                ))
+              }
+            </div>
+          </div>
+          <figure class="zwds-meaning__visual">
+            <div class="zwds-meaning__frame">
+              <img
+                class="zwds-meaning__image"
+                src={purpleStarChartSrc}
+                alt="Holographic Zi Wei Dou Shu Purple Star chart"
+                width={purpleStarChartWidth}
+                height={purpleStarChartHeight}
+                loading="lazy"
+                decoding="async"
+              />
+            </div>
+          </figure>
+        </div>
+      </div>
+    </section>
+
+    <div class="cae-section-rule" aria-hidden="true">
+      <span class="cae-section-rule__line"></span>
+    </div>
+
+    <!-- Origin -->
+    <section class="zwds-section zwds-section--holo" aria-labelledby="zwds-origin-heading">
+      <div class="zwds-page__inner">
+        <p class="cae-eyebrow cae-tech-label">{ziWeiDouShuCopy.originEyebrow}</p>
+        <h2 class="zwds-section__heading" id="zwds-origin-heading">
+          {ziWeiDouShuCopy.originHeading}
+        </h2>
+        <p class="zwds-section__lede">{ziWeiDouShuCopy.originLede}</p>
+        <div class="zwds-prose">
+          {
+            ziWeiDouShuCopy.originBody.map((paragraph) => (
+              <p>{paragraph}</p>
+            ))
+          }
+        </div>
+      </div>
+    </section>
+
+    <div class="cae-section-rule" aria-hidden="true">
+      <span class="cae-section-rule__line"></span>
+    </div>
+
+    <!-- Chart process -->
+    <section class="zwds-section" aria-labelledby="zwds-chart-heading">
+      <div class="zwds-page__inner">
+        <p class="cae-eyebrow cae-tech-label">{ziWeiDouShuCopy.chartEyebrow}</p>
+        <h2 class="zwds-section__heading" id="zwds-chart-heading">
+          {ziWeiDouShuCopy.chartHeading}
+        </h2>
+        <p class="zwds-section__lede">{ziWeiDouShuCopy.chartLede}</p>
+        <ol class="zwds-process">
+          {
+            ziWeiDouShuCopy.processSteps.map((step) => (
+              <li class="zwds-process__item cae-holo-panel">
+                <span class="zwds-process__index cae-tech-label">{step.index}</span>
+                <h3 class="zwds-process__title">{step.title}</h3>
+                <p class="zwds-process__body">{step.body}</p>
+              </li>
+            ))
+          }
+        </ol>
+      </div>
+    </section>
+
+    <div class="cae-section-rule" aria-hidden="true">
+      <span class="cae-section-rule__line"></span>
+    </div>
+
+    <!-- Twelve palaces — celestial chart interface -->
+    <section
+      class="zwds-section zwds-section--palaces"
+      aria-labelledby="zwds-palaces-heading"
+    >
+      <div class="zwds-page__inner">
+        <p class="cae-eyebrow cae-tech-label">{ziWeiDouShuCopy.palacesEyebrow}</p>
+        <h2 class="zwds-section__heading" id="zwds-palaces-heading">
+          {ziWeiDouShuCopy.palacesHeading}
+        </h2>
+        <p class="zwds-section__lede">{ziWeiDouShuCopy.palacesLede}</p>
+
+        <div class="zwds-chart" data-zwds-chart>
+          <div class="zwds-chart__atmosphere" aria-hidden="true"></div>
+
+          <div class="zwds-chart__layout">
+            <div
+              class="zwds-chart__stage"
+              role="radiogroup"
+              aria-labelledby="zwds-palaces-heading"
+              aria-describedby="zwds-chart-hint"
+            >
+              <svg
+                class="zwds-chart__rings"
+                viewBox="0 0 400 400"
+                fill="none"
+                aria-hidden="true"
+              >
+                <defs>
+                  <radialGradient id="zwds-chart-core-glow" cx="50%" cy="50%" r="50%">
+                    <stop offset="0%" stop-color="var(--cae-gold)" stop-opacity="0.45"></stop>
+                    <stop offset="55%" stop-color="var(--cae-holo)" stop-opacity="0.12"></stop>
+                    <stop offset="100%" stop-color="transparent" stop-opacity="0"></stop>
+                  </radialGradient>
+                </defs>
+                <circle
+                  class="zwds-chart__orbit zwds-chart__orbit--outer"
+                  cx="200"
+                  cy="200"
+                  r="168"
+                ></circle>
+                <circle
+                  class="zwds-chart__orbit zwds-chart__orbit--mid"
+                  cx="200"
+                  cy="200"
+                  r="128"
+                ></circle>
+                <circle
+                  class="zwds-chart__orbit zwds-chart__orbit--inner"
+                  cx="200"
+                  cy="200"
+                  r="78"
+                ></circle>
+                <circle class="zwds-chart__core-glow" cx="200" cy="200" r="56" fill="url(#zwds-chart-core-glow)"></circle>
+                {
+                  ziWeiDouShuCopy.palaces.map((_, i) => {
+                    const angle = (i * 30 - 90) * (Math.PI / 180);
+                    const x = 200 + Math.cos(angle) * 168;
+                    const y = 200 + Math.sin(angle) * 168;
+                    return (
+                      <g class="zwds-chart__spoke-group">
+                        <line
+                          class="zwds-chart__spoke"
+                          x1="200"
+                          y1="200"
+                          x2={x}
+                          y2={y}
+                        ></line>
+                        <circle class="zwds-chart__star-dot" cx={x} cy={y} r="2.5"></circle>
+                      </g>
+                    );
+                  })
+                }
+              </svg>
+
+              <div class="zwds-chart__hub" aria-hidden="true">
+                <span class="zwds-chart__hub-glyph" lang="zh-Hans">紫微</span>
+                <span class="zwds-chart__hub-label">Emperor</span>
+              </div>
+
+              {
+                ziWeiDouShuCopy.palaces.map((palace, index) => {
+                  const inputId = `zwds-palace-${palace.id}`;
+                  const indexLabel = String(index + 1).padStart(2, "0");
+                  return (
+                    <label
+                      class="zwds-chart__node"
+                      style={`--i: ${index}`}
+                      data-palace-node={palace.id}
+                      for={inputId}
+                    >
+                      <input
+                        class="zwds-chart__input"
+                        type="radio"
+                        name="zwds-palace"
+                        id={inputId}
+                        value={palace.id}
+                        checked={index === 0}
+                        data-palace-input={palace.id}
+                      />
+                      <span class="zwds-chart__node-face">
+                        <span class="zwds-chart__node-index cae-tech-label">{indexLabel}</span>
+                        <span class="zwds-chart__node-chinese" lang="zh-Hans">
+                          {palace.chinese}
+                        </span>
+                        <span class="zwds-chart__node-label">{palace.label}</span>
+                      </span>
+                    </label>
+                  );
+                })
+              }
+            </div>
+
+            <aside class="zwds-chart__side">
+              <p class="zwds-chart__hint cae-tech-label" id="zwds-chart-hint">
+                Select a palace to read its domain
+              </p>
+              <div class="zwds-chart__readout" aria-live="polite">
+                {
+                  ziWeiDouShuCopy.palaces.map((palace, index) => {
+                    const indexLabel = String(index + 1).padStart(2, "0");
+                    return (
+                      <article
+                        class="zwds-chart__panel"
+                        data-palace={palace.id}
+                        aria-labelledby={`zwds-palace-title-${palace.id}`}
+                      >
+                        <span class="zwds-chart__panel-index cae-tech-label">{indexLabel}</span>
+                        <div class="zwds-chart__panel-titles">
+                          <span class="zwds-chart__panel-chinese" lang="zh-Hans">
+                            {palace.chinese}
+                          </span>
+                          <h3
+                            class="zwds-chart__panel-label"
+                            id={`zwds-palace-title-${palace.id}`}
+                          >
+                            {palace.label}
+                          </h3>
+                        </div>
+                        <p class="zwds-chart__panel-domain">{palace.domain}</p>
+                      </article>
+                    );
+                  })
+                }
+              </div>
+            </aside>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <style is:inline set:html={palacePanelVisibilityCss} />
+
+    <script>
+      /**
+       * Progressive enhancement for the twelve-palace celestial chart:
+       * hover (fine pointer) selects a palace; keyboard stays on native radios.
+       */
+      function initZwdsPalaceChart(): void {
+        const root = document.querySelector("[data-zwds-chart]");
+        if (!(root instanceof HTMLElement)) {
+          return;
+        }
+        if (root.dataset.zwdsChartReady === "true") {
+          return;
+        }
+        root.dataset.zwdsChartReady = "true";
+
+        const inputs = Array.from(
+          root.querySelectorAll("input[data-palace-input]"),
+        ).filter((el): el is HTMLInputElement => el instanceof HTMLInputElement);
+        if (inputs.length === 0) {
+          return;
+        }
+
+        const finePointer = window.matchMedia("(hover: hover) and (pointer: fine)");
+
+        /**
+         * Checks the radio for a given palace id.
+         *
+         * @param palaceId - Stable palace id from copy data
+         */
+        function selectPalace(palaceId: string): void {
+          for (const input of inputs) {
+            if (input.value === palaceId && !input.checked) {
+              input.checked = true;
+              return;
+            }
+          }
+        }
+
+        root.addEventListener("mouseover", (event: Event) => {
+          if (!finePointer.matches) {
+            return;
+          }
+          const target = event.target;
+          if (!(target instanceof Element)) {
+            return;
+          }
+          const label = target.closest("[data-palace-node]");
+          if (!(label instanceof HTMLElement)) {
+            return;
+          }
+          const palaceId = label.dataset.palaceNode;
+          if (typeof palaceId === "string" && palaceId.length > 0) {
+            selectPalace(palaceId);
+          }
+        });
+      }
+
+      initZwdsPalaceChart();
+      document.addEventListener("astro:page-load", initZwdsPalaceChart);
+    </script>
+
+    <div class="cae-section-rule" aria-hidden="true">
+      <span class="cae-section-rule__line"></span>
+    </div>
+
+    <!-- Major stars — two imperial constellation courts -->
+    <section class="zwds-section zwds-section--holo zwds-section--stars" aria-labelledby="zwds-stars-heading">
+      <div class="zwds-page__inner">
+        <p class="cae-eyebrow cae-tech-label">{ziWeiDouShuCopy.starsEyebrow}</p>
+        <h2 class="zwds-section__heading" id="zwds-stars-heading">
+          {ziWeiDouShuCopy.starsHeading}
+        </h2>
+        <p class="zwds-section__lede">{ziWeiDouShuCopy.starsLede}</p>
+
+        <div class="zwds-courts">
+          {
+            ziWeiDouShuCopy.starSeries.map((series) => {
+              const seriesStars = resolveSeriesStars(series.starIds);
+              const radioName = `zwds-star-${series.id}`;
+              const hintId = `zwds-court-hint-${series.id}`;
+              const headingId = `zwds-court-heading-${series.id}`;
+              return (
+                <article
+                  class={`zwds-court zwds-court--${series.id}`}
+                  data-zwds-court
+                  data-series={series.id}
+                  aria-labelledby={headingId}
+                >
+                  <header class="zwds-court__header">
+                    <p class="cae-tech-label zwds-court__eyebrow">{series.eyebrow}</p>
+                    <h3 class="zwds-court__title" id={headingId}>
+                      <span class="zwds-court__chinese" lang="zh-Hans">
+                        {series.chinese}
+                      </span>
+                      <span class="zwds-court__heading">{series.heading}</span>
+                    </h3>
+                    <p class="zwds-court__lede">{series.lede}</p>
+                  </header>
+
+                  <div
+                    class="zwds-court__sky"
+                    role="radiogroup"
+                    aria-labelledby={headingId}
+                    aria-describedby={hintId}
+                  >
+                    {
+                      /* Northern Court only — Southern Court has no constellation arc */
+                      series.id === "ziwei-series" ? (
+                        <svg
+                          class="zwds-court__constellation"
+                          viewBox="0 0 320 120"
+                          fill="none"
+                          aria-hidden="true"
+                          preserveAspectRatio="none"
+                        >
+                          <path
+                            class="zwds-court__path"
+                            d="M16 88 C 56 28, 96 28, 136 72 S 216 108, 256 48 S 296 24, 304 40"
+                          />
+                        </svg>
+                      ) : null
+                    }
+
+                    {
+                      seriesStars.map((star, index) => {
+                        const inputId = `zwds-star-${series.id}-${star.id}`;
+                        const separator = " · ";
+                        const separatorIndex = star.label.indexOf(separator);
+                        const chipLabel =
+                          separatorIndex >= 0
+                            ? star.label.slice(separatorIndex + separator.length)
+                            : star.label;
+                        return (
+                          <label
+                            class="zwds-court__node"
+                            style={`--i: ${index}`}
+                            data-star-node={star.id}
+                            for={inputId}
+                          >
+                            <input
+                              class="zwds-court__input"
+                              type="radio"
+                              name={radioName}
+                              id={inputId}
+                              value={star.id}
+                              checked={index === 0}
+                              data-star-input={star.id}
+                            />
+                            <span class="zwds-court__chip">
+                              <span class="zwds-court__dot" aria-hidden="true"></span>
+                              <span class="zwds-court__chip-chinese" lang="zh-Hans">
+                                {star.chinese}
+                              </span>
+                              <span class="zwds-court__chip-label">{chipLabel}</span>
+                            </span>
+                          </label>
+                        );
+                      })
+                    }
+                  </div>
+
+                  <p class="zwds-court__hint cae-tech-label" id={hintId}>
+                    Select a star to read its essence
+                  </p>
+
+                  <div class="zwds-court__readout" aria-live="polite">
+                    {
+                      seriesStars.map((star) => (
+                        <div
+                          class="zwds-court__panel"
+                          data-star={star.id}
+                          aria-labelledby={`zwds-star-title-${series.id}-${star.id}`}
+                        >
+                          <span class="zwds-court__panel-chinese" lang="zh-Hans">
+                            {star.chinese}
+                          </span>
+                          <h4
+                            class="zwds-court__panel-label"
+                            id={`zwds-star-title-${series.id}-${star.id}`}
+                          >
+                            {star.label}
+                          </h4>
+                          <p class="zwds-court__panel-essence">{star.essence}</p>
+                        </div>
+                      ))
+                    }
+                  </div>
+                </article>
+              );
+            })
+          }
+        </div>
+      </div>
+    </section>
+
+    <style is:inline set:html={starPanelVisibilityCss} />
+
+    <script>
+      /**
+       * Progressive enhancement for imperial star courts:
+       * fine-pointer hover selects a star; keyboard stays on native radios.
+       */
+      function initZwdsStarCourts(): void {
+        const courts = Array.from(
+          document.querySelectorAll("[data-zwds-court]"),
+        ).filter((el): el is HTMLElement => el instanceof HTMLElement);
+
+        for (const root of courts) {
+          if (root.dataset.zwdsCourtReady === "true") {
+            continue;
+          }
+          root.dataset.zwdsCourtReady = "true";
+
+          const inputs = Array.from(
+            root.querySelectorAll("input[data-star-input]"),
+          ).filter((el): el is HTMLInputElement => el instanceof HTMLInputElement);
+          if (inputs.length === 0) {
+            continue;
+          }
+
+          const finePointer = window.matchMedia("(hover: hover) and (pointer: fine)");
+
+          /**
+           * Checks the radio for a given star id within this court.
+           *
+           * @param starId - Stable major-star id from copy data
+           */
+          function selectStar(starId: string): void {
+            for (const input of inputs) {
+              if (input.value === starId && !input.checked) {
+                input.checked = true;
+                return;
+              }
+            }
+          }
+
+          root.addEventListener("mouseover", (event: Event) => {
+            if (!finePointer.matches) {
+              return;
+            }
+            const target = event.target;
+            if (!(target instanceof Element)) {
+              return;
+            }
+            const label = target.closest("[data-star-node]");
+            if (!(label instanceof HTMLElement)) {
+              return;
+            }
+            const starId = label.dataset.starNode;
+            if (typeof starId === "string" && starId.length > 0) {
+              selectStar(starId);
+            }
+          });
+        }
+      }
+
+      initZwdsStarCourts();
+      document.addEventListener("astro:page-load", initZwdsStarCourts);
+    </script>
+
+    <div class="cae-section-rule" aria-hidden="true">
+      <span class="cae-section-rule__line"></span>
+    </div>
+
+    <!-- Timing — Four Transformations (四化) -->
+    <section
+      class="zwds-section zwds-section--transforms"
+      aria-labelledby="zwds-timing-heading"
+    >
+      <div class="zwds-page__inner">
+        <p class="cae-eyebrow cae-tech-label">{ziWeiDouShuCopy.timingEyebrow}</p>
+        <h2 class="zwds-section__heading" id="zwds-timing-heading">
+          {ziWeiDouShuCopy.timingHeading}
+        </h2>
+        <p class="zwds-section__lede">{ziWeiDouShuCopy.timingLede}</p>
+
+        <div class="zwds-transforms" role="list" aria-label="Four Transformations">
+          <div class="zwds-transforms__flow" aria-hidden="true"></div>
+          {
+            ziWeiDouShuCopy.transforms.map((transform, index) => {
+              const indexLabel = String(index + 1).padStart(2, "0");
+              return (
+                <article
+                  class={`zwds-transforms__seal zwds-transforms__seal--${transform.id}`}
+                  role="listitem"
+                  style={`--i: ${index}`}
+                >
+                  <span class="zwds-transforms__beam" aria-hidden="true"></span>
+                  <span class="zwds-transforms__index cae-tech-label">{indexLabel}</span>
+                  <span class="zwds-transforms__glyph" lang="zh-Hans">
+                    {transform.chinese}
+                  </span>
+                  <strong class="zwds-transforms__name">{transform.label}</strong>
+                  <span class="zwds-transforms__meaning">{transform.meaning}</span>
+                  <span class="zwds-transforms__pulse" aria-hidden="true"></span>
+                </article>
+              );
+            })
+          }
+        </div>
+
+        <div class="zwds-prose">
+          {
+            ziWeiDouShuCopy.timingBody.map((paragraph) => (
+              <p>{paragraph}</p>
+            ))
+          }
+        </div>
+      </div>
+    </section>
+
+    <div class="cae-section-rule" aria-hidden="true">
+      <span class="cae-section-rule__line"></span>
+    </div>
+
+    <!-- Compare -->
+    <section class="zwds-section" aria-labelledby="zwds-compare-heading">
+      <div class="zwds-page__inner">
+        <p class="cae-eyebrow cae-tech-label">{ziWeiDouShuCopy.compareEyebrow}</p>
+        <h2 class="zwds-section__heading" id="zwds-compare-heading">
+          {ziWeiDouShuCopy.compareHeading}
+        </h2>
+        <p class="zwds-section__lede">{ziWeiDouShuCopy.compareLede}</p>
+        <div class="zwds-compare" role="table" aria-label="Zi Wei Dou Shu compared with BaZi">
+          <div class="zwds-compare__head" role="row">
+            <span class="zwds-compare__cell" role="columnheader">Aspect</span>
+            <span class="zwds-compare__cell" role="columnheader">Zi Wei Dou Shu</span>
+            <span class="zwds-compare__cell" role="columnheader">BaZi</span>
+          </div>
+          {
+            ziWeiDouShuCopy.comparePoints.map((row) => (
+              <div class="zwds-compare__row cae-holo-panel" role="row">
+                <span class="zwds-compare__cell zwds-compare__aspect" role="rowheader">
+                  {row.aspect}
+                </span>
+                <span class="zwds-compare__cell" role="cell">{row.zwds}</span>
+                <span class="zwds-compare__cell" role="cell">{row.bazi}</span>
+              </div>
+            ))
+          }
+        </div>
+      </div>
+    </section>
+
+    <div class="cae-section-rule" aria-hidden="true">
+      <span class="cae-section-rule__line"></span>
+    </div>
+
+    <!-- CAE framing -->
+    <section class="zwds-section zwds-section--holo" aria-labelledby="zwds-cae-heading">
+      <div class="zwds-page__inner">
+        <p class="cae-eyebrow cae-tech-label">{ziWeiDouShuCopy.caeEyebrow}</p>
+        <h2 class="zwds-section__heading" id="zwds-cae-heading">
+          {ziWeiDouShuCopy.caeHeading}
+        </h2>
+        <p class="zwds-section__lede">{ziWeiDouShuCopy.caeLede}</p>
+        <div class="zwds-prose">
+          {
+            ziWeiDouShuCopy.caeBody.map((paragraph) => (
+              <p>{paragraph}</p>
+            ))
+          }
+        </div>
+      </div>
+    </section>
+
+    <div class="cae-section-rule" aria-hidden="true">
+      <span class="cae-section-rule__line"></span>
+    </div>
+
+    <!-- FAQ -->
+    <section class="zwds-section" aria-labelledby="zwds-faq-heading">
+      <div class="zwds-page__inner">
+        <p class="cae-eyebrow cae-tech-label">{ziWeiDouShuCopy.faqEyebrow}</p>
+        <h2 class="zwds-section__heading" id="zwds-faq-heading">
+          {ziWeiDouShuCopy.faqHeading}
+        </h2>
+        <div class="zwds-faq">
+          {
+            ziWeiDouShuCopy.faqItems.map((item) => (
+              <details class="zwds-faq__item cae-holo-panel">
+                <summary class="zwds-faq__question">{item.question}</summary>
+                <p class="zwds-faq__answer">{item.answer}</p>
+              </details>
+            ))
+          }
+        </div>
+      </div>
+    </section>
+
+    <!-- CTA -->
+    <section class="zwds-cta" aria-labelledby="zwds-cta-heading">
+      <div class="zwds-cta__glow" aria-hidden="true"></div>
+      <div class="zwds-page__inner zwds-cta__inner">
+        <h2 class="zwds-cta__heading" id="zwds-cta-heading">
+          {ziWeiDouShuCopy.ctaHeading}
+        </h2>
+        <p class="zwds-cta__lede">{ziWeiDouShuCopy.ctaLede}</p>
+        <div class="zwds-cta__actions">
+          {
+            ziWeiDouShuCopy.ctaPrimaryVisible ? (
+              <a
+                class="zwds-cta__btn zwds-cta__btn--primary"
+                href={primaryHref}
+                {...(primaryIsExternal
+                  ? { target: "_blank", rel: "noopener noreferrer" }
+                  : {})}
+              >
+                {ziWeiDouShuCopy.ctaPrimaryLabel}
+              </a>
+            ) : null
+          }
+          <a class="zwds-cta__btn zwds-cta__btn--secondary" href={secondaryHref}>
+            {ziWeiDouShuCopy.ctaSecondaryLabel}
+          </a>
+          <a class="zwds-cta__btn zwds-cta__btn--ghost" href={tertiaryHref}>
+            {ziWeiDouShuCopy.ctaTertiaryLabel}
+          </a>
+        </div>
+      </div>
+    </section>
+  </div>
+</article>

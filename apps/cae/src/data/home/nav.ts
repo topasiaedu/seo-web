@@ -52,6 +52,10 @@ export const homeNav = {
       href: assertHomeHref("/#success-stories"),
     },
     {
+      label: "ZI WEI DOU SHU",
+      href: assertHomeHref("/zi-wei-dou-shu/"),
+    },
+    {
       label: "ABOUT",
       href: assertHomeHref("/about/"),
     },

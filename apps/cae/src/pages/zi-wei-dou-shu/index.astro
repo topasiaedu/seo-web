@@ -1,0 +1,30 @@
+---
+/**
+ * CAE Zi Wei Dou Shu explainer route — `/cae/zi-wei-dou-shu/`.
+ * Educational page: what Purple Star Astrology is, framed for CAE's audience.
+ */
+import ZwdsLayout from "../../layouts/ZwdsLayout.astro";
+import SiteHeader from "../../components/home/SiteHeader.astro";
+import ZwdsContent from "../../components/zwds/ZwdsContent.astro";
+import SiteFooter from "../../components/home/SiteFooter.astro";
+import { ziWeiDouShuMeta, requireMetaString } from "../../data/home/meta.ts";
+
+export const prerender = true;
+
+const title = requireMetaString(
+  ziWeiDouShuMeta.title,
+  "What Is Zi Wei Dou Shu? | Purple Star Astrology | Cae Goh",
+);
+const description = requireMetaString(
+  ziWeiDouShuMeta.description,
+  "Learn Zi Wei Dou Shu (Purple Star Astrology): twelve palaces, the Emperor Star, and how Cae Goh uses it as a decision system.",
+);
+---
+
+<ZwdsLayout title={title} description={description}>
+  <main class="cae-home">
+    <SiteHeader />
+    <ZwdsContent />
+    <SiteFooter />
+  </main>
+</ZwdsLayout>

@@ -1,13 +1,13 @@
 ---
 /**
- * Document chrome for the CAE About page — native home stack.
+ * Document chrome for the CAE Zi Wei Dou Shu explainer page.
  */
 import "@/styles/global.css";
 import "@/styles/home/decorative.css";
 import SeoHead from "@/components/seo/SeoHead.astro";
 import PublicThemeBoot from "@/components/site/PublicThemeBoot.astro";
-import { aboutMeta, requireMetaString } from "@/data/home/meta";
-import { buildAboutJsonLd } from "@/data/home/jsonld";
+import { ziWeiDouShuMeta, requireMetaString } from "@/data/home/meta";
+import { buildZiWeiDouShuJsonLd } from "@/data/home/jsonld";
 import { toAbsoluteUrl } from "@/lib/site-url";
 import logoAsset from "../assets/logo.png";
 
@@ -17,10 +17,10 @@ interface Props {
 }
 
 const { title, description } = Astro.props;
-const pageTitle = requireMetaString(title, aboutMeta.title);
+const pageTitle = requireMetaString(title, ziWeiDouShuMeta.title);
 const metaDescription = requireMetaString(
   description,
-  aboutMeta.description,
+  ziWeiDouShuMeta.description,
 );
 const logoSrc =
   typeof logoAsset === "object" &&
@@ -32,10 +32,10 @@ const logoSrc =
       ? logoAsset
       : "";
 if (logoSrc.length === 0) {
-  throw new Error("AboutLayout: failed to resolve logo asset src.");
+  throw new Error("ZwdsLayout: failed to resolve logo asset src.");
 }
 const ogImageUrl = toAbsoluteUrl(logoSrc);
-const jsonLd = buildAboutJsonLd(Astro.url.pathname, ogImageUrl);
+const jsonLd = buildZiWeiDouShuJsonLd(Astro.url.pathname, ogImageUrl);
 ---
 
 <!doctype html>
@@ -47,9 +47,9 @@ const jsonLd = buildAboutJsonLd(Astro.url.pathname, ogImageUrl);
     <SeoHead
       title={pageTitle}
       description={metaDescription}
-      ogType={aboutMeta.ogType}
-      siteName={aboutMeta.siteName}
-      twitterCard={aboutMeta.twitterCard}
+      ogType={ziWeiDouShuMeta.ogType}
+      siteName={ziWeiDouShuMeta.siteName}
+      twitterCard={ziWeiDouShuMeta.twitterCard}
       ogImage={ogImageUrl}
       jsonLd={jsonLd}
     />

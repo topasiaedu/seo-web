@@ -21,8 +21,24 @@ body {
   min-height: 100vh;
   color: var(--cae-text);
   background-color: var(--cae-bg);
+  background-image:
+    radial-gradient(
+      ellipse 90% 55% at 10% -10%,
+      color-mix(in srgb, var(--cae-nebula) 22%, transparent),
+      transparent 55%
+    ),
+    radial-gradient(
+      ellipse 70% 45% at 95% 5%,
+      color-mix(in srgb, var(--cae-holo) 12%, transparent),
+      transparent 50%
+    );
+  background-attachment: fixed;
   font-family: var(--cae-font-sans);
   -webkit-font-smoothing: antialiased;
+}
+
+html[data-theme="light"] body {
+  background-image: none;
 }
 
 img {
